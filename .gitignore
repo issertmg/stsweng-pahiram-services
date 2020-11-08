@@ -106,5 +106,5 @@ dist
 # uploads
 public/uploads/
 
-# env files
-.env
+# WebStorm
+.idea/
