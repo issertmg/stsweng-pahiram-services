@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+
+  <!-- Custom Styles -->
+  <link href="/css/styles.css" rel="stylesheet">
+  <link href="/css/styles-index.css" rel="stylesheet">
+  <link href="/css/styles-my-reservations.css" rel="stylesheet">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+
+   
+
+  <title>About Us</title>
+  <link rel="icon" href="/static/logo.png">
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="main-container row">
+      {{> sidenav act=active sb=sidebarData}}
+
+      <div class="main col-md-9 col-lg-10 ml-sm-auto p-0">
+        {{> topnav}}
+
+        <main role="main" class="pt-3 px-4">
+          <div class="row px-0 col-lg-10 align-items-end mx-auto">
+
+            <h1 class="mb-5 col-12">About us</h1>
+
+            <div class="col-12 pb-3 container-fluid text-center">
+              <h2>Our Values</h2>
+            </div>
+
+            <div class="row d-flex justify-content-around px-0">
+              <div class="col-md-6 col-sm-6 col-xs-12 mt-3 text-center">
+                <img src="static/about-us/mission.svg" class="mx-auto img-fluid" width=200px>
+                <div class="card-body">
+                  <h5>Mission</h5>
+                  <p class="card-text">Our mission is to provide convenience to our fellow Lasallians. Through online
+                    Pahiram Services, locker rentals and equipment rentals are made easier and hassle-free.</p>
+                </div>
+              </div>
+              <div class="col-md-6 col-sm-6 col-xs-12 mt-3 text-center">
+                <img src="static/about-us/vision.svg" class="mx-auto img-fluid" width=200px>
+                <div class="card-body">
+                  <h5>Vision</h5>
+                  <p class="card-text">Our vision is for Pahiram Services to be a solid and reputable project,
+                    considered by the entire student body as the provider of convenience in just a few clicks.</p>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="col-12 pt-5 pb-3 container-fluid text-center">
+              <h2>Our Services</h2>
+            </div>
+
+            <div class="row d-flex justify-content-around px-0">
+              <div class="col-md-6 col-sm-6 col-xs-12 mt-3 text-center">
+                <img src="static/about-us/locker-rentals.svg" class="mx-auto img-fluid" width=200px>
+                <div class="card-body">
+                  <h5>Locker Rentals</h5>
+                  <p class="card-text">No one needs excess baggage. Our locker rentals cater to students who need a
+                    storage space in school, whether it be for their bags or other necessary items.</p>
+                </div>
+              </div>
+              <div class="col-md-6 col-sm-6 col-xs-12 mt-3 text-center">
+                <img src="static/about-us/equipment-rentals.svg" class="mx-auto img-fluid" width=200px>
+                <div class="card-body">
+                  <h5>Equipment Rentals</h5>
+                  <p class="card-text">We get it - it's frustrating to forget your own cable for a presentation or
+                    event. Which is why this service ensures students that borrowing equipment from us is simple and
+                    quick.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 pt-5 pb-3 container-fluid text-center">
+              <h2>NPM Packages Used</h2>
+            </div>
+
+            <ol class="list-group list-group-flush">
+              <li class="list-group-item">
+                <h5>aws-sdk</h5>
+                Used to perform read/write operations on an AWS S3 bucket where file uploads are stored.
+              </li>
+              <li class="list-group-item">
+                <h5>body-parser</h5>
+                Used to parse request body when forms are submitted.
+              </li>
+              <li class="list-group-item">
+                <h5>cookie-parser</h5>
+                Used to populate cookies for Google Auth 2.0.
+              </li>
+              <li class="list-group-item">
+                <h5>cookie-session</h5>
+                Used to store user session using cookies.
+              </li>
+              <li class="list-group-item">
+                <h5>dotenv</h5>
+                Used to load environment variables from a .env file.
+              </li>
+              <li class="list-group-item">
+                <h5>express</h5>
+                Web application framework used to simplify our development process.
+              </li>
+              <li class="list-group-item">
+                <h5>hbs</h5>
+                Templating language used to keep us close to the HTML language whilest designing dynamic webpages. 
+              </li>
+              <li class="list-group-item">
+                <h5>mongoose</h5>
+                MongoDB object modelling package used for validation and schema design.
+              </li>
+              <li class="list-group-item">
+                <h5>multer</h5>
+                Used to handle multipart/form-data. This package is mainly used for file uploads.
+              </li>
+              <li class="list-group-item">
+                <h5>node-cron</h5>
+                Used to automate daily process of marking unreturned lockers and equipment as uncleared.
+                Also used to apply increments on penalties for unreturned items.
+              </li>
+              <li class="list-group-item">
+                <h5>opencollective-postinstall</h5>
+                An npm package needed for node-cron to work.
+              </li>
+              <li class="list-group-item">
+                <h5>passport</h5>
+                Used to authenticate users when they log in and register.
+              </li>
+              <li class="list-group-item">
+                <h5>passport-google-oauth</h5>
+                Google OAuth 2.0 Passport strategies are used to authenticate the user when they login via their DLSU Google account.
+              </li>
+              <li class="list-group-item">
+                <h5>shortid</h5>
+                Used to generate a unique filename when uploading a photo to the server.
+              </li>
+            </ol>
+
+          </div>
+
+        </main>
+
+        {{> footer}}
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/js/styles.js"></script>
+
+</body>
+
+</html>

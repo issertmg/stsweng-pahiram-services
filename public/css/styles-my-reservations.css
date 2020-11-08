@@ -1,0 +1,23 @@
+
+.card {
+    transition: 0.2s ease;
+}
+
+.badge {
+    transition: 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.card hr {
+    margin-left: 25px;
+    margin-right: 12px;
+    background-color: #efefef;
+    border-top: solid 1px #efefef;
+}
+
+.cancel-anchor {
+    cursor: pointer;
+}

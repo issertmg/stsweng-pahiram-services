@@ -1,0 +1,75 @@
+.option {
+    color: #38b98a;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.option:hover {
+    color: #1f6383;
+    text-decoration: none;
+}
+
+.equipment-element {
+    /* max-width: 200px;
+    max-height: 200px; */
+    width: 100%;
+    padding-top: 100%;
+    transition: ease 0.25s;
+}
+
+.equipment-types .btn {
+    font-size: 12px;
+}
+
+#extension-cord {
+    background: url(../static/equipment-types/extension-cord.png) center no-repeat;
+    background-size: contain;
+}
+
+#vga-cable {
+    background: url(../static/equipment-types/vga-cable.png) center no-repeat;
+    background-size: contain;
+}
+
+#lan-cable {
+    background: url(../static/equipment-types/lan-cable.png) center no-repeat;
+    background-size: contain;
+}
+
+.equipment-element.active {
+    transform: scale(1.1);
+    filter: grayscale(0);
+}
+
+.equipment-element:not(.active) {
+    filter: grayscale(0.75);
+}
+
+.equipment-img {
+    background-position: center;
+    background-repeat: no-repeat;
+    /* background: center no-repeat; */
+    background-size: cover;
+    height: 150px;
+    width: 150px;
+    transform: translateY(-64px);
+    margin-bottom: -64px;
+    transition: 0.5s ease;
+}
+
+.equipment-card {
+    margin-top: 64px;
+    transition: 0.2s ease;
+}
+
+.equipment-card:hover {
+    transform: translateY(-2px);
+}
+
+.equipment-card .card-body {
+    margin-top: -16px;
+}
+
+.equipment-card:hover .equipment-img {
+    transform: translateY(-68px);
+}

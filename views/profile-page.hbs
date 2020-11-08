@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+
+  <!-- Custom Styles -->
+  <link href="/css/styles.css" rel="stylesheet">
+  <link href="/css/styles-profile-page.css" rel="stylesheet">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+
+   
+
+  <title>Profile Page</title>
+  <link rel="icon" href="/static/logo.png">
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="main-container row">
+      {{> sidenav act=active sb=sidebarData}}
+
+      <div class="main col-md-9 col-lg-10 ml-sm-auto p-0">
+        {{> topnav}}
+
+        <main role="main" class="pt-3 px-4">
+          <div class="row col-lg-10 align-items-end mx-auto px-0">
+
+            <h1 class="mb-4 col-12">My Account</h1>
+
+            <div class="col-lg-10 mx-auto mt-4">
+              <div class="profile-card row mx-auto">
+
+                <div class="col-xl-5 profile-header px-0">
+                  <div id="avatar" class="profile-picture mx-auto" style="background-image: url({{sidebarData.dp}});">
+                  </div>
+                  <div class="profile-head d-flex flex-column align-items-center pt-3 pb-5">
+                    <h5 class="profile-name mb-0">{{user.firstName}} {{user.lastName}}</h5>
+                    <h6 class="profile-type mb-4">{{user.type}}</h6>
+                    <a id="editProfile" data-toggle="modal" href="#editProfileModal"
+                      class="btn btn-primary btn-round">Edit Profile</a>
+                  </div>
+                </div>
+                <div class="col-xl-7 d-flex align-items-center px-0">
+                  <div class="table-responsive profile-info px-5 py-lg-0 py-5">
+                    <table class="table table-borderless">
+                      <tbody>
+                        <tr>
+                          <th scope="row">ID number</th>
+                          <td>{{user.idNum}}</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">College</th>
+                          <td>{{user.college}}</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">Degree program</th>
+                          <td>{{user.degreeProg}}</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">Email address</th>
+                          <td>{{user.email}}</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">Mobile number</th>
+                          <td>+63{{user.contactNum}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        {{> footer}}
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="profileModalLabel">Edit Profile</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form method="post" action="/profile" class="form-horizontal">
+          <div class="modal-body col-lg-10 mx-auto">
+            <div class="form-group form-inline input-group">
+              <label for="phone" class="col-lg-4 justify-content-start">Mobile Number:</label>
+              <div class="input-group-prepend">
+                <span class="input-group-text">+63</span>
+              </div>
+              <input type="tel" class="form-control col-lg-8" name="phone" id="phone" value="{{user.contactNum}}" pattern="[0-9]{10}" required>
+              <input type="hidden" id="idNum" name="idNum" value="{{user.idNum}}">
+              <p class="error-label text-sm ml-auto col-lg-8" id="phoneError">{{phoneError}}</p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
+            <input type="submit" id="submitBtn" class="btn btn-primary" value="Submit">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/js/styles.js"></script>
+  <script type="text/javascript" src="/js/styles-profile.js"></script>
+  <script type="text/javascript" src="/js/validator.min.js"></script>
+  <script type="text/javascript" src="/js/profile-page.js"></script>
+</body>
+
+</html>

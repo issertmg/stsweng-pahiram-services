@@ -1,0 +1,48 @@
+.card .card-item {
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.card-item .response {
+    visibility: hidden;
+    transform: translateX(100px);
+}
+
+.card-item:hover .response {
+    visibility: visible;
+    transform: translateX(0);
+}
+
+.card-item {
+    transition: 0.2s ease;
+}
+
+.card-item:hover {
+    box-shadow: 0px 5px 10px rgba(110, 163, 124, 0.1);
+    transform: translateY(-2px);
+}
+
+.card:hover {
+    box-shadow: 0px 10px 40px rgba(110, 163, 124, 0.2);
+}
+
+.pinned-card .card-body {
+    max-height: 40vh;
+    overflow-y: scroll;
+}
+
+.pinned-card .card-body::-webkit-scrollbar {
+    width: 1px;
+}
+
+.pinned-card .card-body::-webkit-scrollbar-thumb {
+    background-color: #fff;
+}
+
+.pinned-card:hover .card-body::-webkit-scrollbar-thumb {
+    background-color: #38b98a;
+}
+
+.card#otherResCard {
+    min-height: 70vh;
+}

@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+
+  <!-- Custom Styles -->
+  <link href="/css/styles.css" rel="stylesheet">
+  <link href="/css/styles-locker.css" rel="stylesheet">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+
+   
+
+  <title>Rent a Locker</title>
+  <link rel="icon" href="/static/logo.png">
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="main-container row">
+      {{> sidenav act=active sb=sidebarData}}
+
+      <div class="main col-md-9 col-lg-10 ml-sm-auto p-0">
+        {{> topnav}}
+
+        <main role="main" class="pt-3 px-4">
+          <form class="form row col-lg-10 mx-auto px-0" action="/reserve/locker" method="POST" id="lockerForm">
+
+            <h1 class="mb-5 col-12">Reserve a locker</h1>
+
+
+            {{#if panels}}
+            <div class="col-lg-10 row align-items-end mx-auto px-0">
+
+              {{#if status}}
+              <div class="col-12 mb-4">
+                <div class="alert alert-danger" role="alert">
+                  <strong>Note:</strong> You already have an active locker reservation. Form submission button is <i class="font-italic">disabled</i>. 
+                </div>
+              </div>
+              {{/if}}
+                
+              <div class="form-group-container col-lg-7">
+                <div class="form-group form-card select-form">
+                  <label for="bldg">Select a building</label>
+                  <select class="form-control custom-select select-lg" id="bldg" onchange="updateQueryStringParameter('bldg', this.value)">
+                    {{#each panel_buildings}}
+                    <option value="{{this}}"> {{this}} </option>
+                    {{/each}}
+                  </select>
+                </div>
+              </div>
+  
+              <div class="form-group-container col-lg-5">
+                <div class="form-group form-card select-form">
+                  <label for="floor">Select a floor level</label>
+                  <select class="form-control custom-select select-lg" id="floor" onchange="updateQueryStringParameter('flr', this.value)">
+                    {{#each panel_floors}}
+                    <option value="{{this}}"> {{this}}/F </option>
+                    {{/each}}
+                  </select>
+                </div>
+              </div>
+  
+              <div class="form-group-container col-lg-12">
+                <div class="form-group form-card equipment-types pb-4">
+                  <label class="form-control-placeholder col-12">Choose a locker</label>
+                  <div class="label-legend">
+                    <div class="row">
+                      <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 d-flex align-items-center">
+                        <div class="icon mr-2" id="locker-vacant"></div> vacant
+                      </div>
+                      <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 d-flex align-items-center">
+                        <div class="icon mr-2" id="locker-occupied"></div> occupied
+                      </div>
+                      <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 d-flex align-items-center">
+                        <div class="icon mr-2" id="locker-broken"></div> broken
+                      </div>
+                      <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 d-flex align-items-center">
+                        <div class="icon mr-2" id="locker-uncleared"></div> uncleared
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mx-auto panel accordion" id="panelAccordion">
+                  {{#each panels}}
+                    <a class="col-12 panel-label d-flex align-items-center {{#if (notFirst @index)}}collapsed{{/if}}" data-toggle="collapse" href="#panelCollapse{{number}}" role="button" aria-expanded="false" aria-controls="panelCollapse">
+                      {{!-- <div class="icon mr-2" id="{{#if (lockerIsBig type)}}big{{else}}small{{/if}}" style="height: 2rem; width: 2rem"></div> --}}
+                      {{capitalizeFirst type}} Panel {{number}} ({{lowerRange}}-{{upperRange}})
+                    </a>
+                    <div class="row collapse {{#if @first}}show{{/if}}" data-parent="#panelAccordion" id="panelCollapse{{number}}">
+                      {{#each lockers}}
+                      <div class="col-lg-4 col-md-6 col-6 locker-container mb-4">
+                        <div class="locker locker-status-{{lockerstatus this}} d-flex align-items-center" 
+                            data-lockernumber="{{lockernumber this}}" data-panelid="{{../_id}}">
+                          #{{lockernumber this}}
+                          <div class="icon ml-auto" id="locker-{{lockerstatus this}}"></div>
+                          {{!-- <i class="locker-status-icon fas fa-circle ml-auto"></i> --}}
+                        </div>
+                      </div>
+                      {{/each}}
+                    </div>
+                  {{/each}}
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group-container d-flex flex-wrap col-12 mx-auto justify-content-end align-items-center">
+                <div class="form-check mr-4 d-flex align-items-center my-4">
+                  <input type="checkbox" class="form-check-input my-auto" id="checkTerms" required>
+                  <label class="form-check-label ml-2" for="checkTerms">
+                    I agree to the <a data-toggle="modal" href="#lockerTermsModal">Terms and Conditions</a>.
+                  </label>
+                </div>
+                <div>
+                  <a href="/reserve" class="btn btn-outline mr-4">Go back</a>                  
+                  <button type="button" id="submitLockerForm" class="btn btn-{{#if status}}disabled" disabled {{else}}primary"{{/if}}>Submit</button>
+                </div>
+              </div>
+            </div>
+            {{else}}
+            <div class="font-italic d-flex mx-auto mt-5">
+              There are no available panels yet.
+            </div>
+            {{/if}}
+
+            <input type="hidden" name="panelid" id="panelid">
+            <input type="hidden" name="lockernumber" id="lockernumber">
+
+          </form>
+
+        </main>
+
+        {{> footer}}
+
+      </div>
+
+
+    </div>
+  </div>
+
+  <div class="modal fade" id="lockerTermsModal" tabindex="-1" role="dialog" aria-labelledby="equipmentModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="equipmentModalLabel">Terms and Conditions</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body col-lg-10 mx-auto">
+          <h5>Locker service</h5>
+          <ol class="list-group list-group-flush">
+            <li class="list-group-item">1. A student can only own 1 locker at a time.</li>
+            <li class="list-group-item">2. Online reservation does not guarantee locker ownership.</li>
+            <li class="list-group-item">3. Locker rental rates: 
+                <ul>
+                    <li>Php 70.00 - For small lockers.</li>
+                    <li>Php 90.00 - For big lockers.</li>
+                </ul>
+            </li>
+            <li class="list-group-item">4. The student is required to bring his/her padlock and key to the Student Services team after reserving a locker.</li>
+            <li class="list-group-item">5. The student has one day (the day after reserving) to secure the requirements and fees to the Student Services team. </li>                            
+            <li class="list-group-item">6. Failure in fulfilling the requirements will forfeit locker reservation.</li>
+            <li class="list-group-item">7. A padlock sticker will be given to locker owners upon accomplishing the requirements and fees. The sticker
+                                        should be evident on the padlock at all times. Lockers with no official sticker will be forcefully opened with or without 
+                                        prior notice to the owner.</li>
+            <li class="list-group-item">8. The University Student Government (USG) and the Student Discipline and Formation Office (SDFO) will NOT be held liable 
+                                        for any losses and damages to the items inside the locker.</li>
+            <li class="list-group-item">9. Storage of any object which may be spoiled is strictly prohibited. Students having such objects in the borrowed locker will 
+                                        have their padlocks forcefully opened with or without prior notice.</li>
+            <li class="list-group-item">10. In the case of lost keys or forgetten padlock codes, you may request locker to be forcefully opened for a fine of 
+                                        Php 80.00.</li>
+            <li class="list-group-item">11. All lockers must be emptied on or before the current term's Grade Consultation Day. Failure to comply will result in 
+                                        a fine of Php 200.00.</li>
+            <li class="list-group-item">12. Students who wish to rent a locker outside the specified rental period would be charged a late fee of Php 50.00 and 
+                                        will be accommodated based on availability.</li>
+            <li class="list-group-item">13. Depending on the case, failure to comply with the terms will result in restricted use of pahiram's locker rental service.</li>
+          </ol>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/js/styles-locker.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      var url = new URL(document.location);
+      var params = url.searchParams;
+      var bldg = params.get("bldg");
+      var flr = params.get("flr");
+      
+      $("#bldg").val(bldg);
+      $("#floor").val(flr);
+
+      $("#submitLockerForm").click(function() {
+        var locker = $('#panelAccordion').find('.selected');
+        var panelid = locker.data('panelid');
+        var lockernumber = locker.data('lockernumber');
+
+        if ($("#checkTerms").prop('checked')) {
+          if (locker.length != 0) {
+            $('#panelid').val(panelid);
+            $('#lockernumber').val(lockernumber);
+            $('#lockerForm').submit();
+          }
+          else {
+            alert("Please select a locker you want to rent.");
+          }
+        }
+        else {
+          alert("Please check the box if you agree to the terms and conditions.");
+        }
+      });
+    });
+    // Removes a query parameter
+    function removeParam(key, sourceURL) {
+      var rtn = sourceURL.split("?")[0],
+          param,
+          params_arr = [],
+          queryString = (sourceURL.indexOf("?") !== -1) ? sourceURL.split("?")[1] : "";
+      if (queryString !== "") {
+          params_arr = queryString.split("&");
+          for (var i = params_arr.length - 1; i >= 0; i -= 1) {
+              param = params_arr[i].split("=")[0];
+              if (param === key) {
+                  params_arr.splice(i, 1);
+              }
+          }
+          rtn = rtn + "?" + params_arr.join("&");
+      }
+      return rtn;
+    };
+
+    // Adds or updates a query parameter
+    function updateQueryStringParameter(key, value) {
+      var uri = window.location.href;
+      var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+      var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+      if (key=='bldg') {
+        uri = removeParam('flr', uri);
+      }
+      if (uri.match(re)) {
+        window.location.href = uri.replace(re, '$1' + key + "=" + value + '$2');
+      }
+      else {
+        window.location.href = uri + separator + key + "=" + value;
+      }
+    };
+  </script>
+  <script type="text/javascript" src="/js/styles.js"></script>
+
+</body>
+
+</html>

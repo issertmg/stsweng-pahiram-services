@@ -1,0 +1,83 @@
+<nav class="col-md-3 col-lg-2 sidebar">
+  <div class="sidebar-sticky d-flex flex-column justify-content-between">
+    <div class="">
+      <div class="d-flex">
+        <div class="sidebar-brand">
+          <a class="brand d-flex align-items-center" href="/">
+            <img class="brand-logo" src="/static/logo.png"> pahiram
+          </a>
+        </div>
+        <button class="btn nav-btn ml-auto">
+          <div class="icon" id="hamburger"></div>
+        </button>
+      </div>
+      <div class="{{#if act.active_profile}}active{{/if}} profile-container mb-4">
+        <a class="d-flex flex-column justify-content-center" href="/profile">
+          <div class="profile-img mb-2 mx-auto" style="background-image: url('{{sb.dp}}');"></div>
+          <div class="profile-name text-center">{{sb.name}}</div>
+        </a>
+      </div>
+      <ul class="nav flex-column mb-4">
+        <li class="nav-item mb-4"><a class="{{#if act.active_index}}active{{/if}} nav-link nav-main"
+            href="/reserve">Rent & Reserve</a></li>
+        <li class="nav-item">
+          <a class="{{#if act.active_my_reservations}}active{{/if}} nav-link" href="/reservations">
+            <div class="icon mr-2 {{#if act.active_my_reservations}}white{{/if}}" id="reservations"></div>
+            My Reservations
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="{{#if act.active_terms}}active{{/if}} nav-link" href="/terms">
+            <div class="icon mr-2 {{#if act.active_terms}}white{{/if}}" id="terms"></div>
+            Terms 
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="{{#if act.active_about_us}}active{{/if}} nav-link" href="/about">
+            <div class="icon mr-2 {{#if act.active_about_us}}white{{/if}}" id="about"></div>
+            About Us 
+          </a>
+        </li>
+      </ul>
+      {{#if (isAdmin sb.type)}}
+      <div class="nav-section-header">
+        Manage
+      </div>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="{{#if act.active_manage_reservations}}active{{/if}} nav-link" href="/reservations/manage">
+            <div class="icon mr-2 {{#if act.active_manage_reservations}}white{{/if}}" id="manage-reservations"></div>
+            Reservations 
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="{{#if act.active_manage_lockers}}active{{/if}} nav-link" href="/manage-lockers">
+            <div class="icon mr-2 {{#if act.active_manage_lockers}}white{{/if}}" id="manage-lockers"></div>
+            Lockers 
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="{{#if act.active_manage_equipment}}active{{/if}} nav-link" href="/manage-equipment">  
+            <div class="icon mr-2 {{#if act.active_manage_equipment}}white{{/if}}" id="manage-equipment"></div>
+            Equipment 
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="{{#if act.active_manage_people}}active{{/if}} nav-link" href="/profile/manage">  
+            <div class="icon mr-2 {{#if act.active_manage_people}}white{{/if}}" id="profile"></div>
+            People 
+          </a>
+        </li>
+      </ul>
+      {{/if}}
+    </div>
+
+    <div class="sign-out mt-5">
+      <a class="d-flex align-items-center" href="/logout">
+        <div class="icon mr-2" id="signout"></div>
+        {{!-- <img class="icon mr-2" src="/static/icons/signout.png"> --}}
+        Sign Out
+      </a>
+    </div>
+  </div>
+</nav>

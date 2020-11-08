@@ -1,0 +1,64 @@
+#avatar {
+    background: url(../static/profile-img.jpg) center no-repeat;
+    background-size: cover;
+    
+    height: 150px;
+    width: 150px;
+    border-radius: 100%;
+    border: solid #fff 5px;
+    box-shadow: 0px 10px 40px rgba(110, 163, 124, 0.2);
+}
+
+.profile-head h5 {
+    color: #545662;
+    font-size: 20px;
+}
+
+.profile-head {
+    margin-top: 1%;
+    font-weight: 600;
+    border: none;
+}
+
+label {
+    color: #545662;
+    font-weight: 600;
+}
+
+
+.profile-card {
+    position: relative;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0px 10px 40px rgba(110, 163, 124, 0.2);
+    /* min-height: 100px; */
+    margin-bottom: 30px;
+    margin-top: 50px;
+    /* overflow: hidden; */
+}
+
+@media (min-width: 1200px) {
+    .profile-card .profile-header {
+        border-radius: 12px 0 0 12px;
+    }
+}
+
+@media (max-width: 1199.98px) {
+    .profile-card .profile-header {
+        border-radius: 12px 12px 0 0;
+    }
+}
+
+.profile-card .profile-picture {
+    transform: translateY(-50px);
+    margin-bottom: -50px;
+}
+
+.profile-card .profile-name, .profile-card .profile-type {
+    font-family: 'Muli', sans-serif;
+    color: #3f3f3f;
+}
+
+.profile-card .profile-info {
+    background-color: #fff;
+}

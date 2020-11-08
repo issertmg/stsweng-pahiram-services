@@ -1,0 +1,161 @@
+.illus-container {
+    position: relative;
+    overflow: hidden;
+    min-height: 350px;
+    /* height: 55vh; */
+}
+
+.illus-element {
+    height: 100%;
+    width: 100%;
+    transition: ease 0.5s;
+}
+
+#wall1 {
+    position: absolute;
+    background: url(../static/locker-equipment/wall1.png) center no-repeat;
+    background-size: contain;
+    opacity: 50%;
+}
+
+#wall2 {
+    position: absolute;
+    background: url(../static/locker-equipment/wall2.png) center no-repeat;
+    background-size: contain;
+    opacity: 50%;
+}
+
+#window {
+    position: absolute;
+    background: url(../static/locker-equipment/window.png) center no-repeat;
+    background-size: contain;
+    opacity: 50%;
+}
+
+#clock {
+    position: absolute;
+    background: url(../static/locker-equipment/clock.png) center no-repeat;
+    background-size: contain;
+    opacity: 50%;
+}
+
+#trashcan {
+    position: absolute;
+    background: url(../static/locker-equipment/trashcan.png) center no-repeat;
+    background-size: contain;
+    opacity: 50%;
+}
+
+#bench {
+    position: absolute;
+    background: url(../static/locker-equipment/bench.png) center no-repeat;
+    background-size: contain;
+    opacity: 50%;
+}
+
+#umbrella {
+    position: absolute;
+    background: url(../static/locker-equipment/umbrella.png) center no-repeat;
+    background-size: contain;
+    opacity: 50%;
+}
+
+#laptop {
+    position: absolute;
+    background: url(../static/locker-equipment/laptop.png) center no-repeat;
+    background-size: contain;
+    opacity: 50%;
+}
+
+#table {
+    position: absolute;
+    background: url(../static/locker-equipment/table.png) center no-repeat;
+    background-size: contain;
+}
+
+#human-locker {
+    position: absolute;
+    background: url(../static/locker-equipment/human-locker.png) center no-repeat;
+    background-size: contain;
+}
+
+#human-equipment {
+    position: absolute;
+    background: url(../static/locker-equipment/human-equipment.png) center no-repeat;
+    background-size: contain;
+}
+
+#human-locker.locker-anim {
+    transform: translateX(-90px) scale(1.2);
+}
+
+#human-equipment.locker-anim,
+#table.locker-anim,
+#laptop.locker-anim,
+#umbrella.locker-anim {
+    transform: translateX(-60px) scale(0.8);
+    filter: grayscale(0.75);
+}
+
+#window.locker-anim{
+    transform: translateX(-50px) scale(0.95);
+}
+
+#clock.locker-anim {
+    transform: translateX(-50px) scale(0.95);
+}
+
+#bench.locker-anim {
+    transform: translateX(-70px) scale(0.8);
+}
+
+#trashcan.locker-anim {
+    transform: translateX(-5px) scale(0.9);
+}
+
+#wall2.locker-anim {
+    transform: translateX(-20px) translateY(10px) scale(1.1);
+}
+
+#wall1.locker-anim {
+    transform: translateX(-50px) translateY(-10px) scale(0.9);
+}
+
+
+
+
+#human-locker.equipment-anim {
+    transform: translateX(50px) scale(0.8);
+    filter: grayscale(0.75);
+}
+
+#human-equipment.equipment-anim,
+#table.equipment-anim,
+#laptop.equipment-anim,
+#umbrella.equipment-anim {
+    transform: translateX(90px) scale(1.2);
+}
+
+#window.equipment-anim{
+    transform: translateX(40px) scale(0.95);
+}
+
+#clock.equipment-anim {
+    transform: translateX(40px) scale(0.95);
+}
+
+#bench.equipment-anim {
+    transform: translateX(40px) scale(0.8);
+}
+
+#trashcan.equipment-anim {
+    transform: translateX(90px) scale(0.7);
+}
+
+#wall2.equipment-anim {
+    transform: translateX(50px) translateY(10px) scale(0.9);
+}
+
+#wall1.equipment-anim {
+    transform: translateX(20px) translateY(10px) scale(1.1);
+}

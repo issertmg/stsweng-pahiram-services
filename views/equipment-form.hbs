@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+  
+  <!-- Custom Styles -->
+  <link href="/css/styles.css" rel="stylesheet">
+  <link href="/css/styles-equipment.css" rel="stylesheet">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+
+   
+
+  <title>Rent Equipment</title>
+  <link rel="icon" href="/static/logo.png">
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="main-container row">
+      {{> sidenav act=active sb=sidebarData}}
+
+      <div class="main col-md-9 col-lg-10 ml-sm-auto p-0">
+        {{> topnav}}
+
+        <main role="main" class="pt-3 px-4">
+          <form class="form row col-lg-10 mx-auto px-0" method="POST" action="/reserve/equipment" id="equipmentForm">
+
+            <h1 class="mb-5 col-12">Rent equipment</h1>
+
+            {{#if equipmentList}}
+            <div class="col-lg-10 row align-items-end mx-auto px-0">
+              {{#if status}}
+              <div class="col-12 mb-4">
+                <div class="alert alert-danger" role="alert">
+                  <strong>Note:</strong> You already have 2 active equipment reservations. Form submission button is <i class="font-italic">disabled</i>. 
+                </div>
+              </div>
+              {{/if}}
+
+              <div class="form-group-container col-lg-12">
+                <div class="form-group form-card equipment-types pb-4">
+                  <label class="form-control-placeholder col-12">Choose an equipment to borrow</label>
+                  <label class="label-desc col-12">Only one equipment can be borrowed per request.</label>
+                  <div class="row px-4 mx-auto">
+
+                    {{#each equipmentList}}
+                    <div class="col-lg-4 col-md-6 col-6 d-flex flex-column align-items-center" >
+                      <div class="equipment-element" style="background: url({{imageURL}}) center no-repeat; background-size: contain;"></div>
+                      <button class="btn btn-toggle w-100" data-toggle="button" data-equipmentid="{{_id}}" aria-pressed="false" type="button">
+                        {{name}}
+                      </button>
+                    </div>
+                    {{/each}}
+
+                  </div>
+                </div>
+              </div>
+  
+              <div class="form-group-container col-lg-6">
+                <div class="form-group form-card select-form">
+                  <label class="d-block" for="borrow-date">Date needed</label>
+                  {{!-- TODO: Present only the next 5 schooldays from the server --}}
+                  {{!-- <input type="text" class="form-control form-lg" id="borrow-date" value="March 30, 2020" disabled> --}}
+                  <input type="text" class="form-control form-lg" id="borrow-date" disabled>
+                </div>
+              </div>
+
+              <div class="form-group-container col-lg-6">
+                <div class="form-group form-card select-form">
+                  <label class="d-block" for="borrow-time">Time needed</label>
+                  <select class="form-control custom-select select-lg" id="borrow-time" name="borrowtime">
+                    <option value="1">7:30 am</option>
+                    <option value="2">9:15 am</option>
+                    <option value="3">11:00 am</option>
+                    <option value="4">12:45 pm</option>
+                    <option value="5">2:30 pm</option>
+                    <option value="6">4:15 pm</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group-container col-lg-12">
+                <div class="form-group form-card">
+                  <label class="form-control-placeholder d-block" for="reason">Reason for borrowing the equipment</label>
+                  <input type="text" id="reason" class="form-control form-lg" name="reason" placeholder="e.g. I need this for my presentation in CCAPDEV">
+                </div>
+              </div>
+
+              <div class="form-group-container d-flex flex-wrap col-12 mx-auto justify-content-end align-items-center">
+                <div class="form-check mr-4 d-flex align-items-center my-4">
+                  <input type="checkbox" class="form-check-input my-auto" id="checkTerms" required>
+                  <label class="form-check-label ml-2" for="checkTerms">
+                    I agree to the <a data-toggle="modal" href="#equipmentTermsModal">Terms and Conditions</a>.
+                  </label>
+                </div>
+                <div>
+                  <a href="/reserve" class="btn btn-outline mr-4">Go back</a>        
+                  <button type="button" id="submitEquipmentForm" class="btn btn-{{#if status}}disabled" disabled {{else}}primary"{{/if}}>Submit</button>
+                </div>
+              </div>
+            </div>
+            {{else}}
+            <div class="font-italic d-flex mx-auto mt-5">
+              There are no available equipment yet.
+            </div>
+            {{/if}}
+            <input type="hidden" name="equipmentid" id="equipmentid">
+          </form>
+
+        </main>
+        
+            <footer class="py-5 pt-5 text-muted text-center text-small">
+              <p class="mb-1">De La Salle University - Manila</p>
+              <p class="mb-1">Pahiram Services</p>
+            </footer>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal fade" id="equipmentTermsModal" tabindex="-1" role="dialog" aria-labelledby="equipmentModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="equipmentModalLabel">Terms and Conditions</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body col-lg-10 mx-auto">
+          <h5>Equipment service</h5>
+          <ol class="list-group list-group-flush">
+            <li class="list-group-item">1. A user can borrow up to 2 pieces of equipment per reserved date.</li>
+            <li class="list-group-item">2. All equipment are to be collected and returned to the Computer Studies Government office.</li>
+            <li class="list-group-item">3. There is no time limit in borrowing equipment as long as it is returned before 6pm.</li>
+            <li class="list-group-item">4. Equipment will be tested before borrowing and upon returning. </li>
+            <li class="list-group-item">5. Charges may apply to the following:
+                <ul>
+                    <li>Php 50.00 - For returning borrowed materials beyond 6pm.</li>
+                    <li>Php 150.00 - For damaged/loss equipment.</li>
+                </ul>
+            </li>
+            <li class="list-group-item">6. Unreturned equipment will impose fee incrementing by Php 20.00 per day.</li>
+            <li class="list-group-item">7. Damaged/loss equipment should be replaced immediately.</li>
+            <li class="list-group-item">8. Failure to comply with the terms will result in restricted use of pahiram's equipment borrowing service.</li>                            
+          </ol>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/js/styles.js"></script>
+  <script type="text/javascript" src="/js/styles-equipment.js"></script>
+  
+  <script>
+  $(document).ready(function () {
+
+      var borrowDate = new Date();
+      var options = { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric'};
+      
+      do {
+          borrowDate.setDate(borrowDate.getDate()+1);
+      }
+      while (borrowDate.getDay() == 0 || borrowDate.getDay() == 6); 
+      $("#borrow-date").val(borrowDate.toLocaleDateString("en-US", options));
+      
+      $("#submitEquipmentForm").click(function() {
+        var equipment = $('button.active');
+        var equipmentid = equipment.data('equipmentid');
+        var reason = $('#reason').val();
+
+        if ($("#checkTerms").prop('checked')) {
+          if (equipment.length != 0) {
+            $('#equipmentid').val(equipmentid);
+
+            if (reason.trim().length != 0) {
+              $('#equipmentForm').submit();
+            }
+            else {
+              alert("Please write the reason for borrowing.");
+            }
+          }
+          else {
+            alert("Please select an equipment you want to rent.");
+          }
+        }
+        else {
+          alert("Please check the box if you agree to the terms and conditions.");
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

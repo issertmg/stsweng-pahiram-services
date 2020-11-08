@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+
+  <!-- Custom Styles -->
+  <link href="/css/styles.css" rel="stylesheet">
+  <link href="/css/styles-manage-reservations.css" rel="stylesheet">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+
+   
+
+  <title>Manage Reservations</title>
+  <link rel="icon" href="/static/logo.png">
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="main-container row">
+      {{> sidenav act=active sb=sidebarData}}
+
+      <div class="main col-md-9 col-lg-10 ml-sm-auto p-0">
+        {{> topnav}}
+
+        <main role="main" class="pt-3 px-4">
+          <div class="row px-0 col-lg-10 mx-auto">
+
+            <h1 class="col-12 mb-5">Manage reservations</h1>
+
+            <div class="col-lg-6 mb-5">
+              <div class="card no-hover pinned-card h-100">
+                <h5 class="card-header">Pending</h5>
+                <div class="card-body">
+                  {{#unless pendingEarlier}}{{#unless pendingToday}}
+                  <div class="font-italic my-4 text-center">All caught up</div>
+                  {{/unless}}{{/unless}}
+                  {{#if pendingEarlier}}
+                  <div class="card-subtitle">Earlier</div>
+                  {{#each pendingEarlier}}
+                  <div class="card-item">
+                    <div class="d-flex flex-row flex-nowrap">
+                      <div class="d-flex flex-row flex-nowrap flex-fill col-10 px-0" data-toggle="modal"
+                        data-target="#editReservationModal" data-title="{{title}}" data-userid="{{userID}}"
+                        data-datecreated="{{dateStr dateCreated}}" data-status="{{status}}"
+                        data-description="{{description}}" data-remarks="{{remarks}}" data-penalty="{{penalty}}"
+                        data-type="{{onItemType}}" data-id="{{_id}}" data-paymentdate="{{pickupPayDate}}">
+                        <div class="col-1 icon mb-auto mt-1"
+                          id="{{#if (isLocker onItemType)}}locker{{else}}equipment{{/if}}"></div>
+                        <div class="d-flex flex-fill flex-column mx-4">
+                          <div>
+                            {{dateStr dateCreated}}
+                          </div>
+                          <div class="font-weight-bold">{{userID}}</div>
+                          <div>
+                            {{#if (isLocker onItemType)}}
+                              <span class="">{{description}}</span>
+                            {{else}}
+                              <span class="">{{title}}; {{description}}</span>
+                            {{/if}}
+                          </div>
+                        </div>
+                      </div>
+                      <a class="icon my-auto response" data-toggle="modal" data-target="#approveReservationModal"
+                        id="accept"></a>
+                      <a class="icon my-auto response" data-toggle="modal" data-target="#denyReservationModal"
+                        id="deny" href="#" title="Deny"></a>
+                    </div>
+                  </div>
+                  {{/each}}
+                  <br>
+                  {{/if}}
+
+                  {{#if pendingToday}}
+                  <div class="card-subtitle">Today</div>
+                  {{#each pendingToday}}
+                  <div class="card-item">
+                    <div class="d-flex flex-row flex-nowrap">
+                      <div class="d-flex flex-row flex-nowrap flex-fill col-10 px-0" data-toggle="modal"
+                        data-target="#editReservationModal" data-title="{{title}}" data-userid="{{userID}}"
+                        data-datecreated="{{dateStr dateCreated}}" data-status="{{status}}"
+                        data-description="{{description}}" data-remarks="{{remarks}}" data-penalty="{{penalty}}"
+                        data-type="{{onItemType}}" data-id="{{_id}}" data-paymentdate="{{pickupPayDate}}">
+                        <div class="col-1 icon mb-auto mt-1"
+                          id="{{#if (isLocker onItemType)}}locker{{else}}equipment{{/if}}"></div>
+                        <div class="d-flex flex-fill flex-column mx-4">
+                          <div>
+                            <div class="font-weight-bold">{{userID}}</div>
+                            {{#if (isLocker onItemType)}}
+                              <span class="">{{description}}</span>
+                            {{else}}
+                              <span class="">{{title}}; {{description}}</span>
+                            {{/if}}
+                          </div>
+                        </div>
+                      </div>
+                      <a class="icon my-auto response" data-toggle="modal" data-target="#approveReservationModal"
+                        id="accept"></a>
+                      <a class="icon my-auto response" data-toggle="modal" data-target="#denyReservationModal"
+                        id="deny" href="#" title="Deny"></a>
+                    </div>
+                  </div>
+                  {{/each}}
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6 mb-5">
+              <div class="card no-hover pinned-card h-100">
+                <h5 class="card-header">Pickups and payments</h5>
+                <div class="card-body">
+                  {{#if pickupPayToday}}
+                  <div class="card-subtitle"> as of {{dateTimeToday}}</div>
+                  {{else}}
+                  <div class="font-italic my-4 text-center">All caught up</div>
+                  {{/if}}
+                  {{#each pickupPayToday}}
+                  <div class="card-item" data-toggle="modal" data-target="#editReservationModal" data-title="{{title}}"
+                    data-userid="{{userID}}" data-datecreated="{{dateStr dateCreated}}" data-status="{{status}}"
+                    data-description="{{description}}" data-remarks="{{remarks}}" data-penalty="{{penalty}}"
+                    data-type="{{onItemType}}" data-id="{{_id}}" data-paymentdate="{{pickupPayDate}}">
+                    <div class="d-flex flex-row flex-nowrap">
+                      <div class="col-1 icon mb-auto mt-1 pr-3"
+                        id="{{#if (isLocker onItemType)}}locker{{else}}equipment{{/if}}"></div>
+                      <div class="d-flex flex-column mx-4">
+                        <div class="font-weight-bold">{{userID}}</div>
+                        <div>
+                          {{#if (isLocker onItemType)}}
+                            <span class="">{{description}}</span>
+                          {{else}}
+                            <span class="">{{title}}: {{description}}</span>
+                          {{/if}}
+                        </div>
+                        {{#if remarks}}
+                        <div>
+                          Remarks: {{remarks}}
+                        </div>
+                        {{/if}}
+                        {{#if (isLocker onItemType)}}{{#if pickupPayDate}}
+                        <hr class="my-1">
+                        <div>
+                          Due: {{dateStr pickupPayDate}}
+                        </div>
+                        {{/if}}{{/if}}
+                      </div>
+                    </div>
+                  </div>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 mb-5">
+              <div class="card no-hover" id="otherResCard">
+                <div class="card-body">
+
+                  <div class="col-12 px-0">
+
+                    <h5 class="mb-4">Other Reservations</h5>
+
+                    <div class="row">
+                      <div class="col-md-3 col-6 input-group mb-2">
+                        <div class="form-group form-inline my-auto flex-fill">
+                          <input type="search" id="searchBox" class="form-control" placeholder="ID Number">
+                        </div>
+                      </div>
+                      <div class="col-md-3 col-6 mb-2 d-flex align-items-center">
+                        <select class="form-control custom-select" name="statusFilter" id="statusFilter">
+                          <option value="filter-all">All</option>
+                          <option value="filter-onrent">On Rent</option>
+                          <option value="filter-returned">Returned</option>
+                          <option value="filter-uncleared">Uncleared</option>
+                          <option value="filter-denied">Denied</option>
+                        </select>
+                      </div>
+                      <div class="col-md-6 d-flex" style="overflow-x: auto;">
+                        <nav class="ml-md-auto mr-md-0 mx-auto">
+                          <ul class="pagination d-flex align-items-center" id="resPagination">
+                          </ul>
+                        </nav>
+                      </div>
+                    </div>
+
+                    <div class="col-12 table-responsive px-0">
+                      <table class="table table-hover">
+                        <thead class="">
+                          <tr class="active head">
+                            <th></th>
+                            <th>ID number</th>
+                            <th>Date requested</th>
+                            <th>Description</th>
+                            <th>Penalty</th>
+                            <th>Status</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody id="reservationsTable">
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </main>
+
+        {{> footer}}
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="editReservationModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          {{!-- <span class="badge badge-pill status-on-rent mr-4">hello</span> --}}
+          <h5 class="modal-title" id="statusModalLabel">Update Reservation Status</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form class="form-horizontal" method="post" action="/reservations/manage/update">
+          <input type="hidden" id="reservationID" name="reservationID">
+          <input type="hidden" id="onItemType" name="onItemType">
+          <div class="modal-body col-lg-10 mx-auto">
+            <div class="d-flex flex-column">
+              <div class="font-weight-bold pl-2 mb-2" id="idNum"></div>
+              <div class="d-flex flex-row align-items-center">
+                <div class="icon col-1 mr-2 pr-3" id="profile"></div>
+                <div class="" id="userInfo">Loading...</div>
+              </div>
+              <div class="d-flex flex-row align-items-center">
+                <div class="icon col-1 mr-2 pr-3" id="date"></div>
+                <div class="" id="dateCreated"></div>
+              </div>
+              <div class="d-flex flex-row align-items-center">
+                <div class="icon col-1 mr-2 pr-3" id="desc"></div>
+                <div class="" id="description"></div>
+              </div>
+              <div class="d-flex flex-row align-items-center mb-4">
+                <div class="icon col-1 mr-2 pr-3" id="remarks"></div>
+                <div class="" id="unclearedError">Loading...</div>
+              </div>
+              <div class="form-group form-inline input-group">
+                <label for="status" class="col-lg-4 justify-content-start pl-2">Status:</label>
+                <div class="col-lg-8 px-0">
+                  <select class="form-control custom-select" name="status" id="status">
+                    <option value="status-manage-pending">Pending</option>
+                    <option value="status-manage-pickup-pay">To Pay</option>
+                    <option value="status-manage-on-rent">On Rent</option>
+                    <option value="status-manage-returned">Returned</option>
+                    <option value="status-manage-uncleared">Uncleared</option>
+                    <option value="status-manage-denied">Denied</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group form-inline input-group" id="paymentForm">
+                <label for="paymentForm" class="col-lg-4 justify-content-start pl-2">Deadline of Payment</label>
+                <input type="date" class="form-control col-lg-8" name="paymentDate" id="paymentDate">
+              </div>
+              <div class="form-group form-inline input-group" id="remarksForm">
+                <label for="remarks" class="col-lg-4 justify-content-start pl-2">Remarks</label>
+                <input type="text" class="form-control col-lg-8" name="remarks" placeholder="Enter Remarks"
+                  id="editRemarks">
+              </div>
+              <div class="form-group form-inline input-group" id="penaltyForm">
+                <label for="penalty" class="col-lg-4 justify-content-start pl-2">Penalty</label>
+                <div class="input-group-prepend">
+                  <div class="input-group-text">Php</div>
+                </div>
+                <input type="number" class="form-control col-lg-8" name="penalty" placeholder="Penalty" id="penalty">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <a class="btn btn-warning mr-auto" data-dismiss="modal" data-toggle="modal"
+              href="#delReservationModal">Delete</a>
+            <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
+            <input type="submit" class="btn btn-primary" id="statusSubmit" value="Update">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="delReservationModal" tabindex="-1" role="dialog" aria-labelledby="reservationModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="reservationModalLabel">Delete Reservation</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form method="POST" action="/reservations/manage/delete" id="delReservationForm">
+          <div class="modal-body col-lg-10 mx-auto">
+            <input type="hidden" name="prevPath" id="prevPath">
+            <input type="hidden" name="reservationID" id="delReservationID">
+            <h5 id="deleteHeader">Would you like to delete this reservation?</h5>
+            <p>Note: Users will not be notified on deleted reservations.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="deleteReservationBtn">Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="approveReservationModal" tabindex="-1" role="dialog"
+    aria-labelledby="approveStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title mr-2" id="approveStatusModalLabel">Approve Reservation: </h5>
+          <h5 class="modal-title" id="approveReservationTitle"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form class="form-horizontal" method="post" action="/reservations/manage/update">
+          <input type="hidden" id="approveReservationID" name="reservationID">
+          <input type="hidden" id="approveReservationType" name="onItemType">
+          <div class="modal-body col-lg-10 mx-auto">
+            <div class="d-flex flex-column">
+              <div class="font-weight-bold pl-2 mb-2" id="approveIDNum"></div>
+              <div class="d-flex flex-row align-items-center">
+                <div class="icon col-1 mr-2 pr-3" id="profile"></div>
+                <div class="" id="approveUserInfo">Loading...</div>
+              </div>
+              <div class="d-flex flex-row align-items-center">
+                <div class="icon col-1 mr-2 pr-3" id="date"></div>
+                <div class="" id="approveDateCreated"></div>
+              </div>
+              <div class="d-flex flex-row align-items-center">
+                <div class="icon col-1 mr-2 pr-3" id="desc"></div>
+                <div class="" id="approveDescription"></div>
+              </div>
+              <div class="d-flex flex-row align-items-center mb-4">
+                <div class="icon col-1 mr-2 pr-3" id="remarks"></div>
+                <div class="" id="apUnclearedError">Loading...</div>
+              </div>
+              <div class="form-group form-inline input-group" id="approveSelectForm">
+                <label for="status" class="col-lg-4 justify-content-start pl-2">Status:</label>
+                <div class="col-lg-8 px-0">
+                  <select class="form-control custom-select" name="status" id="approveStatus">
+                    <option value="status-manage-pending">Pending</option>
+                    <option value="status-manage-pickup-pay">To Pay</option>
+                    <option value="status-manage-on-rent">On Rent</option>
+                    <option value="status-manage-returned">Returned</option>
+                    <option value="status-manage-uncleared">Uncleared</option>
+                    <option value="status-manage-denied">Denied</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group form-inline input-group" id="approvePaymentForm">
+                <label for="approvePaymentForm" class="col-lg-4 justify-content-start pl-2">Deadline of Payment</label>
+                <input type="date" class="form-control col-lg-8" name="paymentDate" id="approvePaymentDate">
+              </div>
+              <div class="form-group form-inline input-group" id="approveRemarksForm">
+                <label for="remarks" class="col-lg-4 justify-content-start pl-2">Remarks</label>
+                <input type="text" class="form-control col-lg-8" name="remarks" placeholder="Enter Remarks"
+                  id="approveRemarks">
+              </div>
+              <div class="form-group form-inline input-group" id="approvePenaltyForm">
+                <label for="penalty" class="col-lg-4 justify-content-start pl-2">Penalty</label>
+                <div class="input-group-prepend">
+                  <div class="input-group-text">Php</div>
+                </div>
+                <input type="number" class="form-control col-lg-8" name="penalty" placeholder="Penalty"
+                  id="approvePenalty">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
+            <input type="submit" class="btn btn-primary" id="approveStatusSubmit" value="Approve Reservation">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="denyReservationModal" tabindex="-1" role="dialog" aria-labelledby="denyStatusModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title mr-2" id="denyStatusModalLabel">Deny Reservation: </h5>
+          <h5 class="modal-title" id="denyReservationTitle"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form class="form-horizontal" method="post" action="/reservations/manage/update">
+          <input type="hidden" id="denyReservationID" name="reservationID">
+          <input type="hidden" id="denyReservationType" name="onItemType">
+          <div class="modal-body col-lg-10 mx-auto">
+            <div class="d-flex flex-column">
+              <div class="font-weight-bold pl-2 mb-2" id="denyIDNum"></div>
+              <div class="d-flex flex-row align-items-center">
+                <div class="icon col-1 mr-2 pr-3" id="date"></div>
+                <div class="" id="denyDateCreated"></div>
+              </div>
+              <div class="d-flex flex-row align-items-center mb-4">
+                <div class="icon col-1 mr-2 pr-3" id="desc"></div>
+                <div class="" id="denyDescription"></div>
+              </div>
+              <div class="form-group form-inline input-group" id="denySelectForm">
+                <label for="status" class="col-lg-4 justify-content-start pl-2">Status:</label>
+                <div class="col-lg-8 px-0">
+                  <select class="form-control custom-select" name="status" id="denyStatus">
+                    <option value="status-manage-pending">Pending</option>
+                    <option value="status-manage-pickup-pay">To Pay</option>
+                    <option value="status-manage-on-rent">On Rent</option>
+                    <option value="status-manage-returned">Returned</option>
+                    <option value="status-manage-uncleared">Uncleared</option>
+                    <option value="status-manage-denied">Denied</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group form-inline input-group" id="denyRemarksForm">
+                <label for="remarks" class="col-lg-4 justify-content-start pl-2">Remarks</label>
+                <input type="text" class="form-control col-lg-8" name="remarks" placeholder="Enter Remarks"
+                  id="denyRemarks">
+              </div>
+              <div class="form-group form-inline input-group" id="denyPenaltyForm">
+                <label for="penalty" class="col-lg-4 justify-content-start pl-2">Penalty</label>
+                <div class="input-group-prepend">
+                  <div class="input-group-text">Php</div>
+                </div>
+                <input type="number" class="form-control col-lg-8" name="penalty" placeholder="Penalty"
+                  id="denyPenalty">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
+            <input type="submit" class="btn btn-primary" id="denyStatusSubmit" value="Deny Reservation">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/js/manage-reservations.js"></script>
+  <script type="text/javascript" src="/js/styles.js"></script>
+</body>
+
+</html>

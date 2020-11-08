@@ -1,0 +1,111 @@
+body {
+    background-image: linear-gradient(154.33deg, #d9f2c9 20.81%, #1f6383 52.32%);
+    color: #545662;
+    font-size: 14px;
+    height: 100vh;
+}
+
+h1 {
+    color: #d9f2c9; 
+    font-family: 'Muli';
+    font-weight: 600; /* semi-bold */
+}
+
+#loginForm {
+    height: 100%;
+}
+
+.container {
+    background-color: transparent;
+    height: 80%;
+    font-family: 'Muli', sans-serif;
+}
+
+.leftside {
+    background-color:/*  #FAFAFA; */#e7f1ed;
+    border-radius: 16px 0px 0px 16px;
+}
+
+.rightside {
+    background-color:/*  #e7f1ed; */#fafafa;
+    border-radius: 0px 16px 16px 0px;
+}
+
+.space {
+    padding-bottom: 2rem;
+}
+
+.btn {
+    border: none;
+    border-radius: 50px; 
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 4px 10px rgb(135, 148, 141, .20);
+    
+
+    /* TODO: hover color + active outline not working */
+}
+
+form {
+    padding: 20px;
+}
+
+.form-control {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    background-color: transparent;
+    border-radius: 0px;
+    border-width: 2px;
+    cursor: text;
+}
+  
+.form-control:focus {
+    background-color: transparent;
+    border-width: 6px;
+    border-color: #d9f2c9;
+    box-shadow: none;
+}
+
+.form-control-placeholder {
+    position: absolute;
+    font-size: 18px;
+    top: 0;
+    padding: 7px 0 0 13px;
+    transition: all 200ms;
+    opacity: 0.5;
+    cursor: text;
+}
+
+.form-control:hover {
+    cursor: text;
+}
+.form-control:focus + .form-control-placeholder,
+.form-control:valid + .form-control-placeholder {
+    font-size: 85%;
+    transform: translate3d(0, -100%, 0);
+    opacity: 1;
+    color: #545662;
+}
+
+.form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+p {
+    font-size: 16px;
+}
+
+#register {
+    color: #d9f2c9; 
+    cursor: pointer;
+    font-weight: 900;
+}
+#register:hover {
+    text-decoration: underline;
+}
+
+

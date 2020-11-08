@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+
+  <!-- Animate.css -->
+  <link rel="stylesheet" type="text/css" href="css/animate.css">
+
+  <!-- Custom Styles -->
+  <link href="/css/styles.css" rel="stylesheet">
+  <link href="/css/styles-index.css" rel="stylesheet">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+
+   
+
+  <title>Pahiram Services</title>
+
+  <link rel="icon" href="/static/logo.png">
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="main-container row">
+      {{> sidenav act=active sb=sidebarData}}
+
+      <div class="main col-md-9 col-lg-10 ml-sm-auto p-0">
+        {{> topnav}}
+
+        <main role="main" class="pt-3 px-4">
+          <div class="row">
+            <div class="illus-container col-12">
+              <div class="illus-element" id="wall1"></div>
+              <div class="illus-element" id="wall2"></div>
+              <div class="illus-element" id="window"></div>
+              <div class="illus-element" id="clock"></div>
+              <div class="illus-element" id="trashcan"></div>
+              <div class="illus-element" id="bench"></div>
+              <div class="illus-element" id="umbrella"></div>
+              <div class="illus-element" id="laptop"></div>
+              <div class="illus-element" id="table"></div>
+              <div class="illus-element" id="human-locker"></div>
+              <div class="illus-element" id="human-equipment"></div>
+            </div>
+            <div class="col-12 d-flex flex-column justify-content-center">
+              <h1 class="mx-auto text-center">
+                What would you like to rent?
+              </h1>
+              <p class="mx-auto text-center">
+                Is your bag too heavy? Need tech equipment?
+                We got you covered!
+              </p>
+              <div class="mx-auto">
+                <a id="equipment-btn" type="button" class="btn btn-primary btn-round btn-lg mr-2"
+                  href="/reserve/equipment">Equipment</a>
+                <a id="locker-btn" type="button" class="btn btn-primary btn-round btn-lg" href="/reserve/locker">Locker</a>
+              </div>
+            </div>
+          </div>
+
+        </main>
+
+        {{> footer}}
+
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/js/styles.js"></script>
+</body>
+
+</html>

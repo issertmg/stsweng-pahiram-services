@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+
+  <!-- Custom Styles -->
+  <link href="/css/styles.css" rel="stylesheet">
+  <link href="/css/styles-my-reservations.css" rel="stylesheet">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+
+  <title>My Reservations</title>
+  <link rel="icon" href="/static/logo.png">
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="main-container row">
+      {{> sidenav act=active sb=sidebarData}}
+
+      <div class="main col-md-9 col-lg-10 ml-sm-auto p-0">
+        {{> topnav}}
+
+        <main role="main" class="pt-3 px-4">
+          <div class="row px-0 col-lg-10 align-items-end mx-auto">
+
+            <h1 class="mb-5 col-12">My reservations</h1>
+
+            <div class="col-12 mb-5 d-flex">
+              <ul class="nav nav-tabs">
+                <li class="nav-item">
+                  <a class="nav-link active" data-toggle="tab" href="#activeRequests">Active Requests</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" data-toggle="tab" href="#pastRequests">Past Requests</a>
+                </li>
+              </ul>
+            </div>
+
+            {{!-- Active --}}
+            <div class="tab-content col-12">
+              <div id="activeRequests" class="tab-pane active">
+                <div class="row">
+
+                  {{#unless activeRes}}
+                  <div class="font-italic mx-auto my-5">No active reservations</div>
+                  {{/unless}}
+                  {{#each activeRes}}
+                  <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card equal-height">
+                      <h5 class="card-header">{{title}}</h5>
+                      <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                          <div class="col-1 icon mr-2 pr-3" id="date"></div>
+                          {{dateStr dateCreated}}
+                        </div>
+                        <hr>
+                        <div class="d-flex align-items-center my-2">
+                          <div class="col-1 icon mr-2 pr-3" id="desc"></div>
+                          {{description}}
+                        </div>
+                        {{#if (hasRemarks remarks)}}
+                        <hr>
+                        <div class="d-flex align-items-center my-2">
+                          <div class="col-1 icon mr-2 pr-3" id="remarks"></div>
+                          {{remarks}}
+                        </div>
+                        {{#if (status-pickup-pay status)}}{{#if (isLocker onItemType)}}{{#if pickupPayDate}}
+                        <hr>
+                        <div class="d-flex align-items-center my-2">
+                          <div class="col-1 icon mr-2 pr-3" id="date"></div>
+                          Payment Due: {{dateStr pickupPayDate}}
+                        </div>
+                        {{/if}}{{/if}}{{/if}}
+                        {{/if}}
+                        {{#if (hasPenalty penalty)}}
+                        <hr>
+                        <div class="d-flex align-items-center my-2">
+                          <div class="col-1 icon mr-2 pr-3" id="penalty"></div>
+                          Penalty: Php {{penalty}}
+                        </div>
+                        {{/if}}
+                      </div>
+                      <div class="card-footer d-flex justify-content-between align-items-center 
+                          {{#if (status-pending status)}}
+                          status-pending
+                          {{else if (status-pickup-pay status)}}
+                          status-pickup-pay
+                          {{else if (status-on-rent status)}}
+                          status-on-rent
+                          {{else}}
+                          status-uncleared
+                          {{/if}}
+                          ">
+                        {{#if (cancellable status)}}
+                        <a class="cancel-anchor" title="Cancel Reservation" data-reservationid="{{_id}}" data-toggle="modal" data-target="#cancelReservationModal">
+                          <div class="icon white" id="cancel"></div>
+                        </a>
+                        {{/if}}
+                        <span class="badge badge-pill ml-auto">{{status}}</span>
+                        <div class="color-container"></div>
+                      </div>
+                    </div>
+                  </div>
+                  {{/each}}
+
+                </div>
+              </div>
+
+              <!--past requests-->
+              <div id="pastRequests" class="tab-pane fade">
+                <div class="row">
+
+                  {{#unless pastRes}}
+                  <div class="font-italic mx-auto my-5">No past reservations</div>
+                  {{/unless}}
+                  {{#each pastRes}}
+                  <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card equal-height">
+                      <h5 class="card-header">{{title}}</h5>
+                      <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                          <div class="col-1 icon mr-2 pr-3" id="date"></div>
+                          {{dateStr dateCreated}}
+                        </div>
+                        <hr>
+                        <div class="d-flex align-items-center my-2">
+                          <div class="col-1 icon mr-2 pr-3" id="desc"></div>
+                          {{description}}
+                        </div>
+                        <hr>
+                        {{#if remarks}}
+                        <div class="d-flex align-items-center my-2">
+                          <div class="col-1 icon mr-2 pr-3" id="remarks"></div>
+                          {{remarks}}
+                        </div>
+                        {{/if}}
+                        {{#if (hasPenalty penalty)}}
+                        <hr>
+                        <div class="d-flex align-items-center my-2">
+                          <div class="col-1 icon mr-2 pr-3" id="penalty"></div>
+                          Penalty: Php {{penalty}}
+                        </div>
+                        {{/if}}
+                      </div>
+                      <div class="card-footer d-flex justify-content-between align-items-center 
+                          {{#if (status-denied status)}}
+                          status-denied
+                          {{else}}
+                          status-returned
+                          {{/if}}
+                          ">
+                        <span class="badge badge-pill ml-auto">{{status}}</span>
+                        <div class="color-container"></div>
+                      </div>
+                    </div>
+                  </div>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </main>
+
+        {{> footer}}
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="cancelReservationModal" tabindex="-1" role="dialog" aria-labelledby="cancelReservationLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cancelReservationLabel">Cancel Reservation</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form id="cancelReservationForm" action="/reservations/manage/delete" method="POST">
+          <div class="modal-body col-lg-10 mx-auto">
+            <input type="hidden" id="reservationID" name="reservationID">
+            <input type="hidden" name="prevPath" id="prevPath">
+            <h5>Do you really want to cancel your reservation?</h1>
+            <p>Cancelled requests will be permanently deleted.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-dismiss="modal">No</button>
+            <button type="submit" class="btn btn-warning">Yes, cancel it.</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/js/styles.js"></script>
+  <script>
+    $('#cancelReservationModal').on('show.bs.modal', (event) => {
+      var cancelBtn = $(event.relatedTarget);
+      $('#reservationID').val(cancelBtn.data('reservationid'));
+      $('#prevPath').val('myReservations');
+    });
+  </script>
+
+</body>
+
+</html>

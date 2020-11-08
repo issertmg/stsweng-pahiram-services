@@ -1,0 +1,70 @@
+.panel {
+    padding: 16px 24px;
+}
+
+.panel .panel-label {
+    font-family: 'Muli', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    height: 32px;
+    /* border: solid #E0E5EC 1px; */
+    border-radius: 10px;
+    background-color: #f7f7f7;
+    color: #3f3f3f;
+    margin-bottom: 16px;
+}
+
+.locker {
+    padding: 16px;
+    border: solid #E0E5EC 1px;
+    border-radius: 10px;
+    transition: ease 0.2s;
+}
+
+.locker:hover {
+    cursor: pointer;
+    transform: translateY(-2px);
+    box-shadow: 0px 4px 10px rgba(124, 204, 145, 0.2);
+}
+
+
+.locker.status-manage-vacant:active,
+.locker.status-manage-vacant:focus {
+    transform: translateY(0);
+    box-shadow: none;
+    background-color: #E0E5EC;
+    transition: 0.1s ease;
+}
+
+.locker.selected {
+    background-color: #E0E5EC;
+}
+
+.locker i {
+    font-size: 14px;
+}
+
+.locker.status-manage-vacant i,
+i.status-manage-vacant {
+    color: #1f6383;
+}
+
+.locker.status-manage-occupied i,
+i.status-manage-occupied {
+    color: #cc5353;
+}
+
+.locker.status-manage-uncleared i,
+i.status-manage-uncleared {
+    color: #e0df70;
+}
+
+.locker.status-manage-broken i,
+i.status-manage-broken {
+    color: #dddddd;
+}
+
+.label-legend {
+    color: #3f3f3f;
+    margin: 16px 24px 0 24px;
+}
