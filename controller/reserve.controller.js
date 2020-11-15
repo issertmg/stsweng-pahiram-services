@@ -200,8 +200,9 @@ function getPickupTime(optionNumber) {
 }
 
 async function hasActiveLockerReservation(userID) {
+    let exists;
     try {
-        const exists = await Reservation.exists({
+        exists = await Reservation.exists({
             userID: userID, 
             onItemType: 'Locker',
             $or: [{status: 'Pending'}, {status: 'To Pay'}, {status: 'On Rent'}, {status: 'Uncleared'}]
@@ -229,8 +230,9 @@ async function has2ActiveEquipmentReservations(userID) {
 };
 
 async function isLockerVacant(lockerid) {
+    let locker;
     try {
-        const locker = await Locker.findById(lockerid);
+        locker = await Locker.findById(lockerid);
     }
     catch (err) {
         console.log(err);
