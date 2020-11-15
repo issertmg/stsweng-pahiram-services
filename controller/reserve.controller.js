@@ -169,10 +169,17 @@ exports.reserve_equipment = async function (req, res) {
 
 function getNextWeekDayDate(date) {
     let newDate = new Date(date.getTime());
-    do {
-        newDate.setDate(newDate.getDate()+1);           
-    }   //0 is Sunday,6 Saturday
-    while (newDate.getDay()==0 || newDate.getDay()==6);
+    const day = {"friday": 5, "saturday": 6}
+
+    if (newDate.getDay() == day["friday"]) {
+        newDate.setDate(newDate.getDate()+3);
+    }
+    else if (newDate.getDay() == day["saturday"]) {
+        newDate.setDate(newDate.getDate()+2);
+    }
+    else {
+        newDate.setDate(newDate.getDate()+1);
+    }
 
     return newDate;
 }
@@ -207,8 +214,9 @@ async function hasActiveLockerReservation(userID) {
 };
 
 async function has2ActiveEquipmentReservations(userID) {
+    let reservationCount;
     try {
-        const reservationCount = await Reservation.find({
+        reservationCount = await Reservation.find({
             userID: userID,
             onItemType: 'Equipment',
             $or: [{status: 'Pending'}, {status: 'For Pickup'}, {status: 'On Rent'}, {status: 'Uncleared'}]
