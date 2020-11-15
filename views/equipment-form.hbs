@@ -173,15 +173,11 @@
   <script type="text/javascript" src="/js/styles-equipment.js"></script>
   
   <script>
-  $(document).ready(function () {
-
+    $(document).ready(function () {
       var borrowDate = new Date();
       var options = { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric'};
       
-      do {
-          borrowDate.setDate(borrowDate.getDate()+1);
-      }
-      while (borrowDate.getDay() == 0 || borrowDate.getDay() == 6); 
+      borrowDate = getNextWeekDayDate(borrowDate);
       $("#borrow-date").val(borrowDate.toLocaleDateString("en-US", options));
       
       $("#submitEquipmentForm").click(function() {
@@ -213,6 +209,23 @@
         
       });
     });
+
+    function getNextWeekDayDate(date) {
+      let newDate = new Date(date.getTime());
+      const day = {"friday": 5, "saturday": 6}
+
+      if (newDate.getDay() == day["friday"]) {
+          newDate.setDate(newDate.getDate()+3);
+      }
+      else if (newDate.getDay() == day["saturday"]) {
+          newDate.setDate(newDate.getDate()+2);
+      }
+      else {
+          newDate.setDate(newDate.getDate()+1);
+      }
+
+      return newDate;
+    }
   </script>
 </body>
 
