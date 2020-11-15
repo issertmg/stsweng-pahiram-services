@@ -104,8 +104,8 @@ exports.register_post = async function (req, res) {
         let colleges = User.schema.path('college').enumValues;
 
         if (errors.isEmpty()) {
-            let sameIDNum = await User.countDocuments({idNum: req.body.idNum});
-            let sameContactNum = await User.countDocuments({ contactNum: req.body.phone });
+            const sameIDNum = await User.countDocuments({idNum: req.body.idNum});
+            const sameContactNum = await User.countDocuments({ contactNum: req.body.phone });
             if (sameIDNum === 0 && sameContactNum === 0) {
                 const count = await User.countDocuments();
                 let user = new User({
@@ -153,7 +153,7 @@ exports.register_post = async function (req, res) {
         }
 
     } catch (err) {
-        console.log('Error writing to db: ' + err);
+        console.log('Error registering: ' + err);
         res.redirect('/');
     }
 };

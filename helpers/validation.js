@@ -30,10 +30,14 @@ const validation = {
 
     registerValidation: function () {
         var validation = [
+            check('idNum', 'ID number should be numeric.')
+                .isNumeric({no_symbols: true}),
             check('idNum', 'ID number should contain 8 digits.')
                 .isLength({min: 8, max: 8}),
-            check('degProg', 'Degree program cannot be empty').notEmpty(),
-            check('phone', 'Phone cannot be empty').notEmpty(),
+            check('degProg', 'Degree program cannot be empty')
+                .notEmpty(),
+            check('phone', 'Phone cannot be empty')
+                .notEmpty(),
             check('phone', 'Invalid phone number')
                 .isLength({min: 10, max: 10})
                 .isNumeric({no_symbols: true})
