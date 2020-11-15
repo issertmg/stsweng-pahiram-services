@@ -226,6 +226,20 @@
 
       return newDate;
     }
+
+  let reason = document.getElementById('reason');
+  reason.addEventListener('change', () => {
+    if (reason.value.length > 250) {
+        reason.value = reason.value.slice(0, 250);
+    }
+  })
+  
+  reason.addEventListener('keyup', () => {
+    if (reason.value.length > 250) {
+        reason.value = reason.value.slice(0, 250);
+    }
+  })
+
   </script>
 </body>
 
