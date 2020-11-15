@@ -190,7 +190,7 @@
         var reason = $('#reason').val();
 
         if ($("#checkTerms").prop('checked')) {
-          if (equipment.length != 0) {
+          if (equipment.length == 1 ) {
             $('#equipmentid').val(equipmentid);
 
             if (reason.trim().length != 0) {
@@ -200,6 +200,9 @@
               alert("Please write the reason for borrowing.");
             }
           }
+          else if (equipment.length > 1) {
+            alert("Please select 1 equipment only!");
+          }
           else {
             alert("Please select an equipment you want to rent.");
           }
@@ -207,6 +210,7 @@
         else {
           alert("Please check the box if you agree to the terms and conditions.");
         }
+        
       });
     });
   </script>
