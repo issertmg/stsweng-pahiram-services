@@ -26,10 +26,12 @@ function validateField(activeField, fieldName, errorLabel) {
     
     isValidID(activeField, function (validID) {
         isValidPhone(activeField, function (validPhone) {
-            if (allFilled() && validPhone && validID)
-                $('#signUpBtn').prop('disabled', false);
-            else
-                $('#signUpBtn').prop('disabled', true);
+            isValidDegProg(activeField, function(validDegProg) {
+                if (allFilled() && validPhone && validID && validDegProg)
+                    $('#signUpBtn').prop('disabled', false);
+                else
+                    $('#signUpBtn').prop('disabled', true);
+            })
         })
     });
 }
@@ -50,8 +52,7 @@ function isValidPhone(activeField, callback) {
     let phone = validator.trim($('#phone').val());
 
     let validPhoneFormat = validator.isLength(phone, {min: 10, max: 10})
-        && validator.isNumeric(phone, {no_symbols: true})
-        && !validator.isEmpty();
+        && validator.isNumeric(phone, {no_symbols: true});
 
     if (validPhoneFormat) {
         $.get('/get-phone', {phone: phone}, function (data) {
@@ -75,8 +76,7 @@ function isValidPhone(activeField, callback) {
 function isValidID(activeField, callback) {
     let idNum = validator.trim($('#idnum').val());
     let validID = validator.isLength(idNum, {min: 8, max: 8})
-        && validator.isNumeric(idNum, {no_symbols: true})
-        && !validator.isEmpty();
+        && validator.isNumeric(idNum, {no_symbols: true});
 
     if (validID) {
         $.get('/get-id', {idNum: idNum}, function (data, status) {
@@ -93,6 +93,24 @@ function isValidID(activeField, callback) {
     } else {
         if (activeField.is($('#idnum')))
             $('#idNumError').text('ID Number should contain 8 digits.');
+        return callback(false);
+    }
+}
+
+function isValidDegProg(activeField, callback) {
+    let degProg = validator.trim($('#degProg').val());
+    let degProgSanitized = validator.blacklist(degProg, ' ');
+    console.log(degProgSanitized);
+    let validDegProg = validator.isLength(degProg, {min: 1, max: 15})
+        && validator.isAlpha(degProgSanitized);
+
+    if (validDegProg) {
+        if (activeField.is($('#degProg')))
+            $('#degProgError').text(' ');
+        return callback(true);
+    } else {
+        if (activeField.is($('#degProg')))
+            $('#degProgError').text('Invalid degree program.');
         return callback(false);
     }
 }
