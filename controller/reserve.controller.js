@@ -7,10 +7,10 @@ exports.locker = async function (req, res) {
 
     if (req.query.bldg != null && req.query.flr != null) {
         try {
-            var panel = await Panel.find({ building: req.query.bldg, level: req.query.flr }).populate('lockers');
-            var panel_floor = await Panel.find({ building: req.query.bldg }).distinct('level').populate('lockers');
-            var panel_building = await Panel.find().distinct('building').populate('lockers');
-            var active_reservation = await hasActiveLockerReservation(req.session.idNum);
+            let panel = await Panel.find({ building: req.query.bldg, level: req.query.flr }).populate('lockers');
+            let panel_floor = await Panel.find({ building: req.query.bldg }).distinct('level').populate('lockers');
+            let panel_building = await Panel.find().distinct('building').populate('lockers');
+            let active_reservation = await hasActiveLockerReservation(req.session.idNum);
 
             res.render('locker-form', {
                 active: { active_index: true },
@@ -28,10 +28,9 @@ exports.locker = async function (req, res) {
         catch (err) {
             console.log(err);
         }
-    }
-    else if (req.query.bldg != null) {
+    } else if (req.query.bldg != null) {
         try {
-            var panel_floor = await Panel.find({ building: req.query.bldg }).distinct('level').populate();
+            let panel_floor = await Panel.find({ building: req.query.bldg }).distinct('level').populate();
             if (panel_floor[0] != null) {
                 panel_floor = panel_floor.sort();
                 res.redirect("/reserve/locker?bldg=" + req.query.bldg + "&flr=" + panel_floor[0]);
@@ -46,10 +45,10 @@ exports.locker = async function (req, res) {
     }
     else {
         try {
-            var panel_building = await Panel.find().distinct('building').populate();
+            let panel_building = await Panel.find().distinct('building').populate();
             if (panel_building[0] != null) {
                 try {
-                    var panel_floor = await Panel.find({ building: panel_building[0] }).distinct('level');
+                    let panel_floor = await Panel.find({ building: panel_building[0] }).distinct('level');
                     panel_floor = panel_floor.sort();
                     res.redirect("/reserve/locker?bldg=" + panel_building[0] + "&flr=" + panel_floor[0]);
                 }
@@ -76,18 +75,18 @@ exports.locker = async function (req, res) {
 
 exports.reserve_locker = async function (req, res) {
     try {
-        var invalid = await hasActiveLockerReservation(req.session.idNum); 
+        let invalid = await hasActiveLockerReservation(req.session.idNum);
         if (!invalid) {
-            var panel = await Panel.findById(req.body.panelid);
-            var paneltype = panel.type[0].toUpperCase() + panel.type.slice(1);
-            var lockerIndex = req.body.lockernumber - panel.lowerRange;
-            var lockerid = panel.lockers[lockerIndex]._id;
+            let panel = await Panel.findById(req.body.panelid);
+            let paneltype = panel.type[0].toUpperCase() + panel.type.slice(1);
+            let lockerIndex = req.body.lockernumber - panel.lowerRange;
+            let lockerid = panel.lockers[lockerIndex]._id;
 
-            var titleString = "Locker #" + req.body.lockernumber;
-            var descString = titleString + ", " + paneltype + " Panel #" + panel.number +
-                            ", " + panel.building + ", " + panel.level + "/F"; 
+            let titleString = "Locker #" + req.body.lockernumber;
+            let descString = titleString + ", " + paneltype + " Panel #" + panel.number +
+                ", " + panel.building + ", " + panel.level + "/F";
         
-            var reservation = new Reservation({
+            let reservation = new Reservation({
                 title: titleString,
                 userID: req.session.idNum,
                 item: lockerid,
@@ -122,7 +121,7 @@ exports.equipment = async function (req, res) {
             sidebarData: {
                 dp: req.session.passport.user.profile.photos[0].value,
                 name: req.session.passport.user.profile.displayName,
-                type: req.session.type      
+                type: req.session.type
             },
             equipmentList: equipment,
             status: active_reservation
@@ -158,7 +157,7 @@ exports.reserve_equipment = async function (req, res) {
             var reservation = new Reservation({
                 title: equipment.name,
                 userID: req.session.idNum,
-                item: equipmentid, 
+                item: equipmentid,
                 status: 'Pending',
                 description: descString,
                 onItemType: 'Equipment',
@@ -177,8 +176,9 @@ exports.reserve_equipment = async function (req, res) {
 };
 
 async function hasActiveLockerReservation(userID) {
+    let exists = null;
     try {
-        var exists = await Reservation.exists({
+        exists = await Reservation.exists({
             userID: userID, 
             onItemType: 'Locker',
             $or: [{status: 'Pending'}, {status: 'To Pay'}, {status: 'On Rent'}, {status: 'Uncleared'}]
@@ -188,7 +188,7 @@ async function hasActiveLockerReservation(userID) {
         console.log(err);
     }
     return exists;
-};
+}
 
 async function has2ActiveEquipmentReservations(userID) {
     try {
