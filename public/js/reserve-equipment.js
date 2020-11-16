@@ -62,21 +62,12 @@ function getNextWeekDayDate(date) {
 }
 
 /**
- * Adds onchange listener to reason input element to limit input to max 250 characters.
+ * Adds keyup and onchange event listener to reason input element to limit input to max 250 characters.
  * @returns <void> - nothing
  */
-let reason = document.getElementById('reason');
-reason.addEventListener('change', () => {
-    if (reason.value.length > 250) {
-        reason.value = reason.value.slice(0, 250);
+$("#reason").on("keyup change", function() {
+    let inputElement = $(this);
+    if (inputElement.val().length > 250) {
+        inputElement.val(inputElement.val().slice(0, 250));
     }
-})
-/**
- * Adds keyup event listener to reason input element to limit input to max 250 characters.
- * @returns <void> - nothing
- */
-reason.addEventListener('keyup', () => {
-    if (reason.value.length > 250) {
-        reason.value = reason.value.slice(0, 250);
-    }
-})
+});
