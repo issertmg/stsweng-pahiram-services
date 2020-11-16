@@ -1,68 +1,112 @@
 $(document).ready(function () {
 
-    function isFilled() {
-        var eName = validator.trim($('#equip-name').val());
-        var eQuantity = validator.trim($('#equip-ct').val());
-        var eImage= $('#equip-pic');
+    function isFilledAddModal() {
+        let eName = validator.trim($('#add-equipment-name').val());
+        let eBrand = validator.trim($('#add-equipment-brand').val());
+        let eModel = validator.trim($('#add-equipment-model').val());
+        let eQuantity = validator.trim($('#add-equipment-ct').val());
+        let eImage= $('#add-equipment-pic');
 
-        var eNameEmpty = validator.isEmpty(eName);
-        var eQuantityEmpty = validator.isEmpty(eQuantity);
-        var eImageEmpty = (eImage.get(0).files.length === 0);
+        let eNameEmpty = validator.isEmpty(eName);
+        let eBrandEmpty = validator.isEmpty(eBrand);
+        let eModelEmpty = validator.isEmpty(eModel);
+        let eQuantityEmpty = validator.isEmpty(eQuantity);
+        let eImageEmpty = (eImage.get(0).files.length === 0);
         
-        return !eNameEmpty && !eQuantityEmpty && !eImageEmpty;
+        return !eNameEmpty && !eBrandEmpty && !eModelEmpty && !eQuantityEmpty && !eImageEmpty;
     }
 
-    function isValidQuantity() {
-        var eQuantity = validator.trim($('#equip-ct').val());
+    function isValidNameBrandAddField() {
+        let eName = validator.trim($('#add-equipment-name').val());
+        let eBrand = validator.trim($('#add-equipment-brand').val());
 
+        let isValidName = hasAtLeast1Letter(eName);
+        let isValidBrand = hasAtLeast1Letter(eBrand);
+
+        return isValidName && isValidBrand;
+    }
+
+    function isValidNameBrandEditField() {
+        let eName = validator.trim($('#edit-equipment-name').val());
+        let eBrand = validator.trim($('#edit-equipment-brand').val());
+
+        let isValidName = hasAtLeast1Letter(eName);
+        let isValidBrand = hasAtLeast1Letter(eBrand);
+
+        return isValidName && isValidBrand;
+    }
+
+    function isValidQuantityAddField() {
+        let eQuantity = validator.trim($('#add-equipment-ct').val());
         return validator.isInt(eQuantity);
     }
 
-    function isFilledEdit() {
-      var eName = validator.trim($('#equipment-name').val());
-      var eQuantity = validator.trim($('#equipment-ct').val());
+    function isFilledEditModal() {
+        let eName = validator.trim($('#edit-equipment-name').val());
+        let eBrand = validator.trim($('#edit-equipment-brand').val());
+        let eModel = validator.trim($('#edit-equipment-model').val());
+        let eQuantity = validator.trim($('#edit-equipment-ct').val());
 
-      var eNameEmpty = validator.isEmpty(eName);
-      var eQuantityEmpty = validator.isEmpty(eQuantity);
+        let eNameEmpty = validator.isEmpty(eName);
+        let eBrandEmpty = validator.isEmpty(eBrand);
+        let eModelEmpty = validator.isEmpty(eModel);
+        let eQuantityEmpty = validator.isEmpty(eQuantity);
       
-      return !eNameEmpty && !eQuantityEmpty;
+      return !eNameEmpty && !eBrandEmpty && !eModelEmpty && !eQuantityEmpty;
     }
 
-    function isValidQuantityEdit() {
-        var eQuantity = validator.trim($('#equipment-ct').val());
-
+    function isValidQuantityEditField() {
+        let eQuantity = validator.trim($('#edit-equipment-ct').val());
         return validator.isInt(eQuantity);
     }
 
     $('#addEquipmentButton').click(function() {
 
-        if (isFilled()) {
-            if (isValidQuantity()) {
-                $('#addEquipForm').submit();
+        if (isFilledAddModal()) {
+            $('#formAlert').hide();
+            if (isValidNameBrandAddField()) {
+                $('#formLetterAlert').hide();
+                if (isValidQuantityAddField()) {
+                    $('#addEquipForm').submit();
+                }
+            }
+            else {
+                $('#formLetterAlert').show();
             }
         }
         else {
             $('#formAlert').show();
+            $('#formLetterAlert').hide();
         }
     });
 
     $('#editEquipButton').click(function() {
 
-      if (isFilledEdit()) {
-        if (isValidQuantityEdit()) {
-          $.get('/manage-equipment/onrent', 
-            {equipmentid: $('#editHiddenEquipID').val()},
-            function(data, status) {
-            var setQuantity = $('#equipment-ct').val();
-            if (setQuantity < data.onRent) {
-              $('#availableAlert').show();
-            }
-            else $('#editEquipForm').submit();
-            });
-        }
+      if (isFilledEditModal()) {
+          $('#formUpdateAlert').hide();
+          if (isValidNameBrandEditField()) {
+              $('#formUpdateLetterAlert').hide();
+              if (isValidQuantityEditField()) {
+                  $.get('/manage-equipment/onrent',
+                      {equipmentid: $('#editHiddenEquipID').val()},
+                      function(data, status) {
+                          let setQuantity = $('#edit-equipment-ct').val();
+                          if (setQuantity < data.onRent) {
+                              $('#availableAlert').show();
+                          }
+                          else $('#editEquipForm').submit();
+                      });
+              }
+          }
+          else {
+              $('#formUpdateLetterAlert').show();
+              $('#availableAlert').hide();
+          }
       }
       else {
         $('#formUpdateAlert').show();
+        $('#formUpdateLetterAlert').hide();
+        $('#availableAlert').hide();
       }
     });
 
@@ -82,16 +126,23 @@ $(document).ready(function () {
       });
     });
 
+    limitCharactersTo50("#add-equipment-name");
+    limitCharactersTo50("#add-equipment-brand");
+    limitCharactersTo50("#add-equipment-model");
+    limitCharactersTo50("#edit-equipment-name");
+    limitCharactersTo50("#edit-equipment-brand");
+    limitCharactersTo50("#edit-equipment-model");
 });
 
 $('#addEquipmentModal').on('show.bs.modal', function (event) {
     $('#addEquipForm').trigger("reset");
     $('#formAlert').hide();
+    $('#formLetterAlert').hide();
 });
 
 $('#delEquipmentModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget);
-    var equipmentID = button.data('equipmentid'); /*TODO:*/
+    let button = $(event.relatedTarget);
+    let equipmentID = button.data('equipmentid');
     $('#delHiddenEquipID').val($('#editHiddenEquipID').val());
     $('#onRentAlert').hide();
     $('#deleteHeader').show();
@@ -100,19 +151,38 @@ $('#delEquipmentModal').on('show.bs.modal', function (event) {
 });
 
 $('#editEquipmentModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget);
-    var equipmentID = button.data('equipmentid');
+    let button = $(event.relatedTarget);
+    let equipmentID = button.data('equipmentid');
     $('#editHiddenEquipID').val(equipmentID);
 
     // extract
-    var equipmentName = button.data('equipmentname');
-    var equipmentQty = button.data('equipmentquantity');
+    let equipmentName = button.data('equipmentname');
+    let equipmentBrand = button.data('equipmentbrand');
+    let equipmentModel = button.data('equipmentmodel');
+    let equipmentQty = button.data('equipmentquantity');
 
     // show
-    $('#equipment-name').val(equipmentName);
-    $('#equipment-ct').val(equipmentQty);
+    $('#edit-equipment-name').val(equipmentName);
+    $('#edit-equipment-brand').val(equipmentBrand);
+    $('#edit-equipment-model').val(equipmentModel);
+    $('#edit-equipment-ct').val(equipmentQty);
 
     $('#formUpdateAlert').hide();
+    $('#formUpdateLetterAlert').hide();
     $('#availableAlert').hide();
 });
+
+function limitCharactersTo50 (inputElementID) {
+    $(inputElementID).on("keyup change", function() {
+        let inputElement = $(this);
+        if (inputElement.val().length > 50) {
+            inputElement.val(inputElement.val().slice(0, 50));
+        }
+    });
+}
+
+function hasAtLeast1Letter (stringInput) {
+    return /[a-zA-Z]/.test(stringInput)
+}
+
 
