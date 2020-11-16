@@ -58,7 +58,7 @@
                     <div class="col-lg-4 col-md-6 col-6 d-flex flex-column align-items-center" >
                       <div class="equipment-element" style="background: url({{imageURL}}) center no-repeat; background-size: contain;"></div>
                       <button class="btn btn-toggle w-100" data-toggle="button" data-equipmentid="{{_id}}" aria-pressed="false" type="button">
-                        {{name}}
+                          {{name}} {{#if brand}} ({{brand}}, {{model}}) {{/if}}
                       </button>
                     </div>
                     {{/each}}
