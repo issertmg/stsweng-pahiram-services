@@ -16,6 +16,13 @@ $(document).ready(function () {
     })
 });
 
+/**
+ * Checks if the fields for ID number, phone number, and degree program are all valid.
+ * If not, the sign up button is disabled.
+ * @param activeField - the field that the user is currently interacting with
+ * @param fieldName - the name of the field
+ * @param errorLabel - the JQuery object for the error label
+ */
 function validateField(activeField, fieldName, errorLabel) {
     let value = validator.trim(activeField.val());
     let empty = validator.isEmpty(value);
@@ -36,6 +43,10 @@ function validateField(activeField, fieldName, errorLabel) {
     });
 }
 
+/**
+ * Checks if the fields for ID number, phone number, and degree program are all filled.
+ * @returns {boolean} - true if everything is filled up, false otherwise
+ */
 function allFilled() {
     let idNum = validator.trim($('#idnum').val());
     let degProg = validator.trim($('#degProg').val());
@@ -48,6 +59,12 @@ function allFilled() {
     return !idNumEmpty && !degProgEmpty && !phoneEmpty;
 }
 
+/**
+ * Checks if the phone number is valid
+ * @param activeField - the field the user is currently interacting with
+ * @param callback - callback
+ * @returns {*} - a callback
+ */
 function isValidPhone(activeField, callback) {
     let phone = validator.trim($('#phone').val());
 
@@ -73,6 +90,12 @@ function isValidPhone(activeField, callback) {
     }
 }
 
+/**
+ * Checks if the ID number is valid
+ * @param activeField - the field the user is currently interacting with
+ * @param callback - callback
+ * @returns {*} - a callback
+ */
 function isValidID(activeField, callback) {
     let idNum = validator.trim($('#idnum').val());
     let validID = validator.isLength(idNum, {min: 8, max: 8})
@@ -97,6 +120,12 @@ function isValidID(activeField, callback) {
     }
 }
 
+/**
+ * Checks if the degree progam is valid
+ * @param activeField - the field the user is currently interacting with
+ * @param callback - callback
+ * @returns {*} - a callback
+ */
 function isValidDegProg(activeField, callback) {
     let degProg = validator.trim($('#degProg').val());
     let degProgSanitized = validator.blacklist(degProg, ' ');
