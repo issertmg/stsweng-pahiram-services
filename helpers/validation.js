@@ -3,12 +3,12 @@ const { check } = require('express-validator');
 const validation = {
 
     addPanelValidation: function () {
-        var validation = [
+        return [
             check('type', 'Type should not be empty.').notEmpty(),
             check('building', 'Building should not be empty.').notEmpty(),
             check('level', 'Floor level should be an integer.').notEmpty().isInt(),
             check('lowerRange', 'Lower range should be an integer.').notEmpty().isInt(),
-            check('upperRange', 'Upper range should be an integer greater than or equal to lower range.').notEmpty().isInt().custom((upperRange, { req }) => {
+            check('upperRange', 'Upper range should be an integer greater than or equal to lower range.').notEmpty().isInt().custom((upperRange, {req}) => {
                 var lower = parseInt(req.body.lowerRange);
                 var upper = parseInt(upperRange);
 
@@ -17,38 +17,39 @@ const validation = {
                 else return false;
             })
         ];
-        return validation;
     },
 
     addOrUpdateEquipmentValidation: function () {
-        var validation = [
+        return [
             check('name', 'Equipment name should not be empty.').notEmpty(),
             check('count', 'Quantity should be an integer.').notEmpty().isInt()
         ];
-        return validation;
     },
 
     registerValidation: function () {
-        var validation = [
+        return [
+            check('idNum', 'ID number should be numeric.')
+                .isNumeric({no_symbols: true}),
             check('idNum', 'ID number should contain 8 digits.')
                 .isLength({min: 8, max: 8}),
-            check('degProg', 'Degree program cannot be empty').notEmpty(),
+            check('degProg', 'Degree program is invalid.')
+                .notEmpty()
+                .isLength({min: 1, max: 15}),
+            check('phone', 'Phone cannot be empty')
+                .notEmpty(),
+            check('phone', 'Invalid phone number')
+                .isLength({min: 10, max: 10})
+                .isNumeric({no_symbols: true}),
+        ];
+    },
+
+    editProfileValidation: function () {
+        return [
             check('phone', 'Phone cannot be empty').notEmpty(),
             check('phone', 'Invalid phone number')
                 .isLength({min: 10, max: 10})
                 .isNumeric({no_symbols: true})
         ];
-        return validation;
-    },
-
-    editProfileValidation: function () {
-        var validation = [
-            check('phone', 'Phone cannot be empty').notEmpty(),
-            check('phone', 'Invalid phone number')
-                .isLength({min: 10, max: 10})
-                .isNumeric({no_symbols: true})
-        ]
-        return validation;
     }
 }
 
