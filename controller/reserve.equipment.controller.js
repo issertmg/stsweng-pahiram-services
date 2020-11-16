@@ -1,5 +1,6 @@
 const Equipment = require('../model/equipment.model');
 const Reservation = require('../model/reservation.model');
+const { validationResult } = require('express-validator');
 
 /**
  * Loads and renders the equipment form/reservation page
@@ -33,12 +34,13 @@ exports.equipment = async function (req, res) {
  * @returns {Promise<void>} - nothing
  */
 exports.reserve_equipment = async function (req, res) {
+    let errors = validationResult(req);
     try {
         const invalid = await has2ActiveEquipmentReservations(req.session.idNum);
-        if (!invalid) {
+        if (!invalid && errors.isEmpty()) {
             let equipment = await Equipment.findById(req.body.equipmentid);
             let equipmentid = req.body.equipmentid;
-            let reason = req.body.reason.slice(0, 250);
+            let reason = req.body.reason;
             let pickupDate = new Date();
 
             pickupDate = getNextWeekDayDate(pickupDate);
