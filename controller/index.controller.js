@@ -8,11 +8,6 @@ hbs.registerHelper('isAdmin', (type) => {
     return type === 'studentRep';
 });
 
-exports.testFcn = () => {
-    console.log('Testing function');
-    return true;
-}
-
 exports.home = function (req, res) {
     res.cookie('token', req.session.token);
     res.render('index', {
