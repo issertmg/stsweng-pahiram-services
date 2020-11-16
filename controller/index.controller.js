@@ -4,25 +4,19 @@ const hbs = require('hbs');
 
 const { validationResult } = require('express-validator');
 
+/**
+ * Helper that checks if the user is a student representative
+ */
 hbs.registerHelper('isAdmin', (type) => {
-    return type == 'studentRep';
+    return type === 'studentRep';
 });
 
+/**
+ * Loads and renders the homepage
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ */
 exports.home = function (req, res) {
-
-    console.log('home');
-
-    /* var reservation = new Reservation({
-        userID: 11826401,
-        reservationType: 'locker',
-        status: 'Pending',
-        Description: 'This is a description.',
-        Remarks: 'This is remarkable.'
-    });
-    await reservation.save().catch(err => {
-        console.log('Error writing to db');
-    }); // TODO: test using CREATE method instead */
-
     res.cookie('token', req.session.token);
     res.render('index', {
         active: { active_index: true }, // indicates which page is active in the nav partial.
@@ -34,6 +28,11 @@ exports.home = function (req, res) {
     });
 };
 
+/**
+ * Loads and renders the terms page
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ */
 exports.terms = function (req, res) {
     res.render('terms-page', {
         active: { active_terms: true },
@@ -45,6 +44,11 @@ exports.terms = function (req, res) {
     });
 };
 
+/**
+ * Loads and renders the about page
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ */
 exports.about = function (req, res) {
     res.render('about-us-page', {
         active: { active_about_us: true },
@@ -56,21 +60,33 @@ exports.about = function (req, res) {
     });
 }
 
+/**
+ * Signs the user in using passport, Google OAuth 2.0
+ */
 exports.signin = passport.authenticate('google', {
     scope: ['https://www.googleapis.com/auth/userinfo.profile',
         'https://www.googleapis.com/auth/userinfo.email'],
     hostedDomain: 'dlsu.edu.ph'
 });
 
+/**
+ * Sets up passport to handle callbacks
+ */
 exports.callback = passport.authenticate('google', {
     failureRedirect: '/login'
 });
 
+/**
+ * Passport callback when the user has successfully logged in via Google account
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>}
+ */
 exports.callback_success = async function (req, res) {
     req.session.token = req.user.token;
 
     try {
-        var user = await User.findOneAndUpdate(
+        let user = await User.findOneAndUpdate(
             { email: req.session.passport.user.profile.emails[0].value },
             { dpURL: req.session.passport.user.profile.photos[0].value });
         if (user) {
@@ -86,13 +102,17 @@ exports.callback_success = async function (req, res) {
     res.redirect('/');
 };
 
+/**
+ * Determines if the user has already registered. If not, the user is redirected to the register page.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.register_get = async function (req, res) {
-    var colleges = User.schema.path('college').enumValues;
-
-    console.log(req.session.passport.user.profile.photos[0].value);
+    const colleges = User.schema.path('college').enumValues;
 
     try {
-        var user = await User.findOne({ email: req.session.passport.user.profile.emails[0].value });
+        let user = await User.findOne({ email: req.session.passport.user.profile.emails[0].value });
         if (user == null) {
             res.render('register', {
                 colleges: colleges,
@@ -106,18 +126,24 @@ exports.register_get = async function (req, res) {
     }
 };
 
+/**
+ * Adds a new user object and saves it in the database.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.register_post = async function (req, res) {
 
     try {
         var errors = validationResult(req);
-        var colleges = User.schema.path('college').enumValues;
+        let colleges = User.schema.path('college').enumValues;
 
         if (errors.isEmpty()) {
-            var sameIDNum = await User.countDocuments({ idNum: req.body.idNum });
-            var sameContactNum = await User.countDocuments({ contactNum: req.body.phone });
-            if (sameIDNum == 0 && sameContactNum == 0) {
-                var count = await User.countDocuments();
-                var user = new User({
+            const sameIDNum = await User.countDocuments({idNum: req.body.idNum});
+            const sameContactNum = await User.countDocuments({ contactNum: req.body.phone });
+            if (sameIDNum === 0 && sameContactNum === 0) {
+                const count = await User.countDocuments();
+                let user = new User({
                     firstName: req.session.passport.user.profile.name.givenName,
                     lastName: req.session.passport.user.profile.name.familyName,
                     email: req.session.passport.user.profile.emails[0].value,
@@ -125,18 +151,18 @@ exports.register_post = async function (req, res) {
                     college: User.schema.path('college').enumValues[req.body.college],
                     degreeProg: req.body.degProg,
                     contactNum: req.body.phone,
-                    type: (count == 0 ? 'studentRep' : 'student'),
+                    type: (count === 0 ? 'studentRep' : 'student'),
                     dpURL: req.session.passport.user.profile.photos[0].value
                 });
 
-                var user = await user.save();
+                user = await user.save();
 
                 req.session.idNum = user.idNum;
                 req.session.type = user.type;
 
                 res.redirect('/');
             } else {
-                var errorLabels = {};
+                let errorLabels = {};
                 if (sameIDNum > 0)
                     errorLabels['idNumError'] = 'ID number already taken.'
                 if (sameContactNum > 0)
@@ -150,8 +176,8 @@ exports.register_post = async function (req, res) {
         } else {
             errors = errors.errors;
 
-            var errorLabels = {};
-            for (i = 0; i < errors.length; i++)
+            let errorLabels = {};
+            for (let i = 0; i < errors.length; i++)
                 errorLabels[errors[i].param + 'Error'] = errors[i].msg;
 
             res.render('register', {
@@ -162,11 +188,16 @@ exports.register_post = async function (req, res) {
         }
 
     } catch (err) {
-        console.log('Error writing to db: ' + err);
+        console.log('Error registering: ' + err);
         res.redirect('/');
     }
 };
 
+/**
+ * Logs the user in the web app.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ */
 exports.login = function (req, res) {
     if (req.session.token)
         res.redirect('/');
@@ -174,24 +205,41 @@ exports.login = function (req, res) {
         res.render('login-page');
 };
 
+/**
+ * Logs the user out of the web app.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ */
 exports.logout = function (req, res) {
     req.logout();
     req.session = null;
     res.redirect('/');
 };
 
+/**
+ * Gets the user associated with the ID number and sends it as an HTTP response object
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>}
+ */
 exports.id_get = async function (req, res) {
     try {
-        var user = await User.findOne({ idNum: req.query.idNum });
+        let user = await User.findOne({ idNum: req.query.idNum });
         res.send(user);
     } catch (err) {
         console.log(err);
     }
 }
 
+/**
+ * Gets the user associated with the phone number and sends it as an HTTP response object
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>}
+ */
 exports.phone_get = async function (req, res) {
     try {
-        var phone;
+        let phone;
         if (req.query.idNum)
             phone = await User.findOne({ contactNum: req.query.phone }).where('idNum').ne(req.query.idNum);
         else
