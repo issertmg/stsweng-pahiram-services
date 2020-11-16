@@ -1,4 +1,3 @@
-const Equipment = require('../model/equipment.model');
 const Panel = require('../model/panel.model');
 const Reservation = require('../model/reservation.model');
 const Locker = require('../model/locker.model');
@@ -76,18 +75,18 @@ exports.locker = async function (req, res) {
 
 exports.reserve_locker = async function (req, res) {
     try {
-        var invalid = await hasActiveLockerReservation(req.session.idNum); 
+        const invalid = await hasActiveLockerReservation(req.session.idNum); 
         if (!invalid) {
-            var panel = await Panel.findById(req.body.panelid);
-            var paneltype = panel.type[0].toUpperCase() + panel.type.slice(1);
-            var lockerIndex = req.body.lockernumber - panel.lowerRange;
-            var lockerid = panel.lockers[lockerIndex]._id;
+            let panel = await Panel.findById(req.body.panelid);
+            let paneltype = panel.type[0].toUpperCase() + panel.type.slice(1);
+            let lockerIndex = req.body.lockernumber - panel.lowerRange;
+            let lockerid = panel.lockers[lockerIndex]._id;
 
-            var titleString = "Locker #" + req.body.lockernumber;
-            var descString = titleString + ", " + paneltype + " Panel #" + panel.number +
+            let titleString = "Locker #" + req.body.lockernumber;
+            let descString = titleString + ", " + paneltype + " Panel #" + panel.number +
                             ", " + panel.building + ", " + panel.level + "/F"; 
         
-            var reservation = new Reservation({
+            let reservation = new Reservation({
                 title: titleString,
                 userID: req.session.idNum,
                 item: lockerid,
@@ -95,7 +94,7 @@ exports.reserve_locker = async function (req, res) {
                 description: descString,
                 onItemType: 'Locker'
             });
-            var validLocker = await isLockerVacant(lockerid);
+            const validLocker = await isLockerVacant(lockerid);
             if (validLocker) {
                 await reservation.save();
                 await Locker.findByIdAndUpdate(lockerid, {status: 'occupied'});
@@ -113,72 +112,10 @@ exports.reserve_locker = async function (req, res) {
     res.redirect("/reservations");
 };
 
-exports.equipment = async function (req, res) {
-    try {
-        equipment = await Equipment.find({$expr: {$lt: ['$onRent', '$quantity']}})
-        var active_reservation = await has2ActiveEquipmentReservations(req.session.idNum);
-        res.render('equipment-form', {
-            active: { active_index: true },
-            sidebarData: {
-                dp: req.session.passport.user.profile.photos[0].value,
-                name: req.session.passport.user.profile.displayName,
-                type: req.session.type      
-            },
-            equipmentList: equipment,
-            status: active_reservation
-        });
-    } catch (err) {
-        console.log(err);
-    }
-};
-
-exports.reserve_equipment = async function (req, res) {
-    try {
-        var invalid = await has2ActiveEquipmentReservations(req.session.idNum);
-        if (!invalid) {
-            var equipment = await Equipment.findById(req.body.equipmentid);
-            var equipmentid = req.body.equipmentid;
-            var reason = req.body.reason;
-            var pickupDate = new Date();
-            do {
-                pickupDate.setDate(pickupDate.getDate()+1);                
-            }   //0 is Sunday,6 Saturday
-            while (pickupDate.getDay()==0 || pickupDate.getDay()==6);
-
-            switch(parseInt(req.body.borrowtime)) {
-                case 1: pickupDate.setHours(7,30,0); break;
-                case 2: pickupDate.setHours(9,15,0); break;
-                case 3: pickupDate.setHours(11,0,0); break;
-                case 4: pickupDate.setHours(12,45,0); break;
-                case 5: pickupDate.setHours(14,30,0); break;
-                case 6: pickupDate.setHours(16,15,0); break;
-                default: pickupDate.setHours(0,0,0);
-            }
-            var descString = reason + ", " + "on " + pickupDate.toLocaleString('en-US');
-            var reservation = new Reservation({
-                title: equipment.name,
-                userID: req.session.idNum,
-                item: equipmentid, 
-                status: 'Pending',
-                description: descString,
-                onItemType: 'Equipment',
-                pickupPayDate: pickupDate
-            });
-            await reservation.save();
-            await Equipment.findByIdAndUpdate(equipmentid, {$inc: {onRent: 1}});
-        }
-        else {
-            console.log("Equipment reservation disabled.");
-        }
-    } catch (err) {
-        console.log(err);
-    }
-    res.redirect("/reservations");
-};
-
 async function hasActiveLockerReservation(userID) {
+    let exists;
     try {
-        var exists = await Reservation.exists({
+        exists = await Reservation.exists({
             userID: userID, 
             onItemType: 'Locker',
             $or: [{status: 'Pending'}, {status: 'To Pay'}, {status: 'On Rent'}, {status: 'Uncleared'}]
@@ -190,26 +127,13 @@ async function hasActiveLockerReservation(userID) {
     return exists;
 };
 
-async function has2ActiveEquipmentReservations(userID) {
-    try {
-        var reservationCount = await Reservation.find({
-            userID: userID,
-            onItemType: 'Equipment',
-            $or: [{status: 'Pending'}, {status: 'For Pickup'}, {status: 'On Rent'}, {status: 'Uncleared'}]
-        }).countDocuments();
-    }
-    catch (err) {
-        console.log(err);
-    }
-    return reservationCount == 2;
-};
-
 async function isLockerVacant(lockerid) {
+    let locker;
     try {
-        var locker = await Locker.findById(lockerid);
+        locker = await Locker.findById(lockerid);
     }
     catch (err) {
         console.log(err);
     }
-    return locker.status =='vacant';
+    return locker.status ==='vacant';
 };

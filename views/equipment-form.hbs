@@ -58,7 +58,7 @@
                     <div class="col-lg-4 col-md-6 col-6 d-flex flex-column align-items-center" >
                       <div class="equipment-element" style="background: url({{imageURL}}) center no-repeat; background-size: contain;"></div>
                       <button class="btn btn-toggle w-100" data-toggle="button" data-equipmentid="{{_id}}" aria-pressed="false" type="button">
-                        {{name}}
+                          {{name}} {{#if brand}} ({{brand}}, {{model}}) {{/if}}
                       </button>
                     </div>
                     {{/each}}
@@ -171,45 +171,7 @@
   <script type="text/javascript" src="/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="/js/styles.js"></script>
   <script type="text/javascript" src="/js/styles-equipment.js"></script>
-  
-  <script>
-  $(document).ready(function () {
-
-      var borrowDate = new Date();
-      var options = { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric'};
-      
-      do {
-          borrowDate.setDate(borrowDate.getDate()+1);
-      }
-      while (borrowDate.getDay() == 0 || borrowDate.getDay() == 6); 
-      $("#borrow-date").val(borrowDate.toLocaleDateString("en-US", options));
-      
-      $("#submitEquipmentForm").click(function() {
-        var equipment = $('button.active');
-        var equipmentid = equipment.data('equipmentid');
-        var reason = $('#reason').val();
-
-        if ($("#checkTerms").prop('checked')) {
-          if (equipment.length != 0) {
-            $('#equipmentid').val(equipmentid);
-
-            if (reason.trim().length != 0) {
-              $('#equipmentForm').submit();
-            }
-            else {
-              alert("Please write the reason for borrowing.");
-            }
-          }
-          else {
-            alert("Please select an equipment you want to rent.");
-          }
-        }
-        else {
-          alert("Please check the box if you agree to the terms and conditions.");
-        }
-      });
-    });
-  </script>
+  <script type="text/javascript" src="/js/reserve-equipment.js"></script>
 </body>
 
 </html>
