@@ -1,4 +1,4 @@
-let reserve = require('./reserve.controller');
+let reserve = require('./reserve.equipment.controller');
 
 describe('Next Weekday Date Getter', () => {
     it('When the day of date parameter is Sunday , then it should return the first succeeding date with the day Monday', () => {
