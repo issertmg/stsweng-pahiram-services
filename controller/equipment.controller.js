@@ -19,11 +19,15 @@ hbs.registerHelper('subtract', function (a, b) { return a - b; });
 
 exports.createEquipment = async function (req, res) {
 
-    var errors = validationResult(req);
+    let errors = validationResult(req);
 
     if (errors.isEmpty()) {
-        var sameEquipCt = await Equipment.countDocuments(
-            { name: req.body.name });
+        let sameEquipCt = await Equipment.countDocuments({
+            name: req.body.name,
+            brand: req.body.brand,
+            model: req.body.model
+        });
+
         if (sameEquipCt == 0) {
             const tempPath = req.file.path;
             const filename = shortid.generate() + '.png';
@@ -36,6 +40,8 @@ exports.createEquipment = async function (req, res) {
             try {
                 let equipment = new Equipment({
                     name: req.body.name,
+                    brand: req.body.brand,
+                    model: req.body.model,
                     quantity: parseInt(req.body.count),
                     imageURL: imageURL
                 });
@@ -44,29 +50,6 @@ exports.createEquipment = async function (req, res) {
             } catch (err) {
                 console.log(err);
             }
-
-            /* fs.rename(tempPath, filePath, async function (err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    uploadToS3(filename, filePath);
-                    var imageURL = S3_FILE_URL + filename;
-
-                    console.log(imageURL);
-
-                    let equipment = new Equipment({
-                        name: req.body.name,
-                        quantity: parseInt(req.body.count),
-                        imageURL: imageURL
-                    });
-
-                    try {
-                        await equipment.save();
-                    } catch (err) {
-                        console.log(err);
-                    }
-                }
-            }); */
         }
         res.redirect("/manage-equipment/");
     }
@@ -74,7 +57,7 @@ exports.createEquipment = async function (req, res) {
 
 exports.viewAllEquipment = async function (req, res) {
     try {
-        equipment = await Equipment.find({});
+        let equipment = await Equipment.find({});
 
         res.render('manage-equipment-page', {
             active: { active_manage_equipment: true },
@@ -92,12 +75,15 @@ exports.viewAllEquipment = async function (req, res) {
 
 exports.updateEquipment = async function (req, res) {
 
-    var errors = validationResult(req);
+    let errors = validationResult(req);
     if (errors.isEmpty()) {
         try {
-            var equipment = await Equipment.findById(req.body.equipmentid);
-            if (req.body.name.trim().length != 0) { equipment.name = req.body.name; }
-            if (!isNaN(parseInt(req.body.count))) { equipment.quantity = req.body.count; }
+            let equipment = await Equipment.findById(req.body.equipmentid);
+                equipment.name = req.body.name;
+                equipment.brand = req.body.brand;
+                equipment.model = req.body.model;
+                equipment.quantity = req.body.count;
+
             if (req.file != null) {  
                 const oldFilenameIndex = equipment.imageURL.lastIndexOf('/');
                 const oldFilename = equipment.imageURL.substring(oldFilenameIndex+1);
@@ -110,8 +96,6 @@ exports.updateEquipment = async function (req, res) {
 
                 uploadToS3(newFilename, tempPath);                
                 equipment.imageURL = S3_FILE_URL + newFilename;
-
-                console.log(equipment.imageURL);
             }
             await equipment.save();
         } catch (err) {
@@ -123,9 +107,7 @@ exports.updateEquipment = async function (req, res) {
 
 exports.deleteEquipment = async function (req, res) {
     try {
-        var equipment = await Equipment.findById(req.body.equipmentid);
-        // if (fs.existsSync(path.join(__dirname, '/../public', equipment.imageURL)))
-        //     fs.unlinkSync(path.join(__dirname, '/../public', equipment.imageURL));
+        let equipment = await Equipment.findById(req.body.equipmentid);
 
         const filenameIndex = equipment.imageURL.lastIndexOf('/');
         const filename = equipment.imageURL.substring(filenameIndex+1);
@@ -141,7 +123,7 @@ exports.deleteEquipment = async function (req, res) {
 
 exports.onrent_get = async function (req, res) {
     try {
-        var equipment = await Equipment.findById(req.query.equipmentid);
+        let equipment = await Equipment.findById(req.query.equipmentid);
         if (equipment)
             res.send(equipment);
     } catch (err) {
