@@ -30,7 +30,8 @@ const validation = {
             check('model', 'Equipment model should not be empty.')
                 .notEmpty()
                 .isLength({min: 1, max: 50}),
-            check('count', 'Quantity should be an integer.').notEmpty().isInt()
+            check('count', 'Quantity should be an integer.').notEmpty()
+                .isInt({gt: 0})
         ];
     },
 
