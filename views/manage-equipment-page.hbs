@@ -107,6 +107,9 @@
             <div class="alert alert-warning" role="alert" id="formLetterAlert">
                 Name and brand field should at least contain 1 letter.
             </div>
+            <div class="alert alert-warning" role="alert" id="formQuantityAlert">
+                Quantity should be a whole number greater than 0.
+            </div>
             <div class="form-group form-inline input-group">
               <label for="add-equipment-name" class="col-lg-4 justify-content-start p-0">Name</label>
               <input id="add-equipment-name" type="text" class="form-control mb-2 col-lg-8" placeholder="Enter equipment name" name="name" required>
@@ -152,15 +155,15 @@
             id="editEquipForm" enctype="multipart/form-data">
             <!--FIXME: -->
             <input type="hidden" name="equipmentid" id="editHiddenEquipID">
-
             <div class="alert alert-warning" role="alert" id="formUpdateAlert">
             Please fill up the name, brand, model, and quantity field.
             </div>
-
             <div class="alert alert-warning" role="alert" id="formUpdateLetterAlert">
                 Name and brand field should at least contain 1 letter.
             </div>
-
+            <div class="alert alert-warning" role="alert" id="formUpdateQuantityAlert">
+                Quantity should be a whole number greater than 0.
+            </div>
             <div class="col-12 px-0" id="availableAlert">
               <div class="alert alert-danger" role="alert">
                 <strong>Action unsuccessful!</strong> The quantity should not be less than the number of equipment on rent. 
