@@ -1,44 +1,40 @@
 const Equipment = require('../model/equipment.model');
-const fs = require('fs');
-const path = require('path');
 const shortid = require('shortid');
 const hbs = require('hbs');
 
 const { validationResult } = require('express-validator');
 
-const AWS = require('aws-sdk');
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-});
-const S3_FILE_URL = 'https://pahiram-services-bucket.s3.us-east-2.amazonaws.com/equipment-uploads/';
-
-const BUCKET_NAME = 'pahiram-services-bucket';
+const cloudinary = require('cloudinary').v2;
 
 hbs.registerHelper('subtract', function (a, b) { return a - b; });
 
+/**
+ * Adds a new equipment object and saves it in the database.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.createEquipment = async function (req, res) {
-
-    let errors = validationResult(req);
+    const errors = validationResult(req);
 
     if (errors.isEmpty()) {
-        let sameEquipCt = await Equipment.countDocuments({
+        const sameEquipCt = await Equipment.countDocuments({
             name: req.body.name,
             brand: req.body.brand,
             model: req.body.model
         });
 
-        if (sameEquipCt == 0) {
-            const tempPath = req.file.path;
-            const filename = shortid.generate() + '.png';
-            // const filePath = path.join(__dirname, '/../public/uploads/equipment-images', filename);
-            // const relativeFilePath = '/uploads/equipment-images/' + filename;
+        if (sameEquipCt === 0) {
+            let imageURL = null;
 
-            uploadToS3(filename, tempPath);
-            var imageURL = S3_FILE_URL + filename;
-            
+            if (req.file != null) {
+                const filePath = req.file.path;
+                const uploadResult = await cloudinary.uploader.upload(filePath);
+                imageURL = uploadResult.url;
+            }
+
             try {
-                let equipment = new Equipment({
+                const equipment = new Equipment({
                     name: req.body.name,
                     brand: req.body.brand,
                     model: req.body.model,
@@ -55,10 +51,15 @@ exports.createEquipment = async function (req, res) {
     }
 };
 
+/**
+ * Loads and renders the manage equipment page.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.viewAllEquipment = async function (req, res) {
     try {
-        let equipment = await Equipment.find({});
-
+        const equipment = await Equipment.find({});
         res.render('manage-equipment-page', {
             active: { active_manage_equipment: true },
             sidebarData: {
@@ -73,9 +74,14 @@ exports.viewAllEquipment = async function (req, res) {
     }
 };
 
+/**
+ * Updates an equipment in the database.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.updateEquipment = async function (req, res) {
-
-    let errors = validationResult(req);
+    const errors = validationResult(req);
     if (errors.isEmpty()) {
         try {
             let equipment = await Equipment.findById(req.body.equipmentid);
@@ -84,18 +90,15 @@ exports.updateEquipment = async function (req, res) {
                 equipment.model = req.body.model;
                 equipment.quantity = req.body.count;
 
-            if (req.file != null) {  
-                const oldFilenameIndex = equipment.imageURL.lastIndexOf('/');
-                const oldFilename = equipment.imageURL.substring(oldFilenameIndex+1);
-                const tempPath = req.file.path;
-                const newFilename = shortid.generate() + '.png';
-                console.log('old: ' + oldFilename);
-                console.log('new: ' + newFilename);
-                
-                deleteFromS3(oldFilename)
-
-                uploadToS3(newFilename, tempPath);                
-                equipment.imageURL = S3_FILE_URL + newFilename;
+            if (req.file != null) {
+                if (equipment.imageURL != null) {
+                    const publicID = getPublicIDFromURL(equipment.imageURL);
+                    await cloudinary.uploader.destroy(publicID);
+                }
+                const filePath = req.file.path;
+                const uploadResult = await cloudinary.uploader.upload(filePath);
+                const imageURL = uploadResult.url;
+                equipment.imageURL = imageURL;
             }
             await equipment.save();
         } catch (err) {
@@ -105,15 +108,19 @@ exports.updateEquipment = async function (req, res) {
     }
 };
 
+/**
+ * Deletes an equipment in the database and its image in the Cloudinary storage.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.deleteEquipment = async function (req, res) {
     try {
         let equipment = await Equipment.findById(req.body.equipmentid);
-
-        const filenameIndex = equipment.imageURL.lastIndexOf('/');
-        const filename = equipment.imageURL.substring(filenameIndex+1);
-        console.log('Deleting ' + filename);
-        deleteFromS3(filename);
-
+        if (equipment.imageURL != null) {
+            const publicID = getPublicIDFromURL(equipment.imageURL);
+            await cloudinary.uploader.destroy(publicID);
+        }
         await Equipment.findByIdAndDelete(req.body.equipmentid);
     } catch (err) {
         console.log(err);
@@ -121,9 +128,15 @@ exports.deleteEquipment = async function (req, res) {
     res.redirect("/manage-equipment/");
 };
 
+/**
+ * AJAX function for retrieving an equipment.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.onrent_get = async function (req, res) {
     try {
-        let equipment = await Equipment.findById(req.query.equipmentid);
+        const equipment = await Equipment.findById(req.query.equipmentid);
         if (equipment)
             res.send(equipment);
     } catch (err) {
@@ -131,33 +144,16 @@ exports.onrent_get = async function (req, res) {
     }
 };
 
-var deleteFromS3 = (filename) => {
-    const params = {
-        Bucket: BUCKET_NAME,
-        Key: 'equipment-uploads/' + filename
-    }
-
-    s3.deleteObject(params, (err, data) => {
-        if (err) console.log(err);
-        else console.log(data);
-    })
+/**
+ * Returns the publicID (filename without file extension) from a URL.
+ * @param url - the uniform resource locator of the image stored in Cloudinary storage
+ * @returns {string} - the publicID
+ */
+function getPublicIDFromURL (url) {
+    const filenameIndex = url.lastIndexOf('/');
+    const filename = url.substring(filenameIndex+1);
+    const fileExtensionIndex = filename.lastIndexOf('.');
+    return filename.substring(0, fileExtensionIndex);
 }
 
-var uploadToS3 = (newFilename, filePath) => {
-    try {
-        const fileContent = fs.readFileSync(filePath);
-        
-        const params = {
-            Bucket: BUCKET_NAME,
-            Key: 'equipment-uploads/' + newFilename,
-            Body: fileContent 
-        }
-    
-        s3.upload(params, (err, data) => {
-            if (err) console.log(err);
-            else console.log(data);
-        });
-    } catch (error) {
-        console.log(error);
-    }
-}
+exports.getPublicIDFromURL = getPublicIDFromURL;
