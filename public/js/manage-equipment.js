@@ -1,5 +1,8 @@
 $(document).ready(function () {
-
+    /**
+     * Checks if the name, brand, model, and quantity input fields in the Add Equipment form are empty.
+     * @returns {boolean} - true if name, brand, model and quantity are filled; false otherwise
+     */
     function isFilledAddModal() {
         let eName = validator.trim($('#add-equipment-name').val());
         let eBrand = validator.trim($('#add-equipment-brand').val());
@@ -14,6 +17,10 @@ $(document).ready(function () {
         return !eNameEmpty && !eBrandEmpty && !eModelEmpty && !eQuantityEmpty;
     }
 
+    /**
+     * Checks if the name and brand inputs in the Add Equipment form are valid.
+     * @returns {boolean} - true if both name and brand inputs contain at least one letter; false otherwise
+     */
     function isValidNameBrandAddField() {
         let eName = validator.trim($('#add-equipment-name').val());
         let eBrand = validator.trim($('#add-equipment-brand').val());
@@ -24,6 +31,10 @@ $(document).ready(function () {
         return isValidName && isValidBrand;
     }
 
+    /**
+     * Checks if the name and brand inputs in the Edit Equipment form are valid.
+     * @returns {boolean} - true if both name and brand inputs contain at least one letter; false otherwise
+     */
     function isValidNameBrandEditField() {
         let eName = validator.trim($('#edit-equipment-name').val());
         let eBrand = validator.trim($('#edit-equipment-brand').val());
@@ -34,11 +45,19 @@ $(document).ready(function () {
         return isValidName && isValidBrand;
     }
 
+    /**
+     * Checks if the quantity input in the Add Equipment form is valid.
+     * @returns {boolean} - true if quantity input is a whole number and is greater than 0; false otherwise
+     */
     function isValidQuantityAddField() {
         let eQuantity = validator.trim($('#add-equipment-ct').val());
-        return validator.isInt(eQuantity);
+        return validator.isInt(eQuantity) && (eQuantity > 0);
     }
 
+    /**
+     * Checks if the name, brand, model, and quantity input fields in the Edit Equipment form are empty.
+     * @returns {boolean} - true if name, brand, model and quantity are filled; false otherwise
+     */
     function isFilledEditModal() {
         let eName = validator.trim($('#edit-equipment-name').val());
         let eBrand = validator.trim($('#edit-equipment-brand').val());
@@ -53,61 +72,62 @@ $(document).ready(function () {
       return !eNameEmpty && !eBrandEmpty && !eModelEmpty && !eQuantityEmpty;
     }
 
+    /**
+     * Checks if the quantity input in the Edit Equipment form is valid.
+     * @returns {boolean} - true if quantity input is a whole number and is greater than 0; false otherwise
+     */
     function isValidQuantityEditField() {
         let eQuantity = validator.trim($('#edit-equipment-ct').val());
-        return validator.isInt(eQuantity);
+        return validator.isInt(eQuantity) && (eQuantity > 0);
     }
 
+    /**
+     * Validates the Add Equipment form before submitting.
+     * @returns <void> - nothing
+     */
     $('#addEquipmentButton').click(function() {
+        hideAllAlert();
 
-        if (isFilledAddModal()) {
-            $('#formAlert').hide();
-            if (isValidNameBrandAddField()) {
-                $('#formLetterAlert').hide();
-                if (isValidQuantityAddField()) {
-                    $('#addEquipForm').submit();
-                }
-            }
-            else {
-                $('#formLetterAlert').show();
-            }
-        }
-        else {
+        if (!isFilledAddModal())                //checks if all required inputs are filled
             $('#formAlert').show();
-            $('#formLetterAlert').hide();
+        else if (!isValidNameBrandAddField())   //checks if name and brand inputs have at least one letter
+            $('#formLetterAlert').show();
+        else if (!isValidQuantityAddField())    //checks if the quantity input is valid
+            $('#formQuantityAlert').show();
+        else
+            $('#addEquipForm').submit();
+    });
+
+    /**
+     * Validates the Edit Equipment form before submitting.
+     * @returns <void> - nothing
+     */
+    $('#editEquipButton').click(function() {
+        hideAllAlert();
+
+        if (!isFilledEditModal())                //checks if all required inputs are filled
+            $('#formUpdateAlert').show();
+        else if (!isValidNameBrandEditField())   //checks if name and brand inputs have at least one letter
+            $('#formUpdateLetterAlert').show();
+        else if (!isValidQuantityEditField())    //checks if the quantity input is valid
+            $('#formUpdateQuantityAlert').show();
+        else {
+            $.get('/manage-equipment/onrent',
+                {equipmentid: $('#editHiddenEquipID').val()},
+                function(data, status) {
+                    let setQuantity = $('#edit-equipment-ct').val();
+                    if (setQuantity < data.onRent) {
+                        $('#availableAlert').show();
+                    }
+                    else $('#editEquipForm').submit();
+            });
         }
     });
 
-    $('#editEquipButton').click(function() {
-
-      if (isFilledEditModal()) {
-          $('#formUpdateAlert').hide();
-          if (isValidNameBrandEditField()) {
-              $('#formUpdateLetterAlert').hide();
-              if (isValidQuantityEditField()) {
-                  $.get('/manage-equipment/onrent',
-                      {equipmentid: $('#editHiddenEquipID').val()},
-                      function(data, status) {
-                          let setQuantity = $('#edit-equipment-ct').val();
-                          if (setQuantity < data.onRent) {
-                              $('#availableAlert').show();
-                          }
-                          else $('#editEquipForm').submit();
-                      });
-              }
-          }
-          else {
-              $('#formUpdateLetterAlert').show();
-              $('#availableAlert').hide();
-          }
-      }
-      else {
-        $('#formUpdateAlert').show();
-        $('#formUpdateLetterAlert').hide();
-        $('#availableAlert').hide();
-      }
-    });
-
+    /**
+     * Validates the Delete Equipment form before submitting.
+     * @returns <void> - nothing
+     */
     $('#deleteEquipButton').click(function() {
       $.get('/manage-equipment/onrent', 
         {equipmentid: $('#editHiddenEquipID').val()},
@@ -132,22 +152,33 @@ $(document).ready(function () {
     limitCharactersTo50("#edit-equipment-model");
 });
 
+/**
+ * Shows the Add Equipment Form.
+ * @returns <void> - nothing
+ */
 $('#addEquipmentModal').on('show.bs.modal', function (event) {
     $('#addEquipForm').trigger("reset");
-    $('#formAlert').hide();
-    $('#formLetterAlert').hide();
+    hideAllAlert();
 });
 
+/**
+ * Shows the Delete Equipment Form.
+ * @returns <void> - nothing
+ */
 $('#delEquipmentModal').on('show.bs.modal', function (event) {
     let button = $(event.relatedTarget);
     let equipmentID = button.data('equipmentid');
     $('#delHiddenEquipID').val($('#editHiddenEquipID').val());
-    $('#onRentAlert').hide();
     $('#deleteHeader').show();
     $(this).find('.modal-title').text('Delete Equipment');
     $('#deleteEquipButton').show();
+    hideAllAlert();
 });
 
+/**
+ * Shows the Edit Equipment Form.
+ * @returns <void> - nothing
+ */
 $('#editEquipmentModal').on('show.bs.modal', function (event) {
     let button = $(event.relatedTarget);
     let equipmentID = button.data('equipmentid');
@@ -165,11 +196,34 @@ $('#editEquipmentModal').on('show.bs.modal', function (event) {
     $('#edit-equipment-model').val(equipmentModel);
     $('#edit-equipment-ct').val(equipmentQty);
 
-    $('#formUpdateAlert').hide();
-    $('#formUpdateLetterAlert').hide();
-    $('#availableAlert').hide();
+    hideAllAlert();
 });
 
+/**
+ * Hides all alert elements in all Equipment forms
+ * @returns <void> - nothing
+ */
+function hideAllAlert() {
+    //For Add Equipment
+    $('#formAlert').hide();
+    $('#formLetterAlert').hide();
+    $('#formQuantityAlert').hide();
+
+    //For Delete Equipment
+    $('#onRentAlert').hide();
+
+    //For Edit Equipment
+    $('#formUpdateAlert').hide();
+    $('#formUpdateLetterAlert').hide();
+    $('#formUpdateQuantityAlert').hide();
+    $('#availableAlert').hide();
+}
+
+/**
+ * Adds a keyup and onchange listener to an input element.
+ * @param inputElementID - the id of the input field element
+ * @returns <void> - nothing
+ */
 function limitCharactersTo50 (inputElementID) {
     $(inputElementID).on("keyup change", function() {
         let inputElement = $(this);
@@ -179,6 +233,11 @@ function limitCharactersTo50 (inputElementID) {
     });
 }
 
+/**
+ * Checks if the string parameter has at least 1 letter.
+ * @param stringInput - the string input
+ * @returns {boolean} - true if has at least 1 letter, false otherwise
+ */
 function hasAtLeast1Letter (stringInput) {
     return /[a-zA-Z]/.test(stringInput)
 }
