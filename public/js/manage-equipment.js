@@ -5,15 +5,13 @@ $(document).ready(function () {
         let eBrand = validator.trim($('#add-equipment-brand').val());
         let eModel = validator.trim($('#add-equipment-model').val());
         let eQuantity = validator.trim($('#add-equipment-ct').val());
-        let eImage= $('#add-equipment-pic');
 
         let eNameEmpty = validator.isEmpty(eName);
         let eBrandEmpty = validator.isEmpty(eBrand);
         let eModelEmpty = validator.isEmpty(eModel);
         let eQuantityEmpty = validator.isEmpty(eQuantity);
-        let eImageEmpty = (eImage.get(0).files.length === 0);
         
-        return !eNameEmpty && !eBrandEmpty && !eModelEmpty && !eQuantityEmpty && !eImageEmpty;
+        return !eNameEmpty && !eBrandEmpty && !eModelEmpty && !eQuantityEmpty;
     }
 
     function isValidNameBrandAddField() {
