@@ -1,3 +1,5 @@
+const $ = require('jquery');
+
 $(document).ready(function () {
     let url = new URL(document.location);
     let params = url.searchParams;
@@ -8,35 +10,39 @@ $(document).ready(function () {
     $("#floor").val(flr);
 
     $("#submitLockerForm").click(function() {
-        var locker = $('#panelAccordion').find('.selected');
-        var panelid = locker.data('panelid');
-        var lockernumber = locker.data('lockernumber');
+        let locker = $('#panelAccordion').find('.selected');
+        let panelid = locker.data('panelid');
+        let lockernumber = locker.data('lockernumber');
 
         if ($("#checkTerms").prop('checked')) {
             if (locker.length != 0) {
                 $('#panelid').val(panelid);
                 $('#lockernumber').val(lockernumber);
                 $('#lockerForm').submit();
-            }
-            else {
+            } else {
                 alert("Please select a locker you want to rent.");
             }
-        }
-        else {
+        } else {
             alert("Please check the box if you agree to the terms and conditions.");
         }
     });
 });
 
-// Removes a query parameter
-function removeParam(key, sourceURL) {
-    var rtn = sourceURL.split("?")[0],
+
+/**
+ * Removes a query string parameter from the URL
+ * @param key - the key to be removed
+ * @param sourceURL - the original URL
+ * @returns {string} - the URL when a specified query string parameter is removed
+ */
+function removeQueryStringParam(key, sourceURL) {
+    let rtn = sourceURL.split("?")[0],
         param,
         params_arr = [],
         queryString = (sourceURL.indexOf("?") !== -1) ? sourceURL.split("?")[1] : "";
     if (queryString !== "") {
         params_arr = queryString.split("&");
-        for (var i = params_arr.length - 1; i >= 0; i -= 1) {
+        for (let i = params_arr.length - 1; i >= 0; i--) {
             param = params_arr[i].split("=")[0];
             if (param === key) {
                 params_arr.splice(i, 1);
@@ -47,18 +53,36 @@ function removeParam(key, sourceURL) {
     return rtn;
 }
 
-// Adds or updates a query parameter
-function updateQueryStringParameter(key, value) {
-    var uri = window.location.href;
-    var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-    var separator = uri.indexOf('?') !== -1 ? "&" : "?";
-    if (key=='bldg') {
-        uri = removeParam('flr', uri);
-    }
-    if (uri.match(re)) {
-        window.location.href = uri.replace(re, '$1' + key + "=" + value + '$2');
-    }
-    else {
-        window.location.href = uri + separator + key + "=" + value;
-    }
+/**
+ * Updates the query string parameters of the URL and returns it
+ * @param uri - the  URL
+ * @param key - the key to be added/replaced
+ * @param value - the value associated with the key
+ * @returns {string} - the new URL
+ */
+function getUpdatedURL(uri, key, value) {
+    let re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+    let separator = uri.indexOf('?') !== -1 ? "&" : "?";
+
+    if (uri.match(re))
+        return uri.replace(re, '$1' + key + "=" + value + '$2');
+    else
+        return uri + separator + key + "=" + value;
 }
+
+/**
+ * Updates the query string parameters and redirects to the new URL
+ * @param key - the key to add/replace
+ * @param value - the value associated with the key
+ */
+function updateURLQuery(key, value) {
+    let uri = window.location.href;
+
+    if (key === 'bldg')
+        uri = removeQueryStringParam('flr', uri);
+
+    window.location.href = getUpdatedURL(uri, key, value)
+}
+
+exports.removeQueryStringParam = removeQueryStringParam;
+exports.getUpdatedURL = getUpdatedURL;

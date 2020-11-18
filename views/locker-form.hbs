@@ -53,7 +53,7 @@
               <div class="form-group-container col-lg-7">
                 <div class="form-group form-card select-form">
                   <label for="bldg">Select a building</label>
-                  <select class="form-control custom-select select-lg" id="bldg" onchange="updateQueryStringParameter('bldg', this.value)">
+                  <select class="form-control custom-select select-lg" id="bldg" onchange="updateURLQuery('bldg', this.value)">
                     {{#each panel_buildings}}
                     <option value="{{this}}"> {{this}} </option>
                     {{/each}}
@@ -64,7 +64,7 @@
               <div class="form-group-container col-lg-5">
                 <div class="form-group form-card select-form">
                   <label for="floor">Select a floor level</label>
-                  <select class="form-control custom-select select-lg" id="floor" onchange="updateQueryStringParameter('flr', this.value)">
+                  <select class="form-control custom-select select-lg" id="floor" onchange="updateURLQuery('flr', this.value)">
                     {{#each panel_floors}}
                     <option value="{{this}}"> {{this}}/F </option>
                     {{/each}}
