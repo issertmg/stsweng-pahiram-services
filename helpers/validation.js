@@ -26,6 +26,15 @@ const validation = {
         ];
     },
 
+    reserveEquipmentValidation: function () {
+        return [
+            check('reason', 'Reason for borrowing should not be empty.')
+                .notEmpty()
+                .isLength({min: 1, max: 250}),
+            check('borrowtime', 'Borrow time option number should be an integer.').notEmpty().isInt()
+        ];
+    },
+
     registerValidation: function () {
         return [
             check('idNum', 'ID number should be numeric.')
