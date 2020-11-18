@@ -21,8 +21,17 @@ const validation = {
 
     addOrUpdateEquipmentValidation: function () {
         return [
-            check('name', 'Equipment name should not be empty.').notEmpty(),
-            check('count', 'Quantity should be an integer.').notEmpty().isInt()
+            check('name', 'Equipment name should not be empty.')
+                .notEmpty()
+                .isLength({min: 1, max: 50}),
+            check('brand', 'Equipment brand should not be empty.')
+                .notEmpty()
+                .isLength({min: 1, max: 50}),
+            check('model', 'Equipment model should not be empty.')
+                .notEmpty()
+                .isLength({min: 1, max: 50}),
+            check('count', 'Quantity should be an integer.').notEmpty()
+                .isInt({gt: 0})
         ];
     },
 
