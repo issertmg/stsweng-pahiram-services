@@ -110,6 +110,9 @@
             <div class="alert alert-warning" role="alert" id="formQuantityAlert">
                 Quantity should be a whole number greater than 0.
             </div>
+            <div class="alert alert-warning" role="alert" id="formPicAlert">
+                Image file extension should be ".png"
+            </div>
             <div class="form-group form-inline input-group">
               <label for="add-equipment-name" class="col-lg-4 justify-content-start p-0">Name</label>
               <input id="add-equipment-name" type="text" class="form-control mb-2 col-lg-8" placeholder="Enter equipment name" name="name" required>
@@ -124,11 +127,11 @@
             </div>
             <div class="form-group form-inline input-group">
               <label for="add-equipment-ct" class="col-lg-4 justify-content-start p-0">Amount on stock</label>
-              <input id="add-equipment-ct" type="number" class="form-control mb-2 col-lg-8" placeholder="Enter number of stocks" name="count" min="1" oninput="validity.valid||(value='');" required>
+              <input id="add-equipment-ct" type="number" class="form-control mb-2 col-lg-8" placeholder="Enter number of stocks" name="count" min="1" max="1000" required>
             </div>
             <div class="form-group form-inline input-group">
               <label for="add-equipment-pic" class="col-lg-4 justify-content-start p-0">Image (optional)</label>
-              <input id="add-equipment-pic" type="file" class="form-control-file mb-2 col-lg-8" name="equipmentImage" accept="image/*">
+              <input id="add-equipment-pic" type="file" class="form-control-file mb-2 col-lg-8" name="equipmentImage" accept="image/png">
             </div>
           </form>
         </div>
@@ -164,6 +167,9 @@
             <div class="alert alert-warning" role="alert" id="formUpdateQuantityAlert">
                 Quantity should be a whole number greater than 0.
             </div>
+            <div class="alert alert-warning" role="alert" id="formUpdatePicAlert">
+                Image file extension should be ".png"
+            </div>
             <div class="col-12 px-0" id="availableAlert">
               <div class="alert alert-danger" role="alert">
                 <strong>Action unsuccessful!</strong> The quantity should not be less than the number of equipment on rent. 
@@ -172,26 +178,26 @@
 
             <div class="form-group form-inline input-group">
               <label for="edit-equipment-name" class="col-lg-4 justify-content-start p-0">Name</label>
-              <input type="text" class="form-control mb-2 col-lg-8" id="edit-equipment-name" placeholder="Enter equipment name" name="name">
+              <input type="text" class="form-control mb-2 col-lg-8" id="edit-equipment-name" placeholder="Enter equipment name" name="name" required>
             </div>
 
               <div class="form-group form-inline input-group">
                   <label for="edit-equipment-brand" class="col-lg-4 justify-content-start p-0">Brand</label>
-                  <input type="text" class="form-control mb-2 col-lg-8" id="edit-equipment-brand" placeholder="Enter equipment brand" name="brand">
+                  <input type="text" class="form-control mb-2 col-lg-8" id="edit-equipment-brand" placeholder="Enter equipment brand" name="brand" required>
               </div>
               <div class="form-group form-inline input-group">
                   <label for="edit-equipment-model" class="col-lg-4 justify-content-start p-0">Model</label>
-                  <input type="text" class="form-control mb-2 col-lg-8" id="edit-equipment-model" placeholder="Enter equipment model" name="model">
+                  <input type="text" class="form-control mb-2 col-lg-8" id="edit-equipment-model" placeholder="Enter equipment model" name="model" required>
               </div>
 
 
               <div class="form-group form-inline input-group">
               <label for="edit-equipment-ct" class="col-lg-4 justify-content-start p-0">Amount on stock</label>
-              <input type="number" class="form-control mb-2 col-lg-8" id="edit-equipment-ct" placeholder="Enter number of stocks" name="count" min="1" oninput="validity.valid||(value='');">
+              <input type="number" class="form-control mb-2 col-lg-8" id="edit-equipment-ct" placeholder="Enter number of stocks" name="count" min="1" max="1000" required>
             </div>
             <div class="form-group form-inline input-group">
               <label for="edit-equipment-pic" class="col-lg-4 justify-content-start p-0">Image (optional)</label>
-              <input type="file" class="form-control-file mb-2 col-lg-8" id="edit-equipment-pic" name="equipmentImage" accept="image/*">
+              <input type="file" class="form-control-file mb-2 col-lg-8" id="edit-equipment-pic" name="equipmentImage" accept="image/png">
             </div>
           </form>
         </div>
