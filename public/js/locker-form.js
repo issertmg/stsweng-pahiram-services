@@ -1,5 +1,3 @@
-const $ = require('jquery');
-
 $(document).ready(function () {
     let url = new URL(document.location);
     let params = url.searchParams;
