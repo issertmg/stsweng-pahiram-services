@@ -29,7 +29,7 @@ exports.createEquipment = async function (req, res) {
 
             if (req.file != null) {
                 const filePath = req.file.path;
-                const uploadResult = await cloudinary.uploader.upload(filePath);
+                const uploadResult = await cloudinary.uploader.upload(filePath, {allowed_formats: "png"});
                 imageURL = uploadResult.url;
             }
 
@@ -96,7 +96,7 @@ exports.updateEquipment = async function (req, res) {
                     await cloudinary.uploader.destroy(publicID);
                 }
                 const filePath = req.file.path;
-                const uploadResult = await cloudinary.uploader.upload(filePath);
+                const uploadResult = await cloudinary.uploader.upload(filePath, {allowed_formats: "png"});
                 const imageURL = uploadResult.url;
                 equipment.imageURL = imageURL;
             }

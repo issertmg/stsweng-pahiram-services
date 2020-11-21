@@ -32,6 +32,30 @@ $(document).ready(function () {
     }
 
     /**
+     * Checks if the uploaded image in the Add Equipment form is valid.
+     * @returns {boolean} - true if the file is a PNG; false otherwise
+     */
+    function isValidImageAddField() {
+        let eFile = $('#add-equipment-pic').val();
+        let ext = eFile.split(".");
+        ext = ext[ext.length-1].toLowerCase();
+
+        return ext === "png";
+    }
+
+    /**
+     * Checks if the uploaded image in the Edit Equipment form is valid.
+     * @returns {boolean} - true if the file is a PNG; false otherwise
+     */
+    function isValidImageEditField() {
+        let eFile = $('#edit-equipment-pic').val();
+        let ext = eFile.split(".");
+        ext = ext[ext.length-1].toLowerCase();
+
+        return ext === "png";
+    }
+
+    /**
      * Checks if the name and brand inputs in the Edit Equipment form are valid.
      * @returns {boolean} - true if both name and brand inputs contain at least one letter; false otherwise
      */
@@ -47,11 +71,11 @@ $(document).ready(function () {
 
     /**
      * Checks if the quantity input in the Add Equipment form is valid.
-     * @returns {boolean} - true if quantity input is a whole number and is greater than 0; false otherwise
+     * @returns {boolean} - true if quantity input is a whole number and is greater than 0 but less than or equal to 1000; false otherwise
      */
     function isValidQuantityAddField() {
         let eQuantity = validator.trim($('#add-equipment-ct').val());
-        return validator.isInt(eQuantity) && (eQuantity > 0);
+        return validator.isInt(eQuantity) && (eQuantity > 0) && (eQuantity <= 1000);
     }
 
     /**
@@ -74,11 +98,11 @@ $(document).ready(function () {
 
     /**
      * Checks if the quantity input in the Edit Equipment form is valid.
-     * @returns {boolean} - true if quantity input is a whole number and is greater than 0; false otherwise
+     * @returns {boolean} - true if quantity input is a whole number and is greater than 0 but less than or equal to 1000; false otherwise
      */
     function isValidQuantityEditField() {
         let eQuantity = validator.trim($('#edit-equipment-ct').val());
-        return validator.isInt(eQuantity) && (eQuantity > 0);
+        return validator.isInt(eQuantity) && (eQuantity > 0) && (eQuantity <= 1000);
     }
 
     /**
@@ -94,8 +118,10 @@ $(document).ready(function () {
             $('#formLetterAlert').show();
         else if (!isValidQuantityAddField())    //checks if the quantity input is valid
             $('#formQuantityAlert').show();
-        else
+        else {
+            $('#addEquipmentButton').off("click");
             $('#addEquipForm').submit();
+        }
     });
 
     /**
@@ -119,7 +145,10 @@ $(document).ready(function () {
                     if (setQuantity < data.onRent) {
                         $('#availableAlert').show();
                     }
-                    else $('#editEquipForm').submit();
+                    else {
+                        $('#editEquipButton').off("click");
+                        $('#editEquipForm').submit();
+                    }
             });
         }
     });
@@ -139,7 +168,8 @@ $(document).ready(function () {
           $('#deleteEquipButton').hide();
         }
         else {
-          $('#delEquipForm').submit();
+            $('#deleteEquipButton').off("click");
+            $('#delEquipForm').submit();
         }
       });
     });
@@ -150,6 +180,31 @@ $(document).ready(function () {
     limitCharactersTo50("#edit-equipment-name");
     limitCharactersTo50("#edit-equipment-brand");
     limitCharactersTo50("#edit-equipment-model");
+
+    limitMinAndMaxValue("#add-equipment-ct");
+    limitMinAndMaxValue("#edit-equipment-ct");
+
+    /**
+     * Validates image file input in Add Equipment form.
+     * @returns <void> - nothing
+     */
+    $('#add-equipment-pic').on("change", function() {
+        if (!isValidImageAddField()) {
+            $('#add-equipment-pic').val("");
+            $('#formPicAlert').show();
+        }
+    });
+
+    /**
+     * Validates image file input in Edit Equipment form.
+     * @returns <void> - nothing
+     */
+    $('#edit-equipment-pic').on("change", function() {
+        if (!isValidImageEditField()) {
+            $('#edit-equipment-pic').val("");
+            $('#formUpdatePicAlert').show();
+        }
+    });
 });
 
 /**
@@ -195,6 +250,7 @@ $('#editEquipmentModal').on('show.bs.modal', function (event) {
     $('#edit-equipment-brand').val(equipmentBrand);
     $('#edit-equipment-model').val(equipmentModel);
     $('#edit-equipment-ct').val(equipmentQty);
+    $('#edit-equipment-pic').val("");
 
     hideAllAlert();
 });
@@ -208,6 +264,7 @@ function hideAllAlert() {
     $('#formAlert').hide();
     $('#formLetterAlert').hide();
     $('#formQuantityAlert').hide();
+    $('#formPicAlert').hide();
 
     //For Delete Equipment
     $('#onRentAlert').hide();
@@ -216,6 +273,7 @@ function hideAllAlert() {
     $('#formUpdateAlert').hide();
     $('#formUpdateLetterAlert').hide();
     $('#formUpdateQuantityAlert').hide();
+    $('#formUpdatePicAlert').hide();
     $('#availableAlert').hide();
 }
 
@@ -234,6 +292,23 @@ function limitCharactersTo50 (inputElementID) {
 }
 
 /**
+ * Adds an oninput listener to an input element.
+ * @param inputElementID - the id of the input field element
+ * @returns <void> - nothing
+ */
+function limitMinAndMaxValue (inputElementID) {
+    $(inputElementID).on("input", function() {
+        let inputElement = $(this);
+        if (inputElement.val() <= 0) {
+            inputElement.val("");
+        }
+        else if (inputElement.val() > 1000) {
+            inputElement.val("1000");
+        }
+    });
+}
+
+/**
  * Checks if the string parameter has at least 1 letter.
  * @param stringInput - the string input
  * @returns {boolean} - true if has at least 1 letter, false otherwise
@@ -241,5 +316,6 @@ function limitCharactersTo50 (inputElementID) {
 function hasAtLeast1Letter (stringInput) {
     return /[a-zA-Z]/.test(stringInput)
 }
+
 
 
