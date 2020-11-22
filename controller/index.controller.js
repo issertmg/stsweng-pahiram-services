@@ -4,10 +4,18 @@ const hbs = require('hbs');
 
 const { validationResult } = require('express-validator');
 
+/**
+ * Helper that checks if the user is a student representative
+ */
 hbs.registerHelper('isAdmin', (type) => {
     return type === 'studentRep';
 });
 
+/**
+ * Loads and renders the homepage
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ */
 exports.home = function (req, res) {
     res.cookie('token', req.session.token);
     res.render('index', {
@@ -20,6 +28,11 @@ exports.home = function (req, res) {
     });
 };
 
+/**
+ * Loads and renders the terms page
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ */
 exports.terms = function (req, res) {
     res.render('terms-page', {
         active: { active_terms: true },
@@ -31,6 +44,11 @@ exports.terms = function (req, res) {
     });
 };
 
+/**
+ * Loads and renders the about page
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ */
 exports.about = function (req, res) {
     res.render('about-us-page', {
         active: { active_about_us: true },
@@ -42,16 +60,28 @@ exports.about = function (req, res) {
     });
 }
 
+/**
+ * Signs the user in using passport, Google OAuth 2.0
+ */
 exports.signin = passport.authenticate('google', {
     scope: ['https://www.googleapis.com/auth/userinfo.profile',
         'https://www.googleapis.com/auth/userinfo.email'],
     hostedDomain: 'dlsu.edu.ph'
 });
 
+/**
+ * Sets up passport to handle callbacks
+ */
 exports.callback = passport.authenticate('google', {
     failureRedirect: '/login'
 });
 
+/**
+ * Passport callback when the user has successfully logged in via Google account
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>}
+ */
 exports.callback_success = async function (req, res) {
     req.session.token = req.user.token;
 
@@ -72,10 +102,14 @@ exports.callback_success = async function (req, res) {
     res.redirect('/');
 };
 
+/**
+ * Determines if the user has already registered. If not, the user is redirected to the register page.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.register_get = async function (req, res) {
     const colleges = User.schema.path('college').enumValues;
-
-    console.log(req.session.passport.user.profile.photos[0].value);
 
     try {
         let user = await User.findOne({ email: req.session.passport.user.profile.emails[0].value });
@@ -92,6 +126,12 @@ exports.register_get = async function (req, res) {
     }
 };
 
+/**
+ * Adds a new user object and saves it in the database.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.register_post = async function (req, res) {
 
     try {
@@ -153,6 +193,11 @@ exports.register_post = async function (req, res) {
     }
 };
 
+/**
+ * Logs the user in the web app.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ */
 exports.login = function (req, res) {
     if (req.session.token)
         res.redirect('/');
@@ -160,12 +205,23 @@ exports.login = function (req, res) {
         res.render('login-page');
 };
 
+/**
+ * Logs the user out of the web app.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ */
 exports.logout = function (req, res) {
     req.logout();
     req.session = null;
     res.redirect('/');
 };
 
+/**
+ * Gets the user associated with the ID number and sends it as an HTTP response object
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>}
+ */
 exports.id_get = async function (req, res) {
     try {
         let user = await User.findOne({ idNum: req.query.idNum });
@@ -175,6 +231,12 @@ exports.id_get = async function (req, res) {
     }
 }
 
+/**
+ * Gets the user associated with the phone number and sends it as an HTTP response object
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>}
+ */
 exports.phone_get = async function (req, res) {
     try {
         let phone;

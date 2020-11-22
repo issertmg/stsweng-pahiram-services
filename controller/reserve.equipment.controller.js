@@ -1,10 +1,18 @@
 const Equipment = require('../model/equipment.model');
 const Reservation = require('../model/reservation.model');
 
+const { validationResult } = require('express-validator');
+
+/**
+ * Loads and renders the equipment form/reservation page
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.equipment = async function (req, res) {
     try {
-        let equipment = await Equipment.find({$expr: {$lt: ['$onRent', '$quantity']}})
-        let active_reservation = await has2ActiveEquipmentReservations(req.session.idNum);
+        const equipment = await Equipment.find({$expr: {$lt: ['$onRent', '$quantity']}})
+        const active_reservation = await has2ActiveEquipmentReservations(req.session.idNum);
         res.render('equipment-form', {
             active: { active_index: true },
             sidebarData: {
@@ -20,27 +28,26 @@ exports.equipment = async function (req, res) {
     }
 };
 
+/**
+ * Adds a new reservation object and saves it in the database.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.reserve_equipment = async function (req, res) {
+    let errors = validationResult(req);
     try {
-        let invalid = await has2ActiveEquipmentReservations(req.session.idNum);
-        if (!invalid) {
+        const invalid = await has2ActiveEquipmentReservations(req.session.idNum);
+        if (!invalid && errors.isEmpty()) {
             let equipment = await Equipment.findById(req.body.equipmentid);
             let equipmentid = req.body.equipmentid;
             let reason = req.body.reason;
             let pickupDate = new Date();
-            do {
-                pickupDate.setDate(pickupDate.getDate()+1);                
-            }  while (pickupDate.getDay()==0 || pickupDate.getDay()==6);    //0 is Sunday, 6 is Saturday
 
-            switch(parseInt(req.body.borrowtime)) {
-                case 1: pickupDate.setHours(7,30,0); break;
-                case 2: pickupDate.setHours(9,15,0); break;
-                case 3: pickupDate.setHours(11,0,0); break;
-                case 4: pickupDate.setHours(12,45,0); break;
-                case 5: pickupDate.setHours(14,30,0); break;
-                case 6: pickupDate.setHours(16,15,0); break;
-                default: pickupDate.setHours(0,0,0);
-            }
+            pickupDate = getNextWeekDayDate(pickupDate);
+            let pickupTime = getPickupTime(parseInt(req.body.borrowtime));
+            pickupDate.setHours(pickupTime[0],pickupTime[1],0);
+
             let descString = reason + ", " + "on " + pickupDate.toLocaleString('en-US');
             let reservation = new Reservation({
                 title: equipment.name,
@@ -63,6 +70,52 @@ exports.reserve_equipment = async function (req, res) {
     res.redirect("/reservations");
 };
 
+/**
+ * Returns the next weekday date from the given date.
+ * @param date - the date object
+ * @returns {Date} - the next weekday date
+ */
+function getNextWeekDayDate(date) {
+    let newDate = new Date(date.getTime());
+    const day = {"friday": 5, "saturday": 6}
+
+    if (newDate.getDay() === day["friday"])
+        newDate.setDate(newDate.getDate()+3);
+    else if (newDate.getDay() === day["saturday"])
+        newDate.setDate(newDate.getDate()+2);
+    else
+        newDate.setDate(newDate.getDate()+1);
+
+    return newDate;
+}
+exports.getNextWeekDayDate = getNextWeekDayDate;
+
+/**
+ * Returns the pickup time for equipment reservation.
+ * @param optionNumber - option number of borrow time (see borrow-time<select> element in equipment-form.hbs)
+ * @returns {array}  - the first element is the hour, the second element is the minute
+ */
+function getPickupTime(optionNumber) {
+    let hour = 0;
+    let minute = 0
+    switch(parseInt(optionNumber)) {
+        case 1: hour = 7; minute = 30; break;
+        case 2: hour = 9; minute = 15; break;
+        case 3: hour = 11; minute = 0; break;
+        case 4: hour = 12; minute = 45; break;
+        case 5: hour = 14; minute = 30; break;
+        case 6: hour = 16; minute = 15; break;
+        default: break;
+    }
+    return [hour, minute];
+}
+exports.getPickupTime = getPickupTime;
+
+/**
+ * Checks if the user has 2 active equipment reservation in the database.
+ * @param userID - the id of user
+ * @returns {Promise<boolean>} - true if user has 2 active equipment reservation, false otherwise
+ */
 async function has2ActiveEquipmentReservations(userID) {
     let reservationCount;
     try {
@@ -76,4 +129,4 @@ async function has2ActiveEquipmentReservations(userID) {
         console.log(err);
     }
     return reservationCount === 2;
-}
+};
