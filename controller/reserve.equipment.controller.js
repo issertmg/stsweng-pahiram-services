@@ -1,5 +1,6 @@
 const Equipment = require('../model/equipment.model');
 const Reservation = require('../model/reservation.model');
+
 const { validationResult } = require('express-validator');
 
 /**
