@@ -119,8 +119,22 @@ $(document).ready(function () {
         else if (!isValidQuantityAddField())    //checks if the quantity input is valid
             $('#formQuantityAlert').show();
         else {
-            $('#addEquipmentButton').off("click");
-            $('#addEquipForm').submit();
+            $.get('/manage-equipment/check',
+                {
+                    eName: $('#add-equipment-name').val(),
+                    eBrand: $('#add-equipment-brand').val(),
+                    eModel: $('#add-equipment-model').val()
+                },
+                function (data, status) {
+                    if (data.count === 0) {
+                        $('#addEquipmentButton').off("click");
+                        $('#addEquipForm').submit();
+                    }
+                    else {
+                        $('#formDuplicateAlert').show();
+                    }
+                }
+            );
         }
     });
 
@@ -139,17 +153,36 @@ $(document).ready(function () {
             $('#formUpdateQuantityAlert').show();
         else {
             $.get('/manage-equipment/onrent',
-                {equipmentid: $('#editHiddenEquipID').val()},
+                {
+                    equipmentid: $('#editHiddenEquipID').val()
+                },
                 function(data, status) {
                     let setQuantity = $('#edit-equipment-ct').val();
                     if (setQuantity < data.onRent) {
                         $('#availableAlert').show();
                     }
                     else {
-                        $('#editEquipButton').off("click");
-                        $('#editEquipForm').submit();
+                        $.get('/manage-equipment/check',
+                            {
+                                eName: $('#edit-equipment-name').val(),
+                                eBrand: $('#edit-equipment-brand').val(),
+                                eModel: $('#edit-equipment-model').val()
+                            },
+                            function (data, status) {
+                                if (data.count === 0) {
+                                    $('#editEquipButton').off("click");
+                                    $('#editEquipForm').submit();
+                                }
+                                else {
+                                    $('#formUpdateDuplicateAlert').show();
+                                }
+                            }
+                        );
+
+
                     }
-            });
+                }
+            );
         }
     });
 
@@ -265,6 +298,7 @@ function hideAllAlert() {
     $('#formLetterAlert').hide();
     $('#formQuantityAlert').hide();
     $('#formPicAlert').hide();
+    $('#formDuplicateAlert').hide();
 
     //For Delete Equipment
     $('#onRentAlert').hide();
@@ -275,6 +309,7 @@ function hideAllAlert() {
     $('#formUpdateQuantityAlert').hide();
     $('#formUpdatePicAlert').hide();
     $('#availableAlert').hide();
+    $('#formUpdateDuplicateAlert').hide();
 }
 
 /**
