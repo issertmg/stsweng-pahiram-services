@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 let reserve = require('./reserve.equipment.controller');
 
 describe('Next Weekday Date Getter', () => {
