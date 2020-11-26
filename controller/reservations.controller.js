@@ -9,7 +9,11 @@ const Locker = require('../model/locker.model');
 const EQUIPMENT_PENALTY_INITIAL = 50;
 const EQUIPMENT_PENALTY_INCREMENT = 20;
 
-// Every 6:30pm, mark all unretuned equipment as uncleared 
+// Every 6:30pm, mark all unretuned equipment as uncleared
+/**
+ * Marks all unreturned equipment as uncleared, and increments penalty charges for uncleared reservations.
+ * @returns {Promise<void>} - nothing
+ */
 cron.schedule('0 12 0 * * *', async function () {
 
     try {
@@ -48,33 +52,29 @@ cron.schedule('0 12 0 * * *', async function () {
 
 });
 
-
 hbs.registerHelper('dateStr', (date) => { return date == null ? '' : date.toDateString(); });
-
-hbs.registerHelper('dateTimeToday', () => {
-    const date = new Date();
-    return date.toDateString() + ', ' + date.toLocaleTimeString()
-
-});
-
 hbs.registerHelper('hasPenalty', (penalty) => { return penalty > 0; });
 hbs.registerHelper('hasRemarks', (remarks) => { return remarks != ''; });
-
 hbs.registerHelper('status-pending', (status) => { return status == 'Pending'; });
 hbs.registerHelper('status-pickup-pay', (status) => { return status == 'For Pickup' || status == 'To Pay'; });
 hbs.registerHelper('status-on-rent', (status) => { return status == 'On Rent'; });
 hbs.registerHelper('status-denied', (status) => { return status == 'Denied'; });
 hbs.registerHelper('status-uncleared', (status) => { return status == 'Uncleared'; });
 hbs.registerHelper('status-returned', (status) => { return status == 'Returned'; });
+hbs.registerHelper('isLocker', (type) => { return type == 'Locker';})
+hbs.registerHelper('cancellable', (status) => { return status == 'Pending' || status == 'For Pickup' || status == 'To Pay';});
+hbs.registerHelper('dateTimeToday', () => {
+    const date = new Date();
+    return date.toDateString() + ', ' + date.toLocaleTimeString()
 
-hbs.registerHelper('cancellable', (status) => {
-    return status == 'Pending' || status == 'For Pickup' || status == 'To Pay';
 });
 
-hbs.registerHelper('isLocker', (type) => {
-    return type == 'Locker';
-})
-
+/**
+ * Loads and renders the my reservations page.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.myReservations = async function (req, res) {
     try {
         var activeReservations = await Reservation
@@ -307,6 +307,12 @@ exports.reservation_update = async function (req, res) {
     res.redirect('/reservations/manage');
 }
 
+/**
+ * Deletes a reservation from the database.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.reservation_delete = async function (req, res) {
     try {
         var reservation = await Reservation.findById(req.body.reservationID);
@@ -332,12 +338,24 @@ exports.reservation_delete = async function (req, res) {
         res.redirect('/reservations');
 };
 
+/**
+ * Checks if a reservation is cancellable.
+ * @param reservation - the reservation object
+ * @returns {boolean} - true if the status attribute of reservation is Pending, For Pickup, or To Pay; false otherwise
+ */
 function isCancellable(reservation) {
     return reservation.status == 'Pending'
         || reservation.status == 'For Pickup'
         || reservation.status == 'To Pay';
 }
+exports.isCancellable = isCancellable;
 
+/**
+ * Checks if a user is an admin
+ * @param user - the user object
+ * @returns {boolean} - true if the type attribute of user is studentRep; false otherwise
+ */
 function userIsAdmin(user) {
     return user.type == 'studentRep';
 }
+exports.userIsAdmin = userIsAdmin;
