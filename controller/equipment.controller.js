@@ -18,18 +18,15 @@ exports.createEquipment = async function (req, res) {
     const errors = validationResult(req);
 
     if (errors.isEmpty()) {
-        const sameEquipCt = await Equipment.countDocuments({
-            name: req.body.name,
-            brand: req.body.brand,
-            model: req.body.model
-        });
 
-        if (sameEquipCt === 0) {
+        const isNew = await isNewEquipment(req.body.name, req.body.brand, req.body.model);
+
+        if (isNew) {
             let imageURL = null;
 
             if (req.file != null) {
                 const filePath = req.file.path;
-                const uploadResult = await cloudinary.uploader.upload(filePath);
+                const uploadResult = await cloudinary.uploader.upload(filePath, {allowed_formats: "png"});
                 imageURL = uploadResult.url;
             }
 
@@ -96,7 +93,7 @@ exports.updateEquipment = async function (req, res) {
                     await cloudinary.uploader.destroy(publicID);
                 }
                 const filePath = req.file.path;
-                const uploadResult = await cloudinary.uploader.upload(filePath);
+                const uploadResult = await cloudinary.uploader.upload(filePath, {allowed_formats: "png"});
                 const imageURL = uploadResult.url;
                 equipment.imageURL = imageURL;
             }
@@ -145,6 +142,26 @@ exports.onrent_get = async function (req, res) {
 };
 
 /**
+ * AJAX function for checking if an equipment already exists
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
+exports.check_get = async function (req, res) {
+    try {
+        const equipmentCount = await Equipment.find({
+            name: req.query.eName,
+            brand: req.query.eBrand,
+            model: req.query.eModel
+        }).countDocuments();
+        res.send({count: equipmentCount});
+    }
+    catch (err) {
+        console.log(err);
+    }
+};
+
+/**
  * Returns the publicID (filename without file extension) from a URL.
  * @param url - the uniform resource locator of the image stored in Cloudinary storage
  * @returns {string} - the publicID
@@ -157,3 +174,25 @@ function getPublicIDFromURL (url) {
 }
 
 exports.getPublicIDFromURL = getPublicIDFromURL;
+
+/**
+ * Checks if a to-be-created equipment exists already in the database
+ * such that it has the same name, brand, and model as the already existing equipment.
+ * @param equipment - the equipment to be created
+ * @returns {boolean} - false if the equipment matches an equipment with the
+ * same name, brand, and model; true otherwise
+ */
+async function isNewEquipment (eName, eBrand, eModel) {
+    let equipmentCount;
+    try {
+        equipmentCount = await Equipment.find({
+            name: eName,
+            brand: eBrand,
+            model: eModel
+        }).countDocuments();
+    }
+    catch (err) {
+        console.log(err);
+    }
+    return equipmentCount === 0;
+}

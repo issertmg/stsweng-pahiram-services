@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 let equipment = require('./equipment.controller');
 
 describe('Public ID (filename without file extension) Getter', () => {

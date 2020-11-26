@@ -13,4 +13,6 @@ router.post('/update', UserAuth.userIsAdmin, panel_controller.panel_update);
 router.post('/delete', UserAuth.userIsAdmin, panel_controller.panel_delete);
 router.post('/unclear', UserAuth.userIsAdmin, panel_controller.panel_unclear);
 
+router.get('/get-is-valid-locker-range', panel_controller.valid_locker_range_get);
+
 module.exports = router

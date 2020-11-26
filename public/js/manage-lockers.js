@@ -1,89 +1,101 @@
 $(document).ready(function () {
-    var url = new URL(document.location);
-    var params = url.searchParams;
-    var bldg = params.get("bldg");
-    var flr = params.get("flr");
+    let url = new URL(document.location);
+    let params = url.searchParams;
+    let bldg = params.get("bldg");
+    let flr = params.get("flr");
 
     $("#bldg").val(bldg);
     $("#floor").val(flr);
 
     $('form').on('submit', function () {
-        $('.modal').find('button[type="submit"]').prop('disabled',true);
+        $('.modal').find('button[type="submit"]').prop('disabled', true);
     })
-  });
+});
 
-  function isFilled() {
-    var lRange = validator.trim($('#lowerRange').val());
-    var uRange = validator.trim($('#upperRange').val());
-    var bldg = validator.trim($('#panelBldg').val());
-    var flr = validator.trim($('#panelFloor').val());
+function isFilled() {
+    let lRange = validator.trim($('#lowerRange').val());
+    let uRange = validator.trim($('#upperRange').val());
+    let bldg = validator.trim($('#panelBldg').val());
+    let flr = validator.trim($('#panelFloor').val());
 
-    var lRangeEmpty = validator.isEmpty(lRange);
-    var uRangeEmpty = validator.isEmpty(uRange);
-    var bldgEmpty = validator.isEmpty(bldg);
-    var flrEmpty = validator.isEmpty(flr);
+    let lRangeEmpty = validator.isEmpty(lRange);
+    let uRangeEmpty = validator.isEmpty(uRange);
+    let bldgEmpty = validator.isEmpty(bldg);
+    let flrEmpty = validator.isEmpty(flr);
 
     return !lRangeEmpty && !uRangeEmpty && !bldgEmpty && !flrEmpty;
-  }
+}
 
-  function isValidRange() {
-    var lRange = validator.trim($('#lowerRange').val());
-    var uRange = validator.trim($('#upperRange').val());
+async function isValidRange() {
+    let lRange = validator.trim($('#lowerRange').val());
+    let uRange = validator.trim($('#upperRange').val());
+    let bldg = validator.trim($('#panelBldg').val());
+    let flr = validator.trim($('#panelFloor').val());
+    let type = validator.trim($('#panelType').val());
 
     if (validator.isInt(lRange) && validator.isInt(uRange)) {
-      var lower = validator.toInt(lRange);
-      var upper = validator.toInt(uRange);
+        let lower = validator.toInt(lRange);
+        let upper = validator.toInt(uRange);
 
-      return upper >= lower;
+        let validRange = await $.get(location.pathname + '/get-is-valid-locker-range',
+            {bldg: bldg, flr: flr, type: type, lRange: lRange, uRange: uRange});
+
+        console.log("Valid Range: " + validRange);
+        if (validRange === "invalid")
+            return false;
+
+        return upper >= lower;
+    } else return false;
+}
+
+function isValidBldg() {
+    let bldg = validator.trim($('#panelBldg').val());
+    return validator.isLength(bldg, {min: 1, max: 100});
+}
+
+$('#markUnclearedButton').click(function () {
+    let confirm = $('#confirmation').val();
+    if (confirm === 'locker') {
+        $('#markUnclearedForm').submit();
+    } else {
+        $('#confirmation').css('border-color', 'red');
     }
-    else return false;
-  }
+});
 
-  $('#markUnclearedButton').click(function(){
-    var confirm = $('#confirmation').val();
-    if (confirm == 'locker') {
-      $('#markUnclearedForm').submit();
-    }
-    else {
-      $('#confirmation').css('border-color', 'red');
-    }
-  });
+$('#delPanelButton').click(function () {
+    $.get('/manage-lockers/status',
+        {panelid: $("#deletePanelId").val()},
+        function (data, status) {
+            if (data) {
+                $('#deletePanelForm').submit();
+            } else {
+                $('#panelAlert').show();
+                $('#deleteHeader').hide();
+                $('#delPanelButton').hide();
+                $('#delPanelModal').find('.modal-title').text('Deletion Failed');
+            }
+        });
+});
 
-  $('#delPanelButton').click(function(){
-    $.get('/manage-lockers/status', 
-      {panelid: $("#deletePanelId").val()},
-      function(data, status) {
-      if (data) {
-        $('#deletePanelForm').submit();
-      }
-      else {
-        $('#panelAlert').show();
-        $('#deleteHeader').hide();
-        $('#delPanelButton').hide();
-        $('#delPanelModal').find('.modal-title').text('Deletion Failed');
-      }
-    });
-  });
-
-  $('#setStatusModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget); // Button that triggered the modal
-    var lockernumber = button.data('lockernumber'); // Extract info from data-* attributes
-    var panelid = button.data('panelid');
-    var lockerid = button.data('lockerid');
-    var statusIcon = button.find('.locker-status-icon');
-    var classList = button.attr('class').split(' ');
+$('#setStatusModal').on('show.bs.modal', function (event) {
+    let button = $(event.relatedTarget); // Button that triggered the modal
+    let lockernumber = button.data('lockernumber'); // Extract info from data-* attributes
+    let panelid = button.data('panelid');
+    let lockerid = button.data('lockerid');
+    let statusIcon = button.find('.locker-status-icon');
+    let classList = button.attr('class').split(' ');
     $(statusIcon).addClass(classList[1]);
-    var modal = $(this);
+    let modal = $(this);
 
-    var lockerStatus = '';
-    if (classList[1] == 'locker-status-manage-vacant')
-      lockerStatus = 'Vacant'
-    else if (classList[1] == 'locker-status-manage-occupied')
-      lockerStatus = 'Occupied'
-    else if (classList[1] == 'locker-status-manage-broken')
-      lockerStatus = 'Broken'
-    else if (classList[1] == 'locker-status-manage-uncleared')
-      lockerStatus = 'Uncleared'
+    let lockerStatus = '';
+    if (classList[1] === 'locker-status-manage-vacant')
+        lockerStatus = 'Vacant'
+    else if (classList[1] === 'locker-status-manage-occupied')
+        lockerStatus = 'Occupied'
+    else if (classList[1] === 'locker-status-manage-broken')
+        lockerStatus = 'Broken'
+    else if (classList[1] === 'locker-status-manage-uncleared')
+        lockerStatus = 'Uncleared'
 
 
     modal.find('.modal-title').text('');
@@ -99,107 +111,117 @@ $(document).ready(function () {
     $('#lessee').text("");
 
     if (classList[1].slice(21) == 'occupied' || classList[1].slice(21) == 'uncleared') {
-      $('#setStatusForm').hide();
-      $('#setStatusButton').hide();
-      $('#lessee-container').show();
-      $('#lessee-container *').show();
-      $('#lessee').text('Loading...');
+        $('#setStatusForm').hide();
+        $('#setStatusButton').hide();
+        $('#lessee-container').show();
+        $('#lessee-container *').show();
+        $('#lessee').text('Loading...');
 
-      $.get('/manage-lockers/lessee', 
-        {lockerid: lockerid},
-        function(data) {
-          var user = data.idNum + " - " + data.firstName + " " + data.lastName;
-          $('#lessee').text("Occupied by:  " + user);
-        }
-      );
+        $.get('/manage-lockers/lessee',
+            {lockerid: lockerid},
+            function (data) {
+                var user = data.idNum + " - " + data.firstName + " " + data.lastName;
+                $('#lessee').text("Occupied by:  " + user);
+            }
+        );
     } else {
-      $('#setStatusForm').show();
-      $('#setStatusButton').show();
-      $('#lessee-container').hide();
-      $('#lessee-container *').hide();
+        $('#setStatusForm').show();
+        $('#setStatusButton').show();
+        $('#lessee-container').hide();
+        $('#lessee-container *').hide();
     }
-  });
+});
 
-  $('#delPanelModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget); // Button that triggered the modal
-    var panelid = button.data('panelid');
-    var modal = $(this);
+$('#delPanelModal').on('show.bs.modal', function (event) {
+    let button = $(event.relatedTarget); // Button that triggered the modal
+    let panelid = button.data('panelid');
+    let modal = $(this);
 
     $("#deletePanelId").val(panelid);
     $("#deletePanelBuilding").val($("#bldg").val());
     $("#deletePanelFloor").val($("#floor").val());
-    
+
     modal.find('.modal-title').text('Delete Panel');
 
     $('#panelAlert').hide();
     $('#deleteHeader').show();
     $('#delPanelButton').show();
-  });
+});
 
-  $('#addPanelModal').on('show.bs.modal', function (event) {
+$('#addPanelModal').on('show.bs.modal', function (event) {
     $("#addPanelForm").trigger("reset");
     $('#lowerRange').css('border-color', '');
     $('#upperRange').css('border-color', '');
     $('#rangeAlert').hide();
     $('#formAlert').hide();
-  });
+    $('#bldgAlert').hide();
+});
 
-  $('#addPanelSubmit').click(function(){
+$('#addPanelSubmit').click(async function () {
     if (isFilled()) {
-      if (isValidRange()) {
-        $('#addPanelForm').submit();
-      }
-      else {
-        $('#formAlert').hide();
-        $('#rangeAlert').show();
-        $('#lowerRange').css('border-color', 'red');
-        $('#upperRange').css('border-color', 'red');
-      }
+        let validRange = await isValidRange();
+        console.log(validRange);
+        if (!validRange) {
+            console.log("range invalid")
+            $('#formAlert').hide();
+            $('#bldgAlert').hide();
+            $('#rangeAlert').show();
+            $('#lowerRange').css('border-color', 'red');
+            $('#upperRange').css('border-color', 'red');
+        } else if (!isValidBldg()) {
+            $('#formAlert').hide();
+            $('#rangeAlert').hide();
+            $('#bldgAlert').show();
+        } else {
+            $('#formAlert').hide();
+            $('#rangeAlert').hide();
+            $('#bldgAlert').hide();
+            $('#addPanelForm').submit();
+        }
+    } else {
+        $('#formAlert').show();
+        $('#rangeAlert').hide();
+        $('#bldgAlert').hide();
+        $('#lowerRange').css('border-color', '');
+        $('#upperRange').css('border-color', '');
     }
-    else {
-      $('#formAlert').show();
-      $('#rangeAlert').hide();
-      $('#lowerRange').css('border-color', '');
-      $('#upperRange').css('border-color', '');
-    }    
-  });
+});
 
-  $('#markUnclearedModal').on('show.bs.modal', function (event) {
+$('#markUnclearedModal').on('show.bs.modal', function (event) {
     $("#confirmation").val("");
     $('#confirmation').css('border-color', '');
-  });
+});
 
-  // Removes a query parameter
-  function removeParam(key, sourceURL) {
-    var rtn = sourceURL.split("?")[0],
-      param,
-      params_arr = [],
-      queryString = (sourceURL.indexOf("?") !== -1) ? sourceURL.split("?")[1] : "";
+// Removes a query parameter
+function removeParam(key, sourceURL) {
+    let rtn = sourceURL.split("?")[0],
+        param,
+        params_arr = [],
+        queryString = (sourceURL.indexOf("?") !== -1) ? sourceURL.split("?")[1] : "";
     if (queryString !== "") {
-      params_arr = queryString.split("&");
-      for (var i = params_arr.length - 1; i >= 0; i -= 1) {
-        param = params_arr[i].split("=")[0];
-        if (param === key) {
-          params_arr.splice(i, 1);
+        params_arr = queryString.split("&");
+        for (var i = params_arr.length - 1; i >= 0; i -= 1) {
+            param = params_arr[i].split("=")[0];
+            if (param === key) {
+                params_arr.splice(i, 1);
+            }
         }
-      }
-      rtn = rtn + "?" + params_arr.join("&");
+        rtn = rtn + "?" + params_arr.join("&");
     }
     return rtn;
-  };
+};
 
-  // Adds or updates a query parameter
-  function updateQueryStringParameter(key, value) {
-    var uri = window.location.href;
-    var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-    var separator = uri.indexOf('?') !== -1 ? "&" : "?";
-    if (key == 'bldg') {
-      uri = removeParam('flr', uri);
+// Adds or updates a query parameter
+function updateQueryStringParameter(key, value) {
+    let uri = window.location.href;
+    let re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+    let separator = uri.indexOf('?') !== -1 ? "&" : "?";
+    if (key === 'bldg') {
+        uri = removeParam('flr', uri);
     }
     if (uri.match(re)) {
-      window.location.href = uri.replace(re, '$1' + key + "=" + value + '$2');
+        window.location.href = uri.replace(re, '$1' + key + "=" + value + '$2');
+    } else {
+        window.location.href = uri + separator + key + "=" + value;
     }
-    else {
-      window.location.href = uri + separator + key + "=" + value;
-    }
-  };
+};

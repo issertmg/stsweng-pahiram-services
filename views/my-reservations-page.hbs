@@ -57,14 +57,18 @@
                   {{#each activeRes}}
                   <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
                     <div class="card equal-height">
-                      <h5 class="card-header">{{title}}</h5>
+                      {{#if (isLocker onItemType)}}
+                          <h5 class="card-header">{{title}}</h5>
+                      {{else}}
+                          <h5 class="card-header">{{item.brand}} {{item.name}} ({{item.model}})</h5>
+                      {{/if}}
                       <div class="card-body">
                         <div class="d-flex align-items-center mb-2">
                           <div class="col-1 icon mr-2 pr-3" id="date"></div>
                           {{dateStr dateCreated}}
                         </div>
                         <hr>
-                        <div class="d-flex align-items-center my-2">
+                        <div class="d-flex align-items-center my-2 description">
                           <div class="col-1 icon mr-2 pr-3" id="desc"></div>
                           {{description}}
                         </div>
@@ -126,14 +130,18 @@
                   {{#each pastRes}}
                   <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
                     <div class="card equal-height">
-                      <h5 class="card-header">{{title}}</h5>
+                      {{#if (isLocker onItemType)}}
+                          <h5 class="card-header">{{title}}</h5>
+                      {{else}}
+                          <h5 class="card-header">{{item.brand}} {{item.name}} ({{item.model}})</h5>
+                      {{/if}}
                       <div class="card-body">
                         <div class="d-flex align-items-center mb-2">
                           <div class="col-1 icon mr-2 pr-3" id="date"></div>
                           {{dateStr dateCreated}}
                         </div>
                         <hr>
-                        <div class="d-flex align-items-center my-2">
+                        <div class="d-flex align-items-center my-2 description">
                           <div class="col-1 icon mr-2 pr-3" id="desc"></div>
                           {{description}}
                         </div>

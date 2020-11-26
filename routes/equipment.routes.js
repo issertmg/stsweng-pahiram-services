@@ -26,5 +26,6 @@ router.post('/delete', UserAuth.userIsAdmin, equipmentController.deleteEquipment
 
 // AJAX get request 
 router.get('/onrent', UserAuth.userIsAdmin, equipmentController.onrent_get);
+router.get('/check', UserAuth.userIsAdmin, equipmentController.check_get);
 
 module.exports = router;

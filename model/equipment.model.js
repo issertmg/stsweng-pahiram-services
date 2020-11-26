@@ -7,6 +7,6 @@ const equipmentSchema = new mongoose.Schema({
     quantity: { type: Number, default: 0 },
     onRent: { type: Number, default: 0 },
     imageURL: { type: String}
-});
+}, { collation: { locale: 'en_US', strength: 1 } });
 
 module.exports = mongoose.model('Equipment', equipmentSchema);
