@@ -9,9 +9,8 @@ const Locker = require('../model/locker.model');
 const EQUIPMENT_PENALTY_INITIAL = 50;
 const EQUIPMENT_PENALTY_INCREMENT = 20;
 
-// Every 6:30pm, mark all unretuned equipment as uncleared
 /**
- * Marks all unreturned equipment as uncleared, and increments penalty charges for uncleared reservations.
+ * Marks all unreturned equipment as uncleared, and increments penalty charges for uncleared reservations every 6:30PM.
  * @returns {Promise<void>} - nothing
  */
 cron.schedule('0 12 0 * * *', async function () {
