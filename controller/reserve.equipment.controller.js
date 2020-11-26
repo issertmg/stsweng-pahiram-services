@@ -105,7 +105,7 @@ function getPickupTime(optionNumber) {
         case 4: hour = 12; minute = 45; break;
         case 5: hour = 14; minute = 30; break;
         case 6: hour = 16; minute = 15; break;
-        default: break;
+        default: hour = 7; minute = 30;
     }
     return [hour, minute];
 }
