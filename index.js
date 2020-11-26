@@ -65,13 +65,18 @@ app.use('/manage-lockers', UserAuth.userIsLoggedIn, UserAuth.userIsNew, panel);
 app.use('/manage-equipment', UserAuth.userIsLoggedIn, UserAuth.userIsNew, equipment);
 
 app.use(function (req, res, next) {
-    res.status(404).render('404-page', {
-        sidebarData: {
-            dp: req.session.passport.user.profile.photos[0].value,
-            name: req.session.passport.user.profile.displayName,
-            type: req.session.type      
-        }
-    });
+    if (req.session.token) {
+        res.status(404).render('404-page', {
+            sidebarData: {
+                dp: req.session.passport.user.profile.photos[0].value,
+                name: req.session.passport.user.profile.displayName,
+                type: req.session.type
+            }
+        });
+    }
+    else {
+        res.redirect('/');
+    }
 })
 
 app.listen(process.env.PORT || port, function () {
