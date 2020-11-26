@@ -34,21 +34,8 @@ exports.panel_create = async function (req, res) {
                 .find({building: req.body.building, level: req.body.level, type: req.body.type})
                 .distinct('number')
                 .sort();
-
-            let missingPanelNumber = 1;
-            for (let i = 0; i < panel_number.length; i++) {
-                if (missingPanelNumber !== panel_number[i]) {
-                    break;
-                }
-                missingPanelNumber++;
-            }
-
-            let locker_array = [];
-            for (let i = parseInt(req.body.lowerRange); i <= parseInt(req.body.upperRange); i++) {
-                let locker = new Locker({number: i, status: 'vacant'})
-                await locker.save();
-                locker_array.push(locker._id);
-            }
+            let missingPanelNumber = getMissingPanelNumber(panel_number);
+            let locker_array = await createNewLockers(req.body.lowerRange, req.body.upperRange);
 
             let panel = new Panel({
                 number: missingPanelNumber,
@@ -156,10 +143,9 @@ exports.panel_update = async function (req, res) {
 exports.panel_delete = async function (req, res) {
     try {
         let panel = await Panel.findById(req.body.panelid);
-
-        for (const locker of panel.lockers) {
-            await Locker.findByIdAndDelete(locker._id)
-        }
+        // delete lockers
+        await deleteLockers(panel.lockers);
+        // delete panel
         await Panel.findByIdAndDelete(req.body.panelid);
     } catch (err) {
         console.log(err);
@@ -184,14 +170,10 @@ exports.lessee_get = async function (req, res) {
 
 exports.status_get = async function (req, res) {
     try {
-        let deletable = true;
         let panel = await Panel.findById(req.query.panelid).populate('lockers');
         let lockers = panel.lockers;
-
-        for (let i = 0; i < lockers.length; i++)
-            if (lockers[i].status === 'occupied' || lockers[i].status === 'uncleared')
-                deletable = false;
-
+        // check if panel is deletable, i.e. no locker is occupied or uncleared
+        let deletable = isPanelDeletable(lockers);
         if (panel)
             res.send(deletable);
     } catch (err) {
@@ -233,4 +215,36 @@ async function isLockerVacantBroken(lockerid) {
         console.log(err);
     }
     return locker.status === 'vacant' || locker.status === 'broken';
+}
+
+function getMissingPanelNumber(panelNumbers) {
+    let missingPanelNumber = 1;
+    for (let i = 0; i < panelNumbers.length; i++) {
+        if (missingPanelNumber !== panelNumbers[i])
+            return missingPanelNumber;
+        missingPanelNumber++;
+    }
+    return missingPanelNumber;
+}
+
+async function createNewLockers(lowerRange, upperRange) {
+    let lockerArray = [];
+    for (let i = parseInt(lowerRange); i <= parseInt(upperRange); i++) {
+        let locker = new Locker({number: i, status: 'vacant'})
+        await locker.save();
+        lockerArray.push(locker._id);
+    }
+    return lockerArray;
+}
+
+async function deleteLockers(lockerIDs) {
+    for (const lockerID of lockerIDs)
+        await Locker.findByIdAndDelete(lockerID);
+}
+
+function isPanelDeletable(lockers) {
+    for (let i = 0; i < lockers.length; i++)
+        if (lockers[i].status === 'occupied' || lockers[i].status === 'uncleared')
+            return false;
+    return true;
 }
