@@ -10,8 +10,6 @@ $(document).ready(function () {
     $('form').on('submit', function () {
         $('.modal').find('button[type="submit"]').prop('disabled', true);
     })
-
-    $('#toast').toast('show');
 });
 
 function isFilled() {

@@ -175,3 +175,96 @@ describe('Checking if the panel is deletable (i.e. not a single locker is occupi
         expect(deletable).toEqual(true);
     });
 });
+
+describe('Checking if locker range does not overlap existing locker ranges', () => {
+
+    it('New panel locker range does not overlap existing locker ranges', () => {
+        // Arrange
+        const panels = [
+            {lowerRange: 1, upperRange: 10},
+            {lowerRange: 20, upperRange: 25},
+            {lowerRange: 26, upperRange: 30},
+        ];
+        const newPanelLowerRange = 11;
+        const newPanelUpperRange = 19;
+        // Act
+        const valid = panelController.isValidLockerRange(panels, newPanelLowerRange, newPanelUpperRange);
+        // Assert
+        expect(valid).toEqual(true);
+    })
+
+    it('Lower range of new panel overlaps an existing panel', () => {
+        // Arrange
+        const panels = [
+            {lowerRange: 1, upperRange: 10},
+            {lowerRange: 20, upperRange: 25},
+            {lowerRange: 26, upperRange: 30},
+        ];
+        const newPanelLowerRange = 5;
+        const newPanelUpperRange = 19;
+        // Act
+        const valid = panelController.isValidLockerRange(panels, newPanelLowerRange, newPanelUpperRange);
+        // Assert
+        expect(valid).toEqual(false);
+    });
+
+    it('Upper range of new panel overlaps an existing panel', () => {
+        // Arrange
+        const panels = [
+            {lowerRange: 10, upperRange: 19},
+            {lowerRange: 20, upperRange: 25},
+            {lowerRange: 26, upperRange: 30},
+            {lowerRange: 45, upperRange: 56},
+        ];
+        const newPanelLowerRange = 35;
+        const newPanelUpperRange = 49;
+        // Act
+        const valid = panelController.isValidLockerRange(panels, newPanelLowerRange, newPanelUpperRange);
+        // Assert
+        expect(valid).toEqual(false);
+    });
+
+    it('Entire range of the new panel overlaps existing panels', () => {
+        // Arrange
+        const panels = [
+            {lowerRange: 10, upperRange: 19},
+            {lowerRange: 22, upperRange: 25},
+            {lowerRange: 26, upperRange: 30},
+            {lowerRange: 45, upperRange: 56},
+        ];
+        const newPanelLowerRange = 20;
+        const newPanelUpperRange = 34;
+        // Act
+        const valid = panelController.isValidLockerRange(panels, newPanelLowerRange, newPanelUpperRange);
+        // Assert
+        expect(valid).toEqual(false);
+    });
+
+    it('Lower range of new panel overlaps an existing panel, and upper range of new panel overlaps another existing panel', () => {
+        // Arrange
+        const panels = [
+            {lowerRange: 10, upperRange: 19},
+            {lowerRange: 22, upperRange: 25},
+            {lowerRange: 26, upperRange: 30},
+            {lowerRange: 45, upperRange: 56},
+        ];
+        const newPanelLowerRange = 28;
+        const newPanelUpperRange = 52;
+        // Act
+        const valid = panelController.isValidLockerRange(panels, newPanelLowerRange, newPanelUpperRange);
+        // Assert
+        expect(valid).toEqual(false);
+    });
+
+    it('No panels have been created yet', () => {
+        // Arrange
+        const panels = [];
+        const newPanelLowerRange = 1;
+        const newPanelUpperRange = 20;
+        // Act
+        const valid = panelController.isValidLockerRange(panels, newPanelLowerRange, newPanelUpperRange);
+        // Assert
+        expect(valid).toEqual(true);
+    });
+
+});

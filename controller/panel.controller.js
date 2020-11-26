@@ -33,7 +33,7 @@ exports.panel_create = async function (req, res) {
         // Get all panels of the same building, type, and level
         let allPanels = await Panel.find({type: req.body.type, building: req.body.building, level: req.body.level,});
         // Check if locker range is valid
-        let validLockerRange = await isValidLockerRange(allPanels, req.body.lowerRange, req.body.upperRange);
+        let validLockerRange = isValidLockerRange(allPanels, req.body.lowerRange, req.body.upperRange);
         console.log("validLockerRange = " + validLockerRange);
         if (errors.isEmpty() && validLockerRange) {
             let panel_number = await Panel
@@ -217,7 +217,7 @@ exports.panel_unclear = async function (req, res) {
 
 exports.valid_locker_range_get = async function(req, res) {
     let allPanels = await Panel.find({type: req.query.type, building: req.query.bldg, level: req.query.flr,});
-    let valid = await isValidLockerRange(allPanels, req.query.lRange, req.query.uRange);
+    let valid = isValidLockerRange(allPanels, req.query.lRange, req.query.uRange);
     console.log(valid);
     if (valid) res.send("valid");
     else res.send("invalid");
@@ -248,7 +248,7 @@ async function deleteLockers(lockerIDs) {
         await Locker.findByIdAndDelete(lockerID);
 }
 
-async function isValidLockerRange(panels, lower, upper) {
+function isValidLockerRange(panels, lower, upper) {
     for (const panel of panels) {
         if (lower >= panel.lowerRange && lower <= panel.upperRange ||
             upper >= panel.lowerRange && upper <= panel.upperRange ||
@@ -277,3 +277,4 @@ function isPanelDeletable(lockers) {
 
 exports.getMissingPanelNumber = getMissingPanelNumber;
 exports.isPanelDeletable = isPanelDeletable;
+exports.isValidLockerRange = isValidLockerRange;
