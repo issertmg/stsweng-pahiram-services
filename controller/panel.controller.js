@@ -217,16 +217,6 @@ async function isLockerVacantBroken(lockerid) {
     return locker.status === 'vacant' || locker.status === 'broken';
 }
 
-function getMissingPanelNumber(panelNumbers) {
-    let missingPanelNumber = 1;
-    for (let i = 0; i < panelNumbers.length; i++) {
-        if (missingPanelNumber !== panelNumbers[i])
-            return missingPanelNumber;
-        missingPanelNumber++;
-    }
-    return missingPanelNumber;
-}
-
 async function createNewLockers(lowerRange, upperRange) {
     let lockerArray = [];
     for (let i = parseInt(lowerRange); i <= parseInt(upperRange); i++) {
@@ -242,9 +232,23 @@ async function deleteLockers(lockerIDs) {
         await Locker.findByIdAndDelete(lockerID);
 }
 
+
+function getMissingPanelNumber(panelNumbers) {
+    let missingPanelNumber = 1;
+    for (let i = 0; i < panelNumbers.length; i++) {
+        if (missingPanelNumber !== panelNumbers[i])
+            return missingPanelNumber;
+        missingPanelNumber++;
+    }
+    return missingPanelNumber;
+}
+
 function isPanelDeletable(lockers) {
     for (let i = 0; i < lockers.length; i++)
         if (lockers[i].status === 'occupied' || lockers[i].status === 'uncleared')
             return false;
     return true;
 }
+
+exports.getMissingPanelNumber = getMissingPanelNumber;
+exports.isPanelDeletable = isPanelDeletable;
