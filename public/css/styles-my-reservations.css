@@ -21,3 +21,7 @@
 .cancel-anchor {
     cursor: pointer;
 }
+
+div.description {
+    word-break: break-word;
+}
