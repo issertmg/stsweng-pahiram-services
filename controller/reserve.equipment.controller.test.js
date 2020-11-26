@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 let reserve = require('./reserve.equipment.controller');
 
 describe('Next Weekday Date Getter', () => {
@@ -10,7 +14,7 @@ describe('Next Weekday Date Getter', () => {
 
 		// Assert
 		const expectedDate = new Date (2020, 10, 16);
-        expect(newDate.toISOString().substring(0,10)).toBe(expectedDate.toISOString().substring(0,10))
+        expect(newDate.toISOString().substring(0,10)).toBe(expectedDate.toISOString().substring(0,10));
 	});
 
 	it('When the day of date parameter is Friday , then it should return the first succeeding date with the day Monday', () => {
@@ -22,7 +26,7 @@ describe('Next Weekday Date Getter', () => {
 
 		// Assert
 		const expectedDate = new Date (2021, 1, 1);
-        expect(newDate.toISOString().substring(0,10)).toBe(expectedDate.toISOString().substring(0,10))
+        expect(newDate.toISOString().substring(0,10)).toBe(expectedDate.toISOString().substring(0,10));
 	});
 
 	it('When the day of date parameter is Saturday , then it should return the first succeeding date with the day Monday', () => {
@@ -34,7 +38,7 @@ describe('Next Weekday Date Getter', () => {
 
 		// Assert
 		const expectedDate = new Date (2018, 11, 3);
-        expect(newDate.toISOString().substring(0,10)).toBe(expectedDate.toISOString().substring(0,10))
+        expect(newDate.toISOString().substring(0,10)).toBe(expectedDate.toISOString().substring(0,10));
 	});
 
 	it('When the day of date parameter is Wednesday , then it should return the first succeeding date with the day Thursday', () => {
@@ -46,10 +50,8 @@ describe('Next Weekday Date Getter', () => {
 
 		// Assert
 		const expectedDate = new Date (2019, 3, 18);
-        expect(newDate.toISOString().substring(0,10)).toBe(expectedDate.toISOString().substring(0,10))
+        expect(newDate.toISOString().substring(0,10)).toBe(expectedDate.toISOString().substring(0,10));
 	});
-	
-	//TODO more test cases
 });
 
 describe('Pickup Time Getter (returns array where 1st element is hour, and 2nd element is minute)', () => {
@@ -61,7 +63,7 @@ describe('Pickup Time Getter (returns array where 1st element is hour, and 2nd e
 		const timeArray = reserve.getPickupTime(optionNumber);
 
 		// Assert
-        expect(timeArray).toEqual([7,30])
+        expect(timeArray).toEqual([7,30]);
 	});
 	
 	it('When option number is 2, then it should return [9, 15]', () => {
@@ -72,7 +74,7 @@ describe('Pickup Time Getter (returns array where 1st element is hour, and 2nd e
 		const timeArray = reserve.getPickupTime(optionNumber);
 
 		// Assert
-        expect(timeArray).toEqual([9,15])
+        expect(timeArray).toEqual([9,15]);
 	});
 
 	it('When option number is 3, then it should return [11, 0]', () => {
@@ -83,7 +85,7 @@ describe('Pickup Time Getter (returns array where 1st element is hour, and 2nd e
 		const timeArray = reserve.getPickupTime(optionNumber);
 
 		// Assert
-        expect(timeArray).toEqual([11,0])
+        expect(timeArray).toEqual([11,0]);
 	});
 
 	it('When option number is 4, then it should return [12, 45]', () => {
@@ -94,7 +96,7 @@ describe('Pickup Time Getter (returns array where 1st element is hour, and 2nd e
 		const timeArray = reserve.getPickupTime(optionNumber);
 
 		// Assert
-        expect(timeArray).toEqual([12,45])
+        expect(timeArray).toEqual([12,45]);
 	});
 
 	it('When option number is 5, then it should return [14, 30]', () => {
@@ -105,7 +107,7 @@ describe('Pickup Time Getter (returns array where 1st element is hour, and 2nd e
 		const timeArray = reserve.getPickupTime(optionNumber);
 
 		// Assert
-        expect(timeArray).toEqual([14,30])
+        expect(timeArray).toEqual([14,30]);
 	});
 
 	it('When option number is 6, then it should return [16, 15]', () => {
@@ -116,10 +118,10 @@ describe('Pickup Time Getter (returns array where 1st element is hour, and 2nd e
 		const timeArray = reserve.getPickupTime(optionNumber);
 
 		// Assert
-        expect(timeArray).toEqual([16,15])
+        expect(timeArray).toEqual([16,15]);
 	});
 
-	it('When option number is invalid, then it should return [0, 0]', () => {
+	it('When option number is invalid, then it should return [7, 30]', () => {
 		// Arrange
 		const optionNumber = 8;
 
@@ -127,6 +129,6 @@ describe('Pickup Time Getter (returns array where 1st element is hour, and 2nd e
 		const timeArray = reserve.getPickupTime(optionNumber);
 
 		// Assert
-        expect(timeArray).toEqual([0,0])
+        expect(timeArray).toEqual([7,30]);
 	});
 });
