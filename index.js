@@ -49,9 +49,7 @@ const panel = require('./routes/panel.routes');
 const equipment = require('./routes/equipment.routes');
 
 // Connecting to the db
-mongoose.connect('mongodb://rootuser:p%40ssword@pahiram-shard-00-00-eypip.mongodb.net:27017,pahiram-shard-00-01-eypip.mongodb.net:27017,pahiram-shard-00-02-eypip.mongodb.net:27017/test?ssl=true&replicaSet=pahiram-shard-0&authSource=admin&retryWrites=true&w=majority',
-    { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false }
-).catch(err => {
+mongoose.connect('mongodb://rootuser:p%40ssword@pahiram-shard-00-00-eypip.mongodb.net:27017,pahiram-shard-00-01-eypip.mongodb.net:27017,pahiram-shard-00-02-eypip.mongodb.net:27017/test?ssl=true&replicaSet=pahiram-shard-0&authSource=admin&retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false }).catch(err => {
     console.log('Error connecting to the db: ' + err);
 });
 
@@ -64,17 +62,17 @@ app.use('/reservations', UserAuth.userIsLoggedIn, UserAuth.userIsNew, myReservat
 app.use('/manage-lockers', UserAuth.userIsLoggedIn, UserAuth.userIsNew, panel);
 app.use('/manage-equipment', UserAuth.userIsLoggedIn, UserAuth.userIsNew, equipment);
 
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
     res.status(404).render('404-page', {
         sidebarData: {
             dp: req.session.passport.user.profile.photos[0].value,
             name: req.session.passport.user.profile.displayName,
-            type: req.session.type      
+            type: req.session.type
         }
     });
 })
 
-app.listen(process.env.PORT || port, function () {
+app.listen(process.env.PORT || port, function() {
     console.log('Google Auth Callback URL: ' + process.env.GOOGLE_AUTH_CALLBACK_URL)
     console.log('Listening at port ' + port);
 });
