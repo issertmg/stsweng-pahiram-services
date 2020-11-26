@@ -10,6 +10,8 @@ $(document).ready(function () {
     $('form').on('submit', function () {
         $('.modal').find('button[type="submit"]').prop('disabled', true);
     })
+
+    $('#toast').toast('show');
 });
 
 function isFilled() {
@@ -26,13 +28,23 @@ function isFilled() {
     return !lRangeEmpty && !uRangeEmpty && !bldgEmpty && !flrEmpty;
 }
 
-function isValidRange() {
+async function isValidRange() {
     let lRange = validator.trim($('#lowerRange').val());
     let uRange = validator.trim($('#upperRange').val());
+    let bldg = validator.trim($('#panelBldg').val());
+    let flr = validator.trim($('#panelFloor').val());
+    let type = validator.trim($('#panelType').val());
 
     if (validator.isInt(lRange) && validator.isInt(uRange)) {
         let lower = validator.toInt(lRange);
         let upper = validator.toInt(uRange);
+
+        let validRange = await $.get(location.pathname + '/get-is-valid-locker-range',
+            {bldg: bldg, flr: flr, type: type, lRange: lRange, uRange: uRange});
+
+        console.log("Valid Range: " + validRange);
+        if (validRange === "invalid")
+            return false;
 
         return upper >= lower;
     } else return false;
@@ -147,9 +159,12 @@ $('#addPanelModal').on('show.bs.modal', function (event) {
     $('#bldgAlert').hide();
 });
 
-$('#addPanelSubmit').click(function () {
+$('#addPanelSubmit').click(async function () {
     if (isFilled()) {
-        if (!isValidRange()) {
+        let validRange = await isValidRange();
+        console.log(validRange);
+        if (!validRange) {
+            console.log("range invalid")
             $('#formAlert').hide();
             $('#bldgAlert').hide();
             $('#rangeAlert').show();

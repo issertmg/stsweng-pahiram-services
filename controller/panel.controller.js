@@ -28,8 +28,14 @@ hbs.registerHelper('notFirst', (index) => {
 exports.panel_create = async function (req, res) {
 
     let errors = validationResult(req);
-    if (errors.isEmpty()) {
-        try {
+
+    try {
+        // Get all panels of the same building, type, and level
+        let allPanels = await Panel.find({type: req.body.type, building: req.body.building, level: req.body.level,});
+        // Check if locker range is valid
+        let validLockerRange = await isValidLockerRange(allPanels, req.body.lowerRange, req.body.upperRange);
+        console.log("validLockerRange = " + validLockerRange);
+        if (errors.isEmpty() && validLockerRange) {
             let panel_number = await Panel
                 .find({building: req.body.building, level: req.body.level, type: req.body.type})
                 .distinct('number')
@@ -48,12 +54,12 @@ exports.panel_create = async function (req, res) {
             });
 
             await panel.save();
-        } catch (err) {
-            console.log(err);
+            res.redirect("/manage-lockers/?bldg=" + req.body.building + "&flr=" + req.body.level);
+        } else {
+            res.redirect("/manage-lockers/");
         }
-        res.redirect("/manage-lockers/?bldg=" + req.body.building + "&flr=" + req.body.level);
-    } else {
-        res.redirect("/manage-lockers");
+    } catch (e) {
+        console.log(e);
     }
 }
 
@@ -209,6 +215,14 @@ exports.panel_unclear = async function (req, res) {
     res.redirect('/manage-lockers/');
 }
 
+exports.valid_locker_range_get = async function(req, res) {
+    let allPanels = await Panel.find({type: req.query.type, building: req.query.bldg, level: req.query.flr,});
+    let valid = await isValidLockerRange(allPanels, req.query.lRange, req.query.uRange);
+    console.log(valid);
+    if (valid) res.send("valid");
+    else res.send("invalid");
+}
+
 async function isLockerVacantBroken(lockerid) {
     let locker;
     try {
@@ -234,6 +248,15 @@ async function deleteLockers(lockerIDs) {
         await Locker.findByIdAndDelete(lockerID);
 }
 
+async function isValidLockerRange(panels, lower, upper) {
+    for (const panel of panels) {
+        if (lower >= panel.lowerRange && lower <= panel.upperRange ||
+            upper >= panel.lowerRange && upper <= panel.upperRange ||
+            lower <= panel.lowerRange && upper >= panel.upperRange)
+            return false;
+    }
+    return true;
+}
 
 function getMissingPanelNumber(panelNumbers) {
     let missingPanelNumber = 1;

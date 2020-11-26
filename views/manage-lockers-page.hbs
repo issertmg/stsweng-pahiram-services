@@ -46,7 +46,6 @@
                 <div class="icon mr-2 white" id="add"></div> Add panel
               </a>
             </div>
-
             {{#if panels}}
             <div class="col-lg-10 row align-items-end mx-auto px-0">
 
@@ -194,7 +193,7 @@
         <div class="modal-body col-lg-10 mx-auto">
           <form class="form-horizontal" id="addPanelForm" action="/manage-lockers/" method="POST">
           <div class="alert alert-danger" role="alert" id="rangeAlert">
-            Locker range should strictly follow <strong>smallest</strong> to <strong>largest</strong> number.
+            Invalid locker range.
           </div>
           <div class="alert alert-warning" role="alert" id="formAlert">
             Please fill up all the blank fields.
@@ -262,7 +261,7 @@
 
           <div class="col-12 px-0" id="panelAlert">
             <div class="alert alert-warning" role="alert">
-              <strong>Action unsuccessful!</strong> Panel cannot be deleted as some lockers are still occupied. 
+              <strong>Action unsuccessful!</strong> Panel cannot be deleted as some lockers are still occupied.
             </div>
           </div>
 
