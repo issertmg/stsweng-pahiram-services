@@ -6,6 +6,7 @@ const validation = {
         return [
             check('type', 'Type should not be empty.').notEmpty(),
             check('building', 'Building should not be empty.').notEmpty(),
+            check('building', 'Building should contain a maximum of 100 characters.').isLength({min: 1, max: 100}),
             check('level', 'Floor level should be an integer.').notEmpty().isInt(),
             check('lowerRange', 'Lower range should be an integer.').notEmpty().isInt(),
             check('upperRange', 'Upper range should be an integer greater than or equal to lower range.').notEmpty().isInt().custom((upperRange, {req}) => {

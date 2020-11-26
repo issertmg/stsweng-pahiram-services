@@ -52,6 +52,8 @@ exports.panel_create = async function (req, res) {
             console.log(err);
         }
         res.redirect("/manage-lockers/?bldg=" + req.body.building + "&flr=" + req.body.level);
+    } else {
+        res.redirect("/manage-lockers");
     }
 }
 
