@@ -99,7 +99,7 @@
                     {{#each panels}}
                     <div
                       class="col-12 panel-label d-flex align-items-center justify-content-between {{#if (notFirst @index)}}collapsed{{/if}}"
-                      data-toggle="collapse" href="#panelCollapse{{number}}" role="button" aria-expanded="false"
+                      data-toggle="collapse" href="#panelCollapse{{type}}{{number}}" role="button" aria-expanded="false"
                       aria-controls="panelCollapse" style="cursor:pointer;">
                       <div>
                         {{capitalizeFirst type}} Panel {{number}} ({{lowerRange}}-{{upperRange}})
@@ -111,7 +111,7 @@
                     </div>
 
                     <div class="row collapse {{#if @first}}show{{/if}}" data-parent="#panelAccordion"
-                      id="panelCollapse{{number}}">
+                      id="panelCollapse{{type}}{{number}}">
                       {{#each lockers}}
                       <div class="col-lg-4 col-md-6 col-6 locker-container mb-4">
                         <div class="locker locker-status-manage-{{lockerstatus this}} d-flex align-items-center"

@@ -93,11 +93,11 @@
                   </div>
                   <div class="row mx-auto panel accordion" id="panelAccordion">
                   {{#each panels}}
-                    <a class="col-12 panel-label d-flex align-items-center {{#if (notFirst @index)}}collapsed{{/if}}" data-toggle="collapse" href="#panelCollapse{{number}}" role="button" aria-expanded="false" aria-controls="panelCollapse">
+                    <a class="col-12 panel-label d-flex align-items-center {{#if (notFirst @index)}}collapsed{{/if}}" data-toggle="collapse" href="#panelCollapse{{type}}{{number}}" role="button" aria-expanded="false" aria-controls="panelCollapse">
                       {{!-- <div class="icon mr-2" id="{{#if (lockerIsBig type)}}big{{else}}small{{/if}}" style="height: 2rem; width: 2rem"></div> --}}
                       {{capitalizeFirst type}} Panel {{number}} ({{lowerRange}}-{{upperRange}})
                     </a>
-                    <div class="row collapse {{#if @first}}show{{/if}}" data-parent="#panelAccordion" id="panelCollapse{{number}}">
+                    <div class="row collapse {{#if @first}}show{{/if}}" data-parent="#panelAccordion" id="panelCollapse{{type}}{{number}}">
                       {{#each lockers}}
                       <div class="col-lg-4 col-md-6 col-6 locker-container mb-4">
                         <div class="locker locker-status-{{lockerstatus this}} d-flex align-items-center" 
