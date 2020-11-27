@@ -150,6 +150,7 @@ exports.onrent_get = async function (req, res) {
 exports.check_get = async function (req, res) {
     try {
         const equipmentCount = await Equipment.find({
+            _id: {$ne: req.query.eID},
             name: req.query.eName,
             brand: req.query.eBrand,
             model: req.query.eModel
