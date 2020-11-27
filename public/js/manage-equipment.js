@@ -164,6 +164,7 @@ $(document).ready(function () {
                     else {
                         $.get('/manage-equipment/check',
                             {
+                                eID: $('#editHiddenEquipID').val(),
                                 eName: $('#edit-equipment-name').val(),
                                 eBrand: $('#edit-equipment-brand').val(),
                                 eModel: $('#edit-equipment-model').val()
