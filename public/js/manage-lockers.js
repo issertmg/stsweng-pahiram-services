@@ -33,24 +33,34 @@ async function isValidRange() {
     let flr = validator.trim($('#panelFloor').val());
     let type = validator.trim($('#panelType').val());
 
-    if (validator.isInt(lRange) && validator.isInt(uRange)) {
+    if (validator.isInt(lRange, {min: 1, max: 1000}) && validator.isInt(uRange, {min: 1, max: 1000})) {
         let lower = validator.toInt(lRange);
         let upper = validator.toInt(uRange);
 
+        // Validate overlaps
         let validRange = await $.get(location.pathname + '/get-is-valid-locker-range',
             {bldg: bldg, flr: flr, type: type, lRange: lRange, uRange: uRange});
-
-        console.log("Valid Range: " + validRange);
-        if (validRange === "invalid")
-            return false;
+        if (validRange === "invalid") return false;
 
         return upper >= lower;
     } else return false;
 }
 
 function isValidBldg() {
-    let bldg = validator.trim($('#panelBldg').val());
+    let bldg = validator.whitelist($('#panelBldg').val(), 'A-Za-z');
+    console.log("Bldg: "+bldg)
     return validator.isLength(bldg, {min: 1, max: 100});
+}
+
+function isValidLevel() {
+    let flr = validator.trim($('#panelFloor').val());
+    console.log('Floor ' + flr + " valid: " + validator.isInt(flr, {min: 1, max: 50}))
+    return validator.isInt(flr, {min: 1, max: 50});
+}
+
+function isValidPanelType() {
+    let type = validator.trim($('#panelType').val());
+    return type === 'big' || type === 'small';
 }
 
 $('#markUnclearedButton').click(function () {
@@ -152,36 +162,30 @@ $('#addPanelModal').on('show.bs.modal', function (event) {
     $("#addPanelForm").trigger("reset");
     $('#lowerRange').css('border-color', '');
     $('#upperRange').css('border-color', '');
-    $('#rangeAlert').hide();
-    $('#formAlert').hide();
-    $('#bldgAlert').hide();
+    $('.alert').hide();
 });
 
 $('#addPanelSubmit').click(async function () {
+    $('.alert').hide();
     if (isFilled()) {
-        let validRange = await isValidRange();
-        console.log(validRange);
-        if (!validRange) {
-            console.log("range invalid")
-            $('#formAlert').hide();
-            $('#bldgAlert').hide();
-            $('#rangeAlert').show();
-            $('#lowerRange').css('border-color', 'red');
-            $('#upperRange').css('border-color', 'red');
-        } else if (!isValidBldg()) {
-            $('#formAlert').hide();
-            $('#rangeAlert').hide();
+        if (!isValidBldg())
             $('#bldgAlert').show();
-        } else {
-            $('#formAlert').hide();
-            $('#rangeAlert').hide();
-            $('#bldgAlert').hide();
-            $('#addPanelForm').submit();
+        else if (!isValidLevel())
+            $('#floorAlert').show();
+        else if (!isValidPanelType())
+            $('#panelTypeAlert').show();
+        else {
+            let validRange = await isValidRange();
+            if (!validRange) {
+                console.log("range invalid")
+                $('#rangeAlert').show();
+                $('#lowerRange').css('border-color', 'red');
+                $('#upperRange').css('border-color', 'red');
+            } else
+                $('#addPanelForm').submit();
         }
     } else {
         $('#formAlert').show();
-        $('#rangeAlert').hide();
-        $('#bldgAlert').hide();
         $('#lowerRange').css('border-color', '');
         $('#upperRange').css('border-color', '');
     }
@@ -190,6 +194,10 @@ $('#addPanelSubmit').click(async function () {
 $('#markUnclearedModal').on('show.bs.modal', function (event) {
     $("#confirmation").val("");
     $('#confirmation').css('border-color', '');
+});
+
+$('select#bldg,select#floor').change(function() {
+    $('.form').css({'opacity': '50%', 'pointer-events': 'none'});
 });
 
 // Removes a query parameter
@@ -209,7 +217,7 @@ function removeParam(key, sourceURL) {
         rtn = rtn + "?" + params_arr.join("&");
     }
     return rtn;
-};
+}
 
 // Adds or updates a query parameter
 function updateQueryStringParameter(key, value) {
@@ -224,4 +232,4 @@ function updateQueryStringParameter(key, value) {
     } else {
         window.location.href = uri + separator + key + "=" + value;
     }
-};
+}

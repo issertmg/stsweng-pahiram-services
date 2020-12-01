@@ -192,14 +192,20 @@
         </div>
         <div class="modal-body col-lg-10 mx-auto">
           <form class="form-horizontal" id="addPanelForm" action="/manage-lockers/" method="POST">
+          <div class="alert alert-danger" role="alert" id="panelTypeAlert">
+              Invalid panel type. Do not inspect element!
+          </div>
+          <div class="alert alert-danger" role="alert" id="floorAlert">
+              Floor level should be from 1 to 50.
+          </div>
           <div class="alert alert-danger" role="alert" id="rangeAlert">
-            Invalid locker range.
+            Locker numbers should be from 1 to 1000, and they should not overlap existing locker numbers on the same building and floor.
           </div>
           <div class="alert alert-warning" role="alert" id="formAlert">
             Please fill up all the blank fields.
           </div>
           <div class="alert alert-warning" role="alert" id="bldgAlert">
-            Building field can only contain a maximum of 100 characters.
+            Building field should contain at least 1 letter and a maximum of 100 characters.
           </div>
             <div class="form-group form-inline input-group">
               <label for="panelType" class="col-lg-4 justify-content-start">Type:</label>

@@ -24,6 +24,10 @@ $(document).ready(function () {
             alert("Please check the box if you agree to the terms and conditions.");
         }
     });
+
+    $('select#bldg,select#floor').change(function() {
+        $('.form').css({'opacity': '50%', 'pointer-events': 'none'});
+    });
 });
 
 

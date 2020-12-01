@@ -27,6 +27,8 @@ hbs.registerHelper('notFirst', (index) => {
 
 exports.panel_create = async function (req, res) {
 
+    console.log('Creating panel')
+
     let errors = validationResult(req);
 
     try {
@@ -134,7 +136,7 @@ exports.panel_update = async function (req, res) {
             let lockerIndex = req.body.lockernumber - panel.lowerRange;
             let lockerid = panel.lockers[lockerIndex]._id;
             let editable = await isLockerVacantBroken(lockerid);
-            if (editable) {
+            if (editable && isSetStatusValid(req.body.status)) {
                 await Locker.findByIdAndUpdate(lockerid, {status: req.body.status});
             } else {
                 console.log('Locker status cannot be updated.');
@@ -221,6 +223,10 @@ exports.valid_locker_range_get = async function(req, res) {
     console.log(valid);
     if (valid) res.send("valid");
     else res.send("invalid");
+}
+
+function isSetStatusValid(status) {
+    return status === 'vacant' || status === 'broken';
 }
 
 async function isLockerVacantBroken(lockerid) {
