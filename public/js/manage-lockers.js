@@ -198,6 +198,10 @@ $('#markUnclearedModal').on('show.bs.modal', function (event) {
     $('#confirmation').css('border-color', '');
 });
 
+$('select#bldg,select#floor').change(function() {
+    $('.form').css({'opacity': '50%', 'pointer-events': 'none'});
+});
+
 // Removes a query parameter
 function removeParam(key, sourceURL) {
     let rtn = sourceURL.split("?")[0],
@@ -215,7 +219,7 @@ function removeParam(key, sourceURL) {
         rtn = rtn + "?" + params_arr.join("&");
     }
     return rtn;
-};
+}
 
 // Adds or updates a query parameter
 function updateQueryStringParameter(key, value) {
@@ -230,4 +234,4 @@ function updateQueryStringParameter(key, value) {
     } else {
         window.location.href = uri + separator + key + "=" + value;
     }
-};
+}
