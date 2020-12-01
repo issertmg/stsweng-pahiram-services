@@ -128,8 +128,7 @@ function isValidID(activeField, callback) {
  */
 function isValidDegProg(activeField, callback) {
     let degProg = validator.trim($('#degProg').val());
-    let degProgSanitized = validator.blacklist(degProg, ' ');
-    console.log(degProgSanitized);
+    let degProgSanitized = validator.blacklist(degProg, ' -');
     let validDegProg = validator.isLength(degProg, {min: 1, max: 15})
         && validator.isAlpha(degProgSanitized);
 
