@@ -54,7 +54,13 @@ function isValidBldg() {
 
 function isValidLevel() {
     let flr = validator.trim($('#panelFloor').val());
+    console.log('Floor ' + flr + " valid: " + validator.isInt(flr, {min: 1, max: 50}))
     return validator.isInt(flr, {min: 1, max: 50});
+}
+
+function isValidPanelType() {
+    let type = validator.trim($('#panelType').val());
+    return type === 'big' || type === 'small';
 }
 
 $('#markUnclearedButton').click(function () {
@@ -162,19 +168,21 @@ $('#addPanelModal').on('show.bs.modal', function (event) {
 $('#addPanelSubmit').click(async function () {
     $('.alert').hide();
     if (isFilled()) {
-        let validRange = await isValidRange();
-        console.log(validRange);
-        if (!validRange) {
-            console.log("range invalid")
-            $('#rangeAlert').show();
-            $('#lowerRange').css('border-color', 'red');
-            $('#upperRange').css('border-color', 'red');
-        } else if (!isValidBldg()) {
+        if (!isValidBldg())
             $('#bldgAlert').show();
-        } else if (!isValidLevel()) {
+        else if (!isValidLevel())
             $('#floorAlert').show();
-        } else {
-            $('#addPanelForm').submit();
+        else if (!isValidPanelType())
+            $('#panelTypeAlert').show();
+        else {
+            let validRange = await isValidRange();
+            if (!validRange) {
+                console.log("range invalid")
+                $('#rangeAlert').show();
+                $('#lowerRange').css('border-color', 'red');
+                $('#upperRange').css('border-color', 'red');
+            } else
+                $('#addPanelForm').submit();
         }
     } else {
         $('#formAlert').show();

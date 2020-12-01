@@ -192,6 +192,9 @@
         </div>
         <div class="modal-body col-lg-10 mx-auto">
           <form class="form-horizontal" id="addPanelForm" action="/manage-lockers/" method="POST">
+          <div class="alert alert-danger" role="alert" id="panelTypeAlert">
+              Invalid panel type. Do not inspect element!
+          </div>
           <div class="alert alert-danger" role="alert" id="floorAlert">
               Floor level should be from 1 to 50.
           </div>

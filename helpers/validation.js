@@ -4,7 +4,7 @@ const validation = {
 
     addPanelValidation: function () {
         return [
-            check('type', 'Type should not be empty.').notEmpty(),
+            check('type', 'Type should not be empty.').notEmpty().isIn(['big', 'small']),
             check('building', 'Building should not be empty.').notEmpty(),
             check('building', 'Building should contain a maximum of 100 characters.').isLength({min: 1, max: 100}),
             check('level', 'Floor level should be an integer.').notEmpty().isInt({min: 1, max: 50}),

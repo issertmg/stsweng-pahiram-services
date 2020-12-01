@@ -27,6 +27,8 @@ hbs.registerHelper('notFirst', (index) => {
 
 exports.panel_create = async function (req, res) {
 
+    console.log('Creating panel')
+
     let errors = validationResult(req);
 
     try {
