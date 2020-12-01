@@ -53,6 +53,11 @@ function isValidBldg() {
     return validator.isLength(bldg, {min: 1, max: 100});
 }
 
+function isValidLevel() {
+    let flr = validator.trim($('#panelFloor').val());
+    return validator.isInt(flr, {min: 1, max: 50});
+}
+
 $('#markUnclearedButton').click(function () {
     let confirm = $('#confirmation').val();
     if (confirm === 'locker') {
@@ -152,36 +157,37 @@ $('#addPanelModal').on('show.bs.modal', function (event) {
     $("#addPanelForm").trigger("reset");
     $('#lowerRange').css('border-color', '');
     $('#upperRange').css('border-color', '');
-    $('#rangeAlert').hide();
-    $('#formAlert').hide();
-    $('#bldgAlert').hide();
+    $('.alert').hide();
 });
 
 $('#addPanelSubmit').click(async function () {
+    $('.alert').hide();
     if (isFilled()) {
         let validRange = await isValidRange();
         console.log(validRange);
         if (!validRange) {
             console.log("range invalid")
-            $('#formAlert').hide();
-            $('#bldgAlert').hide();
+            // $('#formAlert').hide();
+            // $('#bldgAlert').hide();
             $('#rangeAlert').show();
             $('#lowerRange').css('border-color', 'red');
             $('#upperRange').css('border-color', 'red');
         } else if (!isValidBldg()) {
-            $('#formAlert').hide();
-            $('#rangeAlert').hide();
+            // $('#formAlert').hide();
+            // $('#rangeAlert').hide();
             $('#bldgAlert').show();
+        } else if (!isValidLevel()) {
+            $('#floorAlert').show();
         } else {
-            $('#formAlert').hide();
-            $('#rangeAlert').hide();
-            $('#bldgAlert').hide();
+            // $('#formAlert').hide();
+            // $('#rangeAlert').hide();
+            // $('#bldgAlert').hide();
             $('#addPanelForm').submit();
         }
     } else {
         $('#formAlert').show();
-        $('#rangeAlert').hide();
-        $('#bldgAlert').hide();
+        // $('#rangeAlert').hide();
+        // $('#bldgAlert').hide();
         $('#lowerRange').css('border-color', '');
         $('#upperRange').css('border-color', '');
     }
