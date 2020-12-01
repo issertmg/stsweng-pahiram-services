@@ -33,16 +33,14 @@ async function isValidRange() {
     let flr = validator.trim($('#panelFloor').val());
     let type = validator.trim($('#panelType').val());
 
-    if (validator.isInt(lRange) && validator.isInt(uRange)) {
+    if (validator.isInt(lRange, {min: 1, max: 1000}) && validator.isInt(uRange, {min: 1, max: 1000})) {
         let lower = validator.toInt(lRange);
         let upper = validator.toInt(uRange);
 
+        // Validate overlaps
         let validRange = await $.get(location.pathname + '/get-is-valid-locker-range',
             {bldg: bldg, flr: flr, type: type, lRange: lRange, uRange: uRange});
-
-        console.log("Valid Range: " + validRange);
-        if (validRange === "invalid")
-            return false;
+        if (validRange === "invalid") return false;
 
         return upper >= lower;
     } else return false;
@@ -167,27 +165,18 @@ $('#addPanelSubmit').click(async function () {
         console.log(validRange);
         if (!validRange) {
             console.log("range invalid")
-            // $('#formAlert').hide();
-            // $('#bldgAlert').hide();
             $('#rangeAlert').show();
             $('#lowerRange').css('border-color', 'red');
             $('#upperRange').css('border-color', 'red');
         } else if (!isValidBldg()) {
-            // $('#formAlert').hide();
-            // $('#rangeAlert').hide();
             $('#bldgAlert').show();
         } else if (!isValidLevel()) {
             $('#floorAlert').show();
         } else {
-            // $('#formAlert').hide();
-            // $('#rangeAlert').hide();
-            // $('#bldgAlert').hide();
             $('#addPanelForm').submit();
         }
     } else {
         $('#formAlert').show();
-        // $('#rangeAlert').hide();
-        // $('#bldgAlert').hide();
         $('#lowerRange').css('border-color', '');
         $('#upperRange').css('border-color', '');
     }
