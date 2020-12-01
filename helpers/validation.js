@@ -54,6 +54,8 @@ const validation = {
             check('degProg', 'Degree program is invalid.')
                 .notEmpty()
                 .isLength({min: 1, max: 15}),
+            check('degProg', 'Degree program should only contain letters and hyphens.')
+                .trim().blacklist(' -').isAlpha(),
             check('phone', 'Phone cannot be empty')
                 .notEmpty(),
             check('phone', 'Invalid phone number')
