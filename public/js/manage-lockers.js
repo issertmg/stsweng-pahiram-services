@@ -47,7 +47,8 @@ async function isValidRange() {
 }
 
 function isValidBldg() {
-    let bldg = validator.trim($('#panelBldg').val());
+    let bldg = validator.whitelist($('#panelBldg').val(), 'A-Za-z');
+    console.log("Bldg: "+bldg)
     return validator.isLength(bldg, {min: 1, max: 100});
 }
 
