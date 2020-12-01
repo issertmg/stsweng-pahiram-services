@@ -7,15 +7,12 @@ const validation = {
             check('type', 'Type should not be empty.').notEmpty(),
             check('building', 'Building should not be empty.').notEmpty(),
             check('building', 'Building should contain a maximum of 100 characters.').isLength({min: 1, max: 100}),
-            check('level', 'Floor level should be an integer.').notEmpty().isInt(),
+            check('level', 'Floor level should be an integer.').notEmpty().isInt({min: 1, max: 50}),
             check('lowerRange', 'Lower range should be an integer.').notEmpty().isInt(),
             check('upperRange', 'Upper range should be an integer greater than or equal to lower range.').notEmpty().isInt().custom((upperRange, {req}) => {
-                var lower = parseInt(req.body.lowerRange);
-                var upper = parseInt(upperRange);
-
-                if (upper >= lower)
-                    return true;
-                else return false;
+                let lower = parseInt(req.body.lowerRange);
+                let upper = parseInt(upperRange);
+                return upper >= lower;
             })
         ];
     },
