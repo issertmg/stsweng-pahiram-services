@@ -46,7 +46,6 @@
                 <div class="icon mr-2 white" id="add"></div> Add panel
               </a>
             </div>
-
             {{#if panels}}
             <div class="col-lg-10 row align-items-end mx-auto px-0">
 
@@ -99,7 +98,7 @@
                     {{#each panels}}
                     <div
                       class="col-12 panel-label d-flex align-items-center justify-content-between {{#if (notFirst @index)}}collapsed{{/if}}"
-                      data-toggle="collapse" href="#panelCollapse{{number}}" role="button" aria-expanded="false"
+                      data-toggle="collapse" href="#panelCollapse{{type}}{{number}}" role="button" aria-expanded="false"
                       aria-controls="panelCollapse" style="cursor:pointer;">
                       <div>
                         {{capitalizeFirst type}} Panel {{number}} ({{lowerRange}}-{{upperRange}})
@@ -111,7 +110,7 @@
                     </div>
 
                     <div class="row collapse {{#if @first}}show{{/if}}" data-parent="#panelAccordion"
-                      id="panelCollapse{{number}}">
+                      id="panelCollapse{{type}}{{number}}">
                       {{#each lockers}}
                       <div class="col-lg-4 col-md-6 col-6 locker-container mb-4">
                         <div class="locker locker-status-manage-{{lockerstatus this}} d-flex align-items-center"
@@ -193,11 +192,20 @@
         </div>
         <div class="modal-body col-lg-10 mx-auto">
           <form class="form-horizontal" id="addPanelForm" action="/manage-lockers/" method="POST">
+          <div class="alert alert-danger" role="alert" id="panelTypeAlert">
+              Invalid panel type. Do not inspect element!
+          </div>
+          <div class="alert alert-danger" role="alert" id="floorAlert">
+              Floor level should be from 1 to 50.
+          </div>
           <div class="alert alert-danger" role="alert" id="rangeAlert">
-            Locker range should strictly follow <strong>smallest</strong> to <strong>largest</strong> number.
+            Locker numbers should be from 1 to 1000, and they should not overlap existing locker numbers on the same building and floor.
           </div>
           <div class="alert alert-warning" role="alert" id="formAlert">
             Please fill up all the blank fields.
+          </div>
+          <div class="alert alert-warning" role="alert" id="bldgAlert">
+            Building field should contain at least 1 letter and a maximum of 100 characters.
           </div>
             <div class="form-group form-inline input-group">
               <label for="panelType" class="col-lg-4 justify-content-start">Type:</label>
@@ -259,7 +267,7 @@
 
           <div class="col-12 px-0" id="panelAlert">
             <div class="alert alert-warning" role="alert">
-              <strong>Action unsuccessful!</strong> Panel cannot be deleted as some lockers are still occupied. 
+              <strong>Action unsuccessful!</strong> Panel cannot be deleted as some lockers are still occupied.
             </div>
           </div>
 

@@ -1,41 +1,40 @@
 const Equipment = require('../model/equipment.model');
-const fs = require('fs');
-const path = require('path');
 const shortid = require('shortid');
 const hbs = require('hbs');
 
 const { validationResult } = require('express-validator');
 
-const AWS = require('aws-sdk');
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-});
-const S3_FILE_URL = 'https://pahiram-services-bucket.s3.us-east-2.amazonaws.com/equipment-uploads/';
-
-const BUCKET_NAME = 'pahiram-services-bucket';
+const cloudinary = require('cloudinary').v2;
 
 hbs.registerHelper('subtract', function (a, b) { return a - b; });
 
+/**
+ * Adds a new equipment object and saves it in the database.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.createEquipment = async function (req, res) {
-
-    var errors = validationResult(req);
+    const errors = validationResult(req);
 
     if (errors.isEmpty()) {
-        var sameEquipCt = await Equipment.countDocuments(
-            { name: req.body.name });
-        if (sameEquipCt == 0) {
-            const tempPath = req.file.path;
-            const filename = shortid.generate() + '.png';
-            // const filePath = path.join(__dirname, '/../public/uploads/equipment-images', filename);
-            // const relativeFilePath = '/uploads/equipment-images/' + filename;
 
-            uploadToS3(filename, tempPath);
-            var imageURL = S3_FILE_URL + filename;
-            
+        const isNew = await isNewEquipment(req.body.name, req.body.brand, req.body.model);
+
+        if (isNew) {
+            let imageURL = null;
+
+            if (req.file != null) {
+                const filePath = req.file.path;
+                const uploadResult = await cloudinary.uploader.upload(filePath, {allowed_formats: "png"});
+                imageURL = uploadResult.url;
+            }
+
             try {
-                let equipment = new Equipment({
+                const equipment = new Equipment({
                     name: req.body.name,
+                    brand: req.body.brand,
+                    model: req.body.model,
                     quantity: parseInt(req.body.count),
                     imageURL: imageURL
                 });
@@ -44,38 +43,20 @@ exports.createEquipment = async function (req, res) {
             } catch (err) {
                 console.log(err);
             }
-
-            /* fs.rename(tempPath, filePath, async function (err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    uploadToS3(filename, filePath);
-                    var imageURL = S3_FILE_URL + filename;
-
-                    console.log(imageURL);
-
-                    let equipment = new Equipment({
-                        name: req.body.name,
-                        quantity: parseInt(req.body.count),
-                        imageURL: imageURL
-                    });
-
-                    try {
-                        await equipment.save();
-                    } catch (err) {
-                        console.log(err);
-                    }
-                }
-            }); */
         }
         res.redirect("/manage-equipment/");
     }
 };
 
+/**
+ * Loads and renders the manage equipment page.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.viewAllEquipment = async function (req, res) {
     try {
-        equipment = await Equipment.find({});
-
+        const equipment = await Equipment.find({});
         res.render('manage-equipment-page', {
             active: { active_manage_equipment: true },
             sidebarData: {
@@ -90,28 +71,31 @@ exports.viewAllEquipment = async function (req, res) {
     }
 };
 
+/**
+ * Updates an equipment in the database.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.updateEquipment = async function (req, res) {
-
-    var errors = validationResult(req);
+    const errors = validationResult(req);
     if (errors.isEmpty()) {
         try {
-            var equipment = await Equipment.findById(req.body.equipmentid);
-            if (req.body.name.trim().length != 0) { equipment.name = req.body.name; }
-            if (!isNaN(parseInt(req.body.count))) { equipment.quantity = req.body.count; }
-            if (req.file != null) {  
-                const oldFilenameIndex = equipment.imageURL.lastIndexOf('/');
-                const oldFilename = equipment.imageURL.substring(oldFilenameIndex+1);
-                const tempPath = req.file.path;
-                const newFilename = shortid.generate() + '.png';
-                console.log('old: ' + oldFilename);
-                console.log('new: ' + newFilename);
-                
-                deleteFromS3(oldFilename)
+            let equipment = await Equipment.findById(req.body.equipmentid);
+                equipment.name = req.body.name;
+                equipment.brand = req.body.brand;
+                equipment.model = req.body.model;
+                equipment.quantity = req.body.count;
 
-                uploadToS3(newFilename, tempPath);                
-                equipment.imageURL = S3_FILE_URL + newFilename;
-
-                console.log(equipment.imageURL);
+            if (req.file != null) {
+                if (equipment.imageURL != null) {
+                    const publicID = getPublicIDFromURL(equipment.imageURL);
+                    await cloudinary.uploader.destroy(publicID);
+                }
+                const filePath = req.file.path;
+                const uploadResult = await cloudinary.uploader.upload(filePath, {allowed_formats: "png"});
+                const imageURL = uploadResult.url;
+                equipment.imageURL = imageURL;
             }
             await equipment.save();
         } catch (err) {
@@ -121,17 +105,19 @@ exports.updateEquipment = async function (req, res) {
     }
 };
 
+/**
+ * Deletes an equipment in the database and its image in the Cloudinary storage.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.deleteEquipment = async function (req, res) {
     try {
-        var equipment = await Equipment.findById(req.body.equipmentid);
-        // if (fs.existsSync(path.join(__dirname, '/../public', equipment.imageURL)))
-        //     fs.unlinkSync(path.join(__dirname, '/../public', equipment.imageURL));
-
-        const filenameIndex = equipment.imageURL.lastIndexOf('/');
-        const filename = equipment.imageURL.substring(filenameIndex+1);
-        console.log('Deleting ' + filename);
-        deleteFromS3(filename);
-
+        let equipment = await Equipment.findById(req.body.equipmentid);
+        if (equipment.imageURL != null) {
+            const publicID = getPublicIDFromURL(equipment.imageURL);
+            await cloudinary.uploader.destroy(publicID);
+        }
         await Equipment.findByIdAndDelete(req.body.equipmentid);
     } catch (err) {
         console.log(err);
@@ -139,9 +125,15 @@ exports.deleteEquipment = async function (req, res) {
     res.redirect("/manage-equipment/");
 };
 
+/**
+ * AJAX function for retrieving an equipment.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.onrent_get = async function (req, res) {
     try {
-        var equipment = await Equipment.findById(req.query.equipmentid);
+        const equipment = await Equipment.findById(req.query.equipmentid);
         if (equipment)
             res.send(equipment);
     } catch (err) {
@@ -149,33 +141,59 @@ exports.onrent_get = async function (req, res) {
     }
 };
 
-var deleteFromS3 = (filename) => {
-    const params = {
-        Bucket: BUCKET_NAME,
-        Key: 'equipment-uploads/' + filename
+/**
+ * AJAX function for checking if an equipment already exists
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
+exports.check_get = async function (req, res) {
+    try {
+        const equipmentCount = await Equipment.find({
+            _id: {$ne: req.query.eID},
+            name: req.query.eName,
+            brand: req.query.eBrand,
+            model: req.query.eModel
+        }).countDocuments();
+        res.send({count: equipmentCount});
     }
+    catch (err) {
+        console.log(err);
+    }
+};
 
-    s3.deleteObject(params, (err, data) => {
-        if (err) console.log(err);
-        else console.log(data);
-    })
+/**
+ * Returns the publicID (filename without file extension) from a URL.
+ * @param url - the uniform resource locator of the image stored in Cloudinary storage
+ * @returns {string} - the publicID
+ */
+function getPublicIDFromURL (url) {
+    const filenameIndex = url.lastIndexOf('/');
+    const filename = url.substring(filenameIndex+1);
+    const fileExtensionIndex = filename.lastIndexOf('.');
+    return filename.substring(0, fileExtensionIndex);
 }
 
-var uploadToS3 = (newFilename, filePath) => {
+exports.getPublicIDFromURL = getPublicIDFromURL;
+
+/**
+ * Checks if a to-be-created equipment exists already in the database
+ * such that it has the same name, brand, and model as the already existing equipment.
+ * @param equipment - the equipment to be created
+ * @returns {boolean} - false if the equipment matches an equipment with the
+ * same name, brand, and model; true otherwise
+ */
+async function isNewEquipment (eName, eBrand, eModel) {
+    let equipmentCount;
     try {
-        const fileContent = fs.readFileSync(filePath);
-        
-        const params = {
-            Bucket: BUCKET_NAME,
-            Key: 'equipment-uploads/' + newFilename,
-            Body: fileContent 
-        }
-    
-        s3.upload(params, (err, data) => {
-            if (err) console.log(err);
-            else console.log(data);
-        });
-    } catch (error) {
-        console.log(error);
+        equipmentCount = await Equipment.find({
+            name: eName,
+            brand: eBrand,
+            model: eModel
+        }).countDocuments();
     }
+    catch (err) {
+        console.log(err);
+    }
+    return equipmentCount === 0;
 }

@@ -16,9 +16,16 @@ $(document).ready(function () {
     })
 });
 
+/**
+ * Checks if the fields for ID number, phone number, and degree program are all valid.
+ * If not, the sign up button is disabled.
+ * @param activeField - the field that the user is currently interacting with
+ * @param fieldName - the name of the field
+ * @param errorLabel - the JQuery object for the error label
+ */
 function validateField(activeField, fieldName, errorLabel) {
-    var value = validator.trim(activeField.val());
-    var empty = validator.isEmpty(value);
+    let value = validator.trim(activeField.val());
+    let empty = validator.isEmpty(value);
     if (empty)
         $(errorLabel).text(fieldName + ' cannot be empty.');
     else
@@ -26,30 +33,42 @@ function validateField(activeField, fieldName, errorLabel) {
     
     isValidID(activeField, function (validID) {
         isValidPhone(activeField, function (validPhone) {
-            if (allFilled() && validPhone && validID)
-                $('#signUpBtn').prop('disabled', false);
-            else
-                $('#signUpBtn').prop('disabled', true);
+            isValidDegProg(activeField, function(validDegProg) {
+                if (allFilled() && validPhone && validID && validDegProg)
+                    $('#signUpBtn').prop('disabled', false);
+                else
+                    $('#signUpBtn').prop('disabled', true);
+            })
         })
     });
 }
 
+/**
+ * Checks if the fields for ID number, phone number, and degree program are all filled.
+ * @returns {boolean} - true if everything is filled up, false otherwise
+ */
 function allFilled() {
-    var idNum = validator.trim($('#idnum').val());
-    var degProg = validator.trim($('#degProg').val());
-    var phone = validator.trim($('#phone').val());
+    let idNum = validator.trim($('#idnum').val());
+    let degProg = validator.trim($('#degProg').val());
+    let phone = validator.trim($('#phone').val());
 
-    var idNumEmpty = validator.isEmpty(idNum);
-    var degProgEmpty = validator.isEmpty(degProg);
-    var phoneEmpty = validator.isEmpty(phone);
+    let idNumEmpty = validator.isEmpty(idNum);
+    let degProgEmpty = validator.isEmpty(degProg);
+    let phoneEmpty = validator.isEmpty(phone);
 
     return !idNumEmpty && !degProgEmpty && !phoneEmpty;
 }
 
+/**
+ * Checks if the phone number is valid
+ * @param activeField - the field the user is currently interacting with
+ * @param callback - callback
+ * @returns {*} - a callback
+ */
 function isValidPhone(activeField, callback) {
-    var phone = validator.trim($('#phone').val());
+    let phone = validator.trim($('#phone').val());
 
-    var validPhoneFormat = validator.isLength(phone, {min: 10, max: 10})
+    let validPhoneFormat = validator.isLength(phone, {min: 10, max: 10})
         && validator.isNumeric(phone, {no_symbols: true});
 
     if (validPhoneFormat) {
@@ -69,20 +88,19 @@ function isValidPhone(activeField, callback) {
             $('#phoneError').text('Invalid phone number');
         return callback(false);
     }
-
-    // if (validPhone && activeField.is($('#phone')))
-    //     $('#phoneError').text(' ');
-    // else if (activeField.is($('#phone')))
-    //     $('#phoneError').text('Invalid phone number');
-
-    // return validPhone;
 }
 
+/**
+ * Checks if the ID number is valid
+ * @param activeField - the field the user is currently interacting with
+ * @param callback - callback
+ * @returns {*} - a callback
+ */
 function isValidID(activeField, callback) {
-    var idNum = validator.trim($('#idnum').val());
-    var validID = validator.isLength(idNum, {min: 8, max: 8})
+    let idNum = validator.trim($('#idnum').val());
+    let validID = validator.isLength(idNum, {min: 8, max: 8})
         && validator.isNumeric(idNum, {no_symbols: true});
-    
+
     if (validID) {
         $.get('/get-id', {idNum: idNum}, function (data, status) {
             if (!data) {
@@ -98,6 +116,29 @@ function isValidID(activeField, callback) {
     } else {
         if (activeField.is($('#idnum')))
             $('#idNumError').text('ID Number should contain 8 digits.');
+        return callback(false);
+    }
+}
+
+/**
+ * Checks if the degree progam is valid
+ * @param activeField - the field the user is currently interacting with
+ * @param callback - callback
+ * @returns {*} - a callback
+ */
+function isValidDegProg(activeField, callback) {
+    let degProg = validator.trim($('#degProg').val());
+    let degProgSanitized = validator.blacklist(degProg, ' -');
+    let validDegProg = validator.isLength(degProg, {min: 1, max: 15})
+        && validator.isAlpha(degProgSanitized);
+
+    if (validDegProg) {
+        if (activeField.is($('#degProg')))
+            $('#degProgError').text(' ');
+        return callback(true);
+    } else {
+        if (activeField.is($('#degProg')))
+            $('#degProgError').text('Invalid degree program.');
         return callback(false);
     }
 }

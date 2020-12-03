@@ -53,7 +53,7 @@
               <div class="form-group-container col-lg-7">
                 <div class="form-group form-card select-form">
                   <label for="bldg">Select a building</label>
-                  <select class="form-control custom-select select-lg" id="bldg" onchange="updateQueryStringParameter('bldg', this.value)">
+                  <select class="form-control custom-select select-lg" id="bldg" onchange="updateURLQuery('bldg', this.value)">
                     {{#each panel_buildings}}
                     <option value="{{this}}"> {{this}} </option>
                     {{/each}}
@@ -64,7 +64,7 @@
               <div class="form-group-container col-lg-5">
                 <div class="form-group form-card select-form">
                   <label for="floor">Select a floor level</label>
-                  <select class="form-control custom-select select-lg" id="floor" onchange="updateQueryStringParameter('flr', this.value)">
+                  <select class="form-control custom-select select-lg" id="floor" onchange="updateURLQuery('flr', this.value)">
                     {{#each panel_floors}}
                     <option value="{{this}}"> {{this}}/F </option>
                     {{/each}}
@@ -93,11 +93,11 @@
                   </div>
                   <div class="row mx-auto panel accordion" id="panelAccordion">
                   {{#each panels}}
-                    <a class="col-12 panel-label d-flex align-items-center {{#if (notFirst @index)}}collapsed{{/if}}" data-toggle="collapse" href="#panelCollapse{{number}}" role="button" aria-expanded="false" aria-controls="panelCollapse">
+                    <a class="col-12 panel-label d-flex align-items-center {{#if (notFirst @index)}}collapsed{{/if}}" data-toggle="collapse" href="#panelCollapse{{type}}{{number}}" role="button" aria-expanded="false" aria-controls="panelCollapse">
                       {{!-- <div class="icon mr-2" id="{{#if (lockerIsBig type)}}big{{else}}small{{/if}}" style="height: 2rem; width: 2rem"></div> --}}
                       {{capitalizeFirst type}} Panel {{number}} ({{lowerRange}}-{{upperRange}})
                     </a>
-                    <div class="row collapse {{#if @first}}show{{/if}}" data-parent="#panelAccordion" id="panelCollapse{{number}}">
+                    <div class="row collapse {{#if @first}}show{{/if}}" data-parent="#panelAccordion" id="panelCollapse{{type}}{{number}}">
                       {{#each lockers}}
                       <div class="col-lg-4 col-md-6 col-6 locker-container mb-4">
                         <div class="locker locker-status-{{lockerstatus this}} d-flex align-items-center" 
@@ -200,74 +200,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
     integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
     crossorigin="anonymous"></script>
+
+  <script type="text/javascript" src="/js/locker-form.js"></script>
+
   <script type="text/javascript" src="/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="/js/styles-locker.js"></script>
 
-  <script>
-    $(document).ready(function () {
-      var url = new URL(document.location);
-      var params = url.searchParams;
-      var bldg = params.get("bldg");
-      var flr = params.get("flr");
-      
-      $("#bldg").val(bldg);
-      $("#floor").val(flr);
-
-      $("#submitLockerForm").click(function() {
-        var locker = $('#panelAccordion').find('.selected');
-        var panelid = locker.data('panelid');
-        var lockernumber = locker.data('lockernumber');
-
-        if ($("#checkTerms").prop('checked')) {
-          if (locker.length != 0) {
-            $('#panelid').val(panelid);
-            $('#lockernumber').val(lockernumber);
-            $('#lockerForm').submit();
-          }
-          else {
-            alert("Please select a locker you want to rent.");
-          }
-        }
-        else {
-          alert("Please check the box if you agree to the terms and conditions.");
-        }
-      });
-    });
-    // Removes a query parameter
-    function removeParam(key, sourceURL) {
-      var rtn = sourceURL.split("?")[0],
-          param,
-          params_arr = [],
-          queryString = (sourceURL.indexOf("?") !== -1) ? sourceURL.split("?")[1] : "";
-      if (queryString !== "") {
-          params_arr = queryString.split("&");
-          for (var i = params_arr.length - 1; i >= 0; i -= 1) {
-              param = params_arr[i].split("=")[0];
-              if (param === key) {
-                  params_arr.splice(i, 1);
-              }
-          }
-          rtn = rtn + "?" + params_arr.join("&");
-      }
-      return rtn;
-    };
-
-    // Adds or updates a query parameter
-    function updateQueryStringParameter(key, value) {
-      var uri = window.location.href;
-      var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-      var separator = uri.indexOf('?') !== -1 ? "&" : "?";
-      if (key=='bldg') {
-        uri = removeParam('flr', uri);
-      }
-      if (uri.match(re)) {
-        window.location.href = uri.replace(re, '$1' + key + "=" + value + '$2');
-      }
-      else {
-        window.location.href = uri + separator + key + "=" + value;
-      }
-    };
-  </script>
   <script type="text/javascript" src="/js/styles.js"></script>
 
 </body>

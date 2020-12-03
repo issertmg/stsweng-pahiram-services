@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --verbose",
     "start": "node index.js"
   },
   "repository": {
@@ -14,24 +14,30 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ccapdev1920T2/s12g7/issues"
+    "url": "https://github.com/keith-badulis/stsweng-pahiram-services/issues"
   },
-  "homepage": "https://github.com/ccapdev1920T2/s12g7#readme",
+  "homepage": "https://github.com/keith-badulis/stsweng-pahiram-services#readme",
   "dependencies": {
     "aws-sdk": "^2.658.0",
     "body-parser": "^1.19.0",
+    "cloudinary": "^1.23.0",
     "cookie-parser": "^1.4.4",
     "cookie-session": "^1.4.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-validator": "^6.4.0",
     "hbs": "^4.1.1",
-    "mongoose": "^5.9.4",
+    "jquery": "^3.5.1",
+    "mongoose": "^5.10.13",
     "multer": "^1.4.2",
     "node-cron": "^2.0.3",
     "opencollective-postinstall": "^2.0.2",
     "passport": "^0.4.1",
     "passport-google-oauth": "^2.0.0",
     "shortid": "^2.2.15"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3",
+    "nodemon": "^2.0.6"
   }
 }
