@@ -21,15 +21,15 @@ jobs:
     - run: npm ci
     - run: npm test
 
-    - name: "cat package.json"
+    - name: Cat package.json
       run: cat ./package.json
     - name: Automated Version Bump
       uses: phips28/gh-action-bump-version@v8.0.18
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag-prefix:  ''
-    - name: "cat package.json"
+        tag-prefix:
+    - name: Cat package.json
         run: cat ./package.json
 
     - name: Set up QEMU
@@ -51,6 +51,6 @@ jobs:
       uses: AkhileshNS/heroku-deploy@v3.6.8
       with:
         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-        heroku_app_name: "stsweng-pahiram-services"
-        heroku_email: "isser_troy_gagan@dlsu.edu.ph"
+        heroku_app_name: stsweng-pahiram-services
+        heroku_email: isser_troy_gagan@dlsu.edu.ph
 
