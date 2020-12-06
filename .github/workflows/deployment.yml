@@ -21,16 +21,12 @@ jobs:
     - run: npm ci
     - run: npm test
 
-    - name: Cat package.json
-      run: cat ./package.json
     - name: Automated Version Bump
       uses: phips28/gh-action-bump-version@v8.0.18
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag-prefix:
-    - name: Cat package.json
-        run: cat ./package.json
+        tag-prefix: ''
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
