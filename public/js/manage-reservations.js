@@ -441,5 +441,18 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
   });
 
   $('#status').change();
+});
 
+$("#editRemarks").on("keyup change", function() {
+  let inputElement = $(this);
+  if (inputElement.val().length > 250) {
+    inputElement.val(inputElement.val().slice(0, 250));
+  }
+});
+
+$("#approveRemarks").on("keyup change", function() {
+  let inputElement = $(this);
+  if (inputElement.val().length > 250) {
+    inputElement.val(inputElement.val().slice(0, 250));
+  }
 });
