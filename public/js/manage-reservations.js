@@ -1,3 +1,7 @@
+/**
+ * Initializes the whole page.
+ * @returns <void> - nothing
+ */
 $(document).ready(function () {
   var pagination;
   var pageNum;
@@ -65,10 +69,18 @@ $(document).ajaxComplete(function () {
   $('.page-link').css('filter', 'opacity(1)');
 });
 
+/**
+ * Removes the pagination for the table containing the reservations.
+ * @returns <void> - nothing
+ */
 function removePagination() {
   $('#resPagination .page-item').remove();
 }
 
+/**
+ * Setup the pagination for the table containing the reservations.
+ * @returns <void> - nothing
+ */
 function setupPagination(pagination, pageStart, pageEnd, pageNum, idNum, stat) {
   $('#resPagination').append(`
       <li class="page-item">
@@ -143,6 +155,10 @@ function updatePagination(pageStart, pageEnd, pageNum) {
   })
 }
 
+/**
+ * Displays the reservations.
+ * @returns <void> - nothing
+ */
 function displayReservations(reservations) {
   $('#reservationsTable tr').remove();
   $('.empty-note').remove();
@@ -203,11 +219,19 @@ function displayReservations(reservations) {
   });
 }
 
+/**
+ * Initializes the DeleteReservation modal.
+ * @returns <void> - nothing
+ */
 $('#delReservationModal').on('show.bs.modal', (event) => {
   $('#delReservationID').val($('#reservationID').val());
   $('#prevPath').val('manageReservations');
 });
 
+/**
+ * Initializes the ApproveReservation modal.
+ * @returns <void> - nothing
+ */
 $('#approveReservationModal').on('show.bs.modal', (event) => {
   var btn = $(event.relatedTarget).prev();
   var reservation = {
@@ -272,6 +296,10 @@ $('#approveReservationModal').on('show.bs.modal', (event) => {
     $('#approvePaymentForm').css('display', 'none');
 });
 
+/**
+ * Initializes the DenyReservation modal.
+ * @returns <void> - nothing
+ */
 $('#denyReservationModal').on('show.bs.modal', (event) => {
   var btn = $(event.relatedTarget).prev().prev();
   var reservation = {
@@ -300,6 +328,10 @@ $('#denyReservationModal').on('show.bs.modal', (event) => {
   $('#denySelectForm').css('display', 'none');
 });
 
+/**
+ * Initializes the EditReservation modal.
+ * @returns <void> - nothing
+ */
 $('#editReservationModal').on('show.bs.modal', (event) => {
   var btn = $(event.relatedTarget);
   var reservation = {
@@ -469,7 +501,7 @@ $('#statusSubmit').click(function() {
     const currStatus = $('#currentStatus').val();
     const nextStatus = $('#status').val();
 
-    if (isValidSetStatus(currStatus, nextStatus)) {
+    if (isValidSetStatus(currStatus, nextStatus.slice(14))) {
       $('#statusSubmit').off("click");
       $('#editForm').submit();
     }
@@ -482,9 +514,11 @@ $('#statusSubmit').click(function() {
   }
 })
 
+/**
+ * Checks if the status to be is valid with respect to the current status.
+ * @returns {boolean} - true if valid; false otherwise
+ */
 function isValidSetStatus (currentStatus, nextStatus) {
-  nextStatus = nextStatus.slice(14);
-  console.log(nextStatus);
 
   if (currentStatus === 'Pending') {
     if (nextStatus === 'pending' || nextStatus === 'pickup-pay' || nextStatus === 'denied') {
@@ -519,7 +553,13 @@ function isValidSetStatus (currentStatus, nextStatus) {
   return false;
 }
 
+/**
+ * Hides all alert elements.
+ * @returns <void> - nothing
+ */
 function hideAllAlert () {
   $('#penaltyAlert').hide();
   $('#inspectAlert').hide();
 }
+
+exports.isValidSetStatus = isValidSetStatus;
