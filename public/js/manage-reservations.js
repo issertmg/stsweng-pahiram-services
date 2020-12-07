@@ -172,7 +172,7 @@ function displayReservations(reservations) {
       '</td>' +
       '<td>' + reservation.userID + '</td>' +
       '<td>' + (new Date(reservation.dateCreated)).toDateString() + '</td>' +
-      '<td>' + 
+      '<td class="description">' +
         ((reservation.onItemType == 'Equipment') ? reservation.title + '; ' : '') +
         reservation.description + 
       '</td>' +

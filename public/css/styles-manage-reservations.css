@@ -46,3 +46,7 @@
 .card#otherResCard {
     min-height: 70vh;
 }
+
+td.description, span.description {
+    word-break: break-word;
+}
