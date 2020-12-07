@@ -351,6 +351,45 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
   $('#onItemType').val(reservation.type);
   $('#paymentDate').val(payDateString);
 
+  // Hide all select options
+  $('[value="status-manage-pending"]').prop('disabled', true).hide();
+  $('[value="status-manage-pickup-pay"]').prop('disabled', true).hide();
+  $('[value="status-manage-on-rent"]').prop('disabled', true).hide();
+  $('[value="status-manage-uncleared"]').prop('disabled', true).hide();
+  $('[value="status-manage-denied"]').prop('disabled', true).hide();
+  $('[value="status-manage-returned"]').prop('disabled', true).hide();
+
+  // Shows valid select options
+  switch (reservation.status) {
+    case 'Pending':
+      $('[value="status-manage-pending"]').prop('disabled', false).show();
+      $('[value="status-manage-pickup-pay"]').prop('disabled', false).show();
+      $('[value="status-manage-denied"]').prop('disabled', false).show();
+      break;
+    case 'To Pay':
+    case 'For Pickup':
+      $('[value="status-manage-pickup-pay"]').prop('disabled', false).show();
+      $('[value="status-manage-on-rent"]').prop('disabled', false).show();
+      $('[value="status-manage-denied"]').prop('disabled', false).show();
+      break;
+    case 'On Rent':
+      $('[value="status-manage-on-rent"]').prop('disabled', false).show();
+      $('[value="status-manage-uncleared"]').prop('disabled', false).show();
+      $('[value="status-manage-returned"]').prop('disabled', false).show();
+      break;
+    case 'Uncleared':
+      $('[value="status-manage-uncleared"]').prop('disabled', false).show();
+      $('[value="status-manage-returned"]').prop('disabled', false).show();
+      break;
+    case 'Returned':
+      $('[value="status-manage-returned"]').prop('disabled', false).show();
+      break;
+    case 'Denied':
+      $('[value="status-manage-denied"]').prop('disabled', false).show();
+      break;
+  }
+  $('.select-selected').show();
+
   var pickupPayText;
   if (reservation.type == 'Locker')
     $('[value="status-manage-pickup-pay"]').text('To Pay')
