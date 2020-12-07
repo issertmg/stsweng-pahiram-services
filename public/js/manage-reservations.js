@@ -262,6 +262,7 @@ $('#approveReservationModal').on('show.bs.modal', (event) => {
   $('#approveStatus').val('status-manage-pickup-pay');
   $('#approvePaymentDate').val(payDateString);
   $('#approveIDNum').text(reservation.userID);
+  $('#approvePenalty').val(0);
 
   $('#apUnclearedError').text('Loading...').removeClass('error-label');
   $('#approveUserInfo').text('Loading...');
@@ -322,7 +323,7 @@ $('#denyReservationModal').on('show.bs.modal', (event) => {
   $('#denyRemarks').val(reservation.remarks);
   $('#denyStatus').val('status-manage-denied');
   $('#denyIDNum').text(reservation.userID);
-
+  $('#denyPenalty').val(0);
 
   $('#denyPenaltyForm').css('display', 'none');
   $('#denySelectForm').css('display', 'none');

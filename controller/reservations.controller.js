@@ -308,6 +308,9 @@ exports.reservation_update = async function (req, res) {
             }
         } catch (err) { console.log(err); };
     }
+    else {
+        console.log(errors);
+    }
 
     res.redirect('/reservations/manage');
 }
