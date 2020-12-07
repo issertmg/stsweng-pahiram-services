@@ -235,11 +235,15 @@
         </div>
 
         <form class="form-horizontal" method="post" action="/reservations/manage/update" id="editForm">
+          <input type="hidden" id="currentStatus" name="currentStatus">
           <input type="hidden" id="reservationID" name="reservationID">
           <input type="hidden" id="onItemType" name="onItemType">
           <div class="modal-body col-lg-10 mx-auto">
             <div class="alert alert-warning" role="alert" id="penaltyAlert">
                 Penalty can only be 0 or a positive number.
+            </div>
+            <div class="alert alert-warning" role="alert" id="inspectAlert">
+                Input element properties has been altered. Please refresh the page.
             </div>
             <div class="d-flex flex-column">
               <div class="font-weight-bold pl-2 mb-2" id="idNum"></div>

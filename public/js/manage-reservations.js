@@ -350,6 +350,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
   $('#reservationID').val(reservation.id);
   $('#onItemType').val(reservation.type);
   $('#paymentDate').val(payDateString);
+  $('#currentStatus').val(reservation.status);
 
   // Hide all select options
   $('[value="status-manage-pending"]').prop('disabled', true).hide();
@@ -442,6 +443,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 
   $('#status').change();
   $('#penaltyAlert').hide();
+  $('#inspectAlert').hide();
 });
 
 $("#editRemarks").on("keyup change", function() {
@@ -459,15 +461,65 @@ $("#approveRemarks").on("keyup change", function() {
 });
 
 $('#statusSubmit').click(function() {
+  hideAllAlert();
   const ePenalty = validator.trim($('#penalty').val());
   const ePenaltyEmpty = validator.isEmpty(ePenalty);
 
   if (!ePenaltyEmpty && (ePenalty >= 0)) {
-    $('#statusSubmit').off("click");
-    $('#editForm').submit();
+    const currStatus = $('#currentStatus').val();
+    const nextStatus = $('#status').val();
+
+    if (isValidSetStatus(currStatus, nextStatus)) {
+      $('#statusSubmit').off("click");
+      $('#editForm').submit();
+    }
+    else {
+      $('#inspectAlert').show()
+    }
   }
   else {
     $('#penaltyAlert').show()
   }
 })
 
+function isValidSetStatus (currentStatus, nextStatus) {
+  nextStatus = nextStatus.slice(14);
+  console.log(nextStatus);
+
+  if (currentStatus === 'Pending') {
+    if (nextStatus === 'pending' || nextStatus === 'pickup-pay' || nextStatus === 'denied') {
+      return true;
+    }
+  }
+  else if (currentStatus === 'To Pay' || currentStatus === 'For Pickup') {
+    if (nextStatus === 'pickup-pay' || nextStatus === 'on-rent' || nextStatus === 'denied') {
+      return true;
+    }
+  }
+  else if (currentStatus === 'On Rent') {
+    if (nextStatus === 'on-rent' || nextStatus === 'uncleared' || nextStatus === 'returned') {
+      return true;
+    }
+  }
+  else if (currentStatus === 'Uncleared') {
+    if (nextStatus === 'uncleared' || nextStatus === 'returned') {
+      return true;
+    }
+  }
+  else if (currentStatus === 'Returned') {
+    if (nextStatus === 'returned') {
+      return true;
+    }
+  }
+  else if (currentStatus === 'Denied') {
+    if (nextStatus === 'denied') {
+      return true;
+    }
+  }
+  return false;
+}
+
+function hideAllAlert () {
+  $('#penaltyAlert').hide();
+  $('#inspectAlert').hide();
+}
