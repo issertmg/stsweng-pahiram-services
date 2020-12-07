@@ -6,6 +6,8 @@ const User = require('../model/user.model');
 const Equipment = require('../model/equipment.model');
 const Locker = require('../model/locker.model');
 
+const { validationResult } = require('express-validator');
+
 const EQUIPMENT_PENALTY_INITIAL = 50;
 const EQUIPMENT_PENALTY_INCREMENT = 20;
 
@@ -215,93 +217,97 @@ exports.uncleared_get = async function (req, res) {
 }
 
 exports.reservation_update = async function (req, res) {
-    try {
-        var user = await User.findOne({ idNum: parseInt(req.session.idNum) });
+    const errors = validationResult(req);
 
-        console.log(req.body);
+    if (errors.isEmpty()) {
+        try {
+            var user = await User.findOne({ idNum: parseInt(req.session.idNum) });
 
-        if (user) {
-            var status;
-            var reservation = await Reservation.findById(req.body.reservationID);
-            switch (req.body.status) {
-                case 'status-manage-pending':
-                    status = 'Pending';
-                    if (req.body.onItemType == 'Locker') { 
-                        await Locker.findByIdAndUpdate(reservation.item, { status: 'occupied' }); 
-                    }
-                    else { 
-                        if (reservation.status == 'Denied' || reservation.status == 'Returned') {
-                            await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+            console.log(req.body);
+
+            if (user) {
+                var status;
+                var reservation = await Reservation.findById(req.body.reservationID);
+                switch (req.body.status) {
+                    case 'status-manage-pending':
+                        status = 'Pending';
+                        if (req.body.onItemType == 'Locker') {
+                            await Locker.findByIdAndUpdate(reservation.item, { status: 'occupied' });
                         }
-                    }
-                    break;
-                case 'status-manage-pickup-pay':
-                    status = (req.body.onItemType == 'Locker') ? 'To Pay' : 'For Pickup';        
-                    if (req.body.onItemType == 'Locker') { 
-                        await Locker.findByIdAndUpdate(reservation.item, { status: 'occupied' }); 
-                    }
-                    else { 
-                        if (reservation.status == 'Denied' || reservation.status == 'Returned') {
-                            await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+                        else {
+                            if (reservation.status == 'Denied' || reservation.status == 'Returned') {
+                                await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+                            }
                         }
-                    }                    
-                    break;
-                case 'status-manage-on-rent':
-                    status = 'On Rent';                    
-                    if (req.body.onItemType == 'Locker') { 
-                        await Locker.findByIdAndUpdate(reservation.item, { status: 'occupied' }); 
-                    }
-                    else { 
-                        if (reservation.status == 'Denied' || reservation.status == 'Returned') {
-                            await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+                        break;
+                    case 'status-manage-pickup-pay':
+                        status = (req.body.onItemType == 'Locker') ? 'To Pay' : 'For Pickup';
+                        if (req.body.onItemType == 'Locker') {
+                            await Locker.findByIdAndUpdate(reservation.item, { status: 'occupied' });
                         }
-                    }                    
-                    break;
-                case 'status-manage-returned':
-                    status = 'Returned';
-                    if (req.body.onItemType == 'Locker') { 
-                        await Locker.findByIdAndUpdate(reservation.item, { status: 'vacant' }); 
-                    }
-                    else { 
-                        if (reservation.status != 'Denied' && reservation.status != 'Returned') {
-                            await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
+                        else {
+                            if (reservation.status == 'Denied' || reservation.status == 'Returned') {
+                                await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+                            }
                         }
-                    }
-                    break;
-                case 'status-manage-uncleared':
-                    status = 'Uncleared';                    
-                    if (req.body.onItemType == 'Locker') { 
-                        await Locker.findByIdAndUpdate(reservation.item, { status: 'uncleared' }); 
-                    }
-                    else { 
-                        if (reservation.status == 'Denied' || reservation.status == 'Returned') {
-                            await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+                        break;
+                    case 'status-manage-on-rent':
+                        status = 'On Rent';
+                        if (req.body.onItemType == 'Locker') {
+                            await Locker.findByIdAndUpdate(reservation.item, { status: 'occupied' });
                         }
-                    }
-                    break;
-                case 'status-manage-denied':
-                    status = 'Denied';                    
-                    if (req.body.onItemType == 'Locker') { 
-                        await Locker.findByIdAndUpdate(reservation.item, { status: 'vacant' }); 
-                    }
-                    else { 
-                        if (reservation.status != 'Denied' && reservation.status != 'Returned') {
-                            await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
+                        else {
+                            if (reservation.status == 'Denied' || reservation.status == 'Returned') {
+                                await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+                            }
                         }
-                    }                    
-                    break;
+                        break;
+                    case 'status-manage-returned':
+                        status = 'Returned';
+                        if (req.body.onItemType == 'Locker') {
+                            await Locker.findByIdAndUpdate(reservation.item, { status: 'vacant' });
+                        }
+                        else {
+                            if (reservation.status != 'Denied' && reservation.status != 'Returned') {
+                                await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
+                            }
+                        }
+                        break;
+                    case 'status-manage-uncleared':
+                        status = 'Uncleared';
+                        if (req.body.onItemType == 'Locker') {
+                            await Locker.findByIdAndUpdate(reservation.item, { status: 'uncleared' });
+                        }
+                        else {
+                            if (reservation.status == 'Denied' || reservation.status == 'Returned') {
+                                await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+                            }
+                        }
+                        break;
+                    case 'status-manage-denied':
+                        status = 'Denied';
+                        if (req.body.onItemType == 'Locker') {
+                            await Locker.findByIdAndUpdate(reservation.item, { status: 'vacant' });
+                        }
+                        else {
+                            if (reservation.status != 'Denied' && reservation.status != 'Returned') {
+                                await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
+                            }
+                        }
+                        break;
+                }
+
+                if (userIsAdmin(user))
+                    await Reservation.findByIdAndUpdate(req.body.reservationID, {
+                        status: status,
+                        remarks: req.body.remarks,
+                        penalty: req.body.status == 'status-manage-uncleared' ? req.body.penalty : 0,
+                        lastUpdated: Date.now(),
+                        pickupPayDate: req.body.paymentDate
+                    });
             }
-
-            if (userIsAdmin(user))
-                await Reservation.findByIdAndUpdate(req.body.reservationID, {
-                    status: status,
-                    remarks: req.body.remarks,
-                    penalty: req.body.status == 'status-manage-uncleared' ? req.body.penalty : 0,
-                    lastUpdated: Date.now(),
-                    pickupPayDate: req.body.paymentDate
-                });
-        }
-    } catch (err) { console.log(err); };
+        } catch (err) { console.log(err); };
+    }
 
     res.redirect('/reservations/manage');
 }

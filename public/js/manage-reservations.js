@@ -441,6 +441,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
   });
 
   $('#status').change();
+  $('#penaltyAlert').hide();
 });
 
 $("#editRemarks").on("keyup change", function() {
@@ -456,3 +457,17 @@ $("#approveRemarks").on("keyup change", function() {
     inputElement.val(inputElement.val().slice(0, 250));
   }
 });
+
+$('#statusSubmit').click(function() {
+  const ePenalty = validator.trim($('#penalty').val());
+  const ePenaltyEmpty = validator.isEmpty(ePenalty);
+
+  if (!ePenaltyEmpty && (ePenalty >= 0)) {
+    $('#statusSubmit').off("click");
+    $('#editForm').submit();
+  }
+  else {
+    $('#penaltyAlert').show()
+  }
+})
+
