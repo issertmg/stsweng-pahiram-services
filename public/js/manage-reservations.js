@@ -23,7 +23,8 @@ $(document).ready(function () {
       { "data": "dateCreated" },
       { "data": "description" },
       { "data": "penalty" },
-      { "data": "status" }
+      { "data": "status" },
+      { "data": "lastUpdated" }
     ]
   });
 

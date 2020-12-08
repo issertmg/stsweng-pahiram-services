@@ -245,39 +245,41 @@ exports.reservation_details = async function (req, res) {
 exports.reservations_get = async function (req, res) {
     console.log(req.query);
     try {
-        var reservations = new Object();
-        const itemsPerPage = 5;
-
-        var statuses = []
-        switch (req.query.status) {
-            case 'onrent':
-                statuses.push('On Rent');
-                break;
-            case 'uncleared':
-                statuses.push('Uncleared');
-                break;
-            case 'returned':
-                statuses.push('Returned');
-                break;
-            case 'denied':
-                statuses.push('Denied');
-                break;
-            default:
-                statuses.push('On Rent');
-                statuses.push('Uncleared');
-                statuses.push('Returned');
-                statuses.push('Denied');
-        }
+        var statuses = ['On Rent', 'Uncleared', 'Returned', 'Denied'];
 
         reservations = await Reservation
-            .find({status: statuses}, '-_id userID dateCreated description penalty status')
-            .sort({ lastUpdated: -1 });
+            .find({status: statuses}, '-_id userID dateCreated description penalty status lastUpdated')
+            .sort(getSortValue(req.query.order[0]))
+            .skip(parseInt(req.query.start))
+            .limit(parseInt(req.query.length));
 
         if (reservations) 
             res.send(reservations);
 
     } catch (error) {
         console.log(error);
+    }
+}
+
+function getSortValue(order) {
+    
+    if (order == null) return {'lastUpdated': -1};
+
+    let dir = (order.dir === 'asc') ? 1: -1;
+
+    switch (order.column) {
+        case '0':
+            return {'userID': dir};
+        case '1':
+            return {'dateCreated': dir};
+        case '2':
+            return {'description': dir};
+        case '3':
+            return {'penalty': dir};
+        case '4':
+            return {'status': dir};
+        case '5':
+            return {'lastUpdated': dir};
     }
 }
 
