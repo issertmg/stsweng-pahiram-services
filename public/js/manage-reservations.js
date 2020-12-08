@@ -1,3 +1,7 @@
+/**
+ * Initializes the whole page.
+ * @returns <void> - nothing
+ */
 $(document).ready(function () {
   var pagination;
   var pageNum;
@@ -65,10 +69,18 @@ $(document).ajaxComplete(function () {
   $('.page-link').css('filter', 'opacity(1)');
 });
 
+/**
+ * Removes the pagination for the table containing the reservations.
+ * @returns <void> - nothing
+ */
 function removePagination() {
   $('#resPagination .page-item').remove();
 }
 
+/**
+ * Setup the pagination for the table containing the reservations.
+ * @returns <void> - nothing
+ */
 function setupPagination(pagination, pageStart, pageEnd, pageNum, idNum, stat) {
   $('#resPagination').append(`
       <li class="page-item">
@@ -143,6 +155,10 @@ function updatePagination(pageStart, pageEnd, pageNum) {
   })
 }
 
+/**
+ * Displays the reservations.
+ * @returns <void> - nothing
+ */
 function displayReservations(reservations) {
   $('#reservationsTable tr').remove();
   $('.empty-note').remove();
@@ -172,7 +188,7 @@ function displayReservations(reservations) {
       '</td>' +
       '<td>' + reservation.userID + '</td>' +
       '<td>' + (new Date(reservation.dateCreated)).toDateString() + '</td>' +
-      '<td>' + 
+      '<td class="description">' +
         ((reservation.onItemType == 'Equipment') ? reservation.title + '; ' : '') +
         reservation.description + 
       '</td>' +
@@ -203,11 +219,19 @@ function displayReservations(reservations) {
   });
 }
 
+/**
+ * Initializes the DeleteReservation modal.
+ * @returns <void> - nothing
+ */
 $('#delReservationModal').on('show.bs.modal', (event) => {
   $('#delReservationID').val($('#reservationID').val());
   $('#prevPath').val('manageReservations');
 });
 
+/**
+ * Initializes the ApproveReservation modal.
+ * @returns <void> - nothing
+ */
 $('#approveReservationModal').on('show.bs.modal', (event) => {
   var btn = $(event.relatedTarget).prev();
   var reservation = {
@@ -238,6 +262,7 @@ $('#approveReservationModal').on('show.bs.modal', (event) => {
   $('#approveStatus').val('status-manage-pickup-pay');
   $('#approvePaymentDate').val(payDateString);
   $('#approveIDNum').text(reservation.userID);
+  $('#approvePenalty').val(0);
 
   $('#apUnclearedError').text('Loading...').removeClass('error-label');
   $('#approveUserInfo').text('Loading...');
@@ -272,6 +297,10 @@ $('#approveReservationModal').on('show.bs.modal', (event) => {
     $('#approvePaymentForm').css('display', 'none');
 });
 
+/**
+ * Initializes the DenyReservation modal.
+ * @returns <void> - nothing
+ */
 $('#denyReservationModal').on('show.bs.modal', (event) => {
   var btn = $(event.relatedTarget).prev().prev();
   var reservation = {
@@ -294,12 +323,16 @@ $('#denyReservationModal').on('show.bs.modal', (event) => {
   $('#denyRemarks').val(reservation.remarks);
   $('#denyStatus').val('status-manage-denied');
   $('#denyIDNum').text(reservation.userID);
-
+  $('#denyPenalty').val(0);
 
   $('#denyPenaltyForm').css('display', 'none');
   $('#denySelectForm').css('display', 'none');
 });
 
+/**
+ * Initializes the EditReservation modal.
+ * @returns <void> - nothing
+ */
 $('#editReservationModal').on('show.bs.modal', (event) => {
   var btn = $(event.relatedTarget);
   var reservation = {
@@ -350,6 +383,46 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
   $('#reservationID').val(reservation.id);
   $('#onItemType').val(reservation.type);
   $('#paymentDate').val(payDateString);
+  $('#currentStatus').val(reservation.status);
+
+  // Hide all select options
+  $('[value="status-manage-pending"]').prop('disabled', true).hide();
+  $('[value="status-manage-pickup-pay"]').prop('disabled', true).hide();
+  $('[value="status-manage-on-rent"]').prop('disabled', true).hide();
+  $('[value="status-manage-uncleared"]').prop('disabled', true).hide();
+  $('[value="status-manage-denied"]').prop('disabled', true).hide();
+  $('[value="status-manage-returned"]').prop('disabled', true).hide();
+
+  // Shows valid select options
+  switch (reservation.status) {
+    case 'Pending':
+      $('[value="status-manage-pending"]').prop('disabled', false).show();
+      $('[value="status-manage-pickup-pay"]').prop('disabled', false).show();
+      $('[value="status-manage-denied"]').prop('disabled', false).show();
+      break;
+    case 'To Pay':
+    case 'For Pickup':
+      $('[value="status-manage-pickup-pay"]').prop('disabled', false).show();
+      $('[value="status-manage-on-rent"]').prop('disabled', false).show();
+      $('[value="status-manage-denied"]').prop('disabled', false).show();
+      break;
+    case 'On Rent':
+      $('[value="status-manage-on-rent"]').prop('disabled', false).show();
+      $('[value="status-manage-uncleared"]').prop('disabled', false).show();
+      $('[value="status-manage-returned"]').prop('disabled', false).show();
+      break;
+    case 'Uncleared':
+      $('[value="status-manage-uncleared"]').prop('disabled', false).show();
+      $('[value="status-manage-returned"]').prop('disabled', false).show();
+      break;
+    case 'Returned':
+      $('[value="status-manage-returned"]').prop('disabled', false).show();
+      break;
+    case 'Denied':
+      $('[value="status-manage-denied"]').prop('disabled', false).show();
+      break;
+  }
+  $('.select-selected').show();
 
   var pickupPayText;
   if (reservation.type == 'Locker')
@@ -402,5 +475,92 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
   });
 
   $('#status').change();
-
+  $('#penaltyAlert').hide();
+  $('#inspectAlert').hide();
 });
+
+$("#editRemarks").on("keyup change", function() {
+  let inputElement = $(this);
+  if (inputElement.val().length > 250) {
+    inputElement.val(inputElement.val().slice(0, 250));
+  }
+});
+
+$("#approveRemarks").on("keyup change", function() {
+  let inputElement = $(this);
+  if (inputElement.val().length > 250) {
+    inputElement.val(inputElement.val().slice(0, 250));
+  }
+});
+
+$('#statusSubmit').click(function() {
+  hideAllAlert();
+  const ePenalty = validator.trim($('#penalty').val());
+  const ePenaltyEmpty = validator.isEmpty(ePenalty);
+
+  if (!ePenaltyEmpty && (ePenalty >= 0)) {
+    const currStatus = $('#currentStatus').val();
+    const nextStatus = $('#status').val();
+
+    if (isValidSetStatus(currStatus, nextStatus.slice(14))) {
+      $('#statusSubmit').off("click");
+      $('#editForm').submit();
+    }
+    else {
+      $('#inspectAlert').show()
+    }
+  }
+  else {
+    $('#penaltyAlert').show()
+  }
+})
+
+/**
+ * Checks if the status to be is valid with respect to the current status.
+ * @returns {boolean} - true if valid; false otherwise
+ */
+function isValidSetStatus (currentStatus, nextStatus) {
+
+  if (currentStatus === 'Pending') {
+    if (nextStatus === 'pending' || nextStatus === 'pickup-pay' || nextStatus === 'denied') {
+      return true;
+    }
+  }
+  else if (currentStatus === 'To Pay' || currentStatus === 'For Pickup') {
+    if (nextStatus === 'pickup-pay' || nextStatus === 'on-rent' || nextStatus === 'denied') {
+      return true;
+    }
+  }
+  else if (currentStatus === 'On Rent') {
+    if (nextStatus === 'on-rent' || nextStatus === 'uncleared' || nextStatus === 'returned') {
+      return true;
+    }
+  }
+  else if (currentStatus === 'Uncleared') {
+    if (nextStatus === 'uncleared' || nextStatus === 'returned') {
+      return true;
+    }
+  }
+  else if (currentStatus === 'Returned') {
+    if (nextStatus === 'returned') {
+      return true;
+    }
+  }
+  else if (currentStatus === 'Denied') {
+    if (nextStatus === 'denied') {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Hides all alert elements.
+ * @returns <void> - nothing
+ */
+function hideAllAlert () {
+  $('#penaltyAlert').hide();
+  $('#inspectAlert').hide();
+}
+
+exports.isValidSetStatus = isValidSetStatus;

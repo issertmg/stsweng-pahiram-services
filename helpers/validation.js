@@ -69,6 +69,15 @@ const validation = {
                 .isLength({min: 10, max: 10})
                 .isNumeric({no_symbols: true})
         ];
+    },
+
+    updateReservationValidation: function () {
+        return [
+            check('penalty', 'Penalty should be 0 or a positive number').notEmpty()
+                .isFloat({min: 0}),
+            check('remarks', 'Maximum length of remarks is 250 characters')
+                .isLength({max: 250})
+        ];
     }
 }
 
