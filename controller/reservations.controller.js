@@ -247,14 +247,26 @@ exports.reservations_get = async function (req, res) {
     try {
         var statuses = ['On Rent', 'Uncleared', 'Returned', 'Denied'];
 
-        reservations = await Reservation
-            .find({status: statuses}, '-_id userID dateCreated description penalty status lastUpdated')
+        count = await Reservation
+            .find({status: statuses})
+            .countDocuments();
+
+        data = await Reservation
+            .find({status: statuses}, '-_id userID title dateCreated description penalty status lastUpdated')
             .sort(getSortValue(req.query.order[0]))
             .skip(parseInt(req.query.start))
             .limit(parseInt(req.query.length));
 
-        if (reservations) 
-            res.send(reservations);
+        if (data && count) {
+
+            let datatable = {
+                recordsTotal: count,
+                recordsFiltered: count,
+                data: data
+            }
+
+            res.send(datatable);
+        }
 
     } catch (error) {
         console.log(error);
@@ -271,14 +283,16 @@ function getSortValue(order) {
         case '0':
             return {'userID': dir};
         case '1':
-            return {'dateCreated': dir};
+            return {'type': dir};
         case '2':
-            return {'description': dir};
+            return {'dateCreated': dir};
         case '3':
-            return {'penalty': dir};
+            return {'description': dir};
         case '4':
-            return {'status': dir};
+            return {'penalty': dir};
         case '5':
+            return {'status': dir};
+        case '6':
             return {'lastUpdated': dir};
     }
 }

@@ -16,10 +16,11 @@ $(document).ready(function () {
     serverSide: true,
     ajax: {
       url: '/reservations/manage/get-reservations',
-      dataSrc: ''
+      dataSrc: 'data'
     },
     columns: [
       { "data": "userID" },
+      { "data": "title" },
       { "data": "dateCreated" },
       { "data": "description" },
       { "data": "penalty" },
