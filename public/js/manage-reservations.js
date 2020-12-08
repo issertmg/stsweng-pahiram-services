@@ -11,18 +11,34 @@ $(document).ready(function () {
   var stat = 'all';
   const itemsPerPage = 5;
 
-  $.get('/reservations/manage/get-reservations',
-    {page: 1, idnum: '', status: 'all'},
-    function (data, status) {
-    pagination = Math.ceil(data.totalCt / itemsPerPage);
-    pageNum = 1;
-    pageStart = 1;
-    pageEnd = pagination > 5 ? 5 : pagination;
-    removePagination();
-    if (data.totalCt > itemsPerPage)
-      setupPagination(pagination, pageStart, pageEnd, pageNum, idNum, stat);
-    displayReservations(data.items);
+  $("#otherReservationsTable").DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+      url: '/reservations/manage/get-reservations',
+      dataSrc: ''
+    },
+    columns: [
+      { "data": "userID" },
+      { "data": "dateCreated" },
+      { "data": "description" },
+      { "data": "penalty" },
+      { "data": "status" }
+    ]
   });
+
+  // $.get('/reservations/manage/get-reservations',
+  //   {page: 1, idnum: '', status: 'all'},
+  //   function (data, status) {
+  //   pagination = Math.ceil(data.totalCt / itemsPerPage);
+  //   pageNum = 1;
+  //   pageStart = 1;
+  //   pageEnd = pagination > 5 ? 5 : pagination;
+  //   removePagination();
+  //   if (data.totalCt > itemsPerPage)
+  //     setupPagination(pagination, pageStart, pageEnd, pageNum, idNum, stat);
+  //   displayReservations(data.items);
+  // });
 
   $("#statusFilter").on("change", function () {
     stat = $(this).val().split('-')[1];

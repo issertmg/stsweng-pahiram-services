@@ -191,7 +191,59 @@ exports.reservation_details = async function (req, res) {
     });
 }
 
+// exports.reservations_get = async function (req, res) {
+//     try {
+//         var reservations = new Object();
+//         const itemsPerPage = 5;
+
+//         var statuses = []
+//         switch (req.query.status) {
+//             case 'onrent':
+//                 statuses.push('On Rent');
+//                 break;
+//             case 'uncleared':
+//                 statuses.push('Uncleared');
+//                 break;
+//             case 'returned':
+//                 statuses.push('Returned');
+//                 break;
+//             case 'denied':
+//                 statuses.push('Denied');
+//                 break;
+//             default:
+//                 statuses.push('On Rent');
+//                 statuses.push('Uncleared');
+//                 statuses.push('Returned');
+//                 statuses.push('Denied');
+//         }
+
+//         reservations.totalCt = await Reservation
+//             .find({
+//                 status: statuses,
+//                 userID: { $regex: '[0-9]*' + req.query.idnum + '[0-9]*' }
+//             })
+//             .countDocuments();
+
+//         reservations.items = await Reservation
+//             .find({
+//                 status: statuses,
+//                 userID: { $regex: '[0-9]*' + req.query.idnum + '[0-9]*' }
+//             })
+//             .sort({ lastUpdated: -1 })
+//             .skip((req.query.page - 1) * itemsPerPage)
+//             .limit(itemsPerPage);
+
+//         if (reservations) {
+//             res.send(reservations);
+//         }
+
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+
 exports.reservations_get = async function (req, res) {
+    console.log(req.query);
     try {
         var reservations = new Object();
         const itemsPerPage = 5;
@@ -217,25 +269,12 @@ exports.reservations_get = async function (req, res) {
                 statuses.push('Denied');
         }
 
-        reservations.totalCt = await Reservation
-            .find({
-                status: statuses,
-                userID: { $regex: '[0-9]*' + req.query.idnum + '[0-9]*' }
-            })
-            .countDocuments();
+        reservations = await Reservation
+            .find({status: statuses}, '-_id userID dateCreated description penalty status')
+            .sort({ lastUpdated: -1 });
 
-        reservations.items = await Reservation
-            .find({
-                status: statuses,
-                userID: { $regex: '[0-9]*' + req.query.idnum + '[0-9]*' }
-            })
-            .sort({ lastUpdated: -1 })
-            .skip((req.query.page - 1) * itemsPerPage)
-            .limit(itemsPerPage);
-
-        if (reservations) {
+        if (reservations) 
             res.send(reservations);
-        }
 
     } catch (error) {
         console.log(error);
