@@ -252,7 +252,17 @@ exports.reservations_get = async function (req, res) {
             .countDocuments();
 
         data = await Reservation
-            .find({status: statuses}, '-_id userID title dateCreated description penalty status lastUpdated')
+            .find(
+                {
+                    status: statuses, 
+                    $or: [
+                        {userID: { $regex: '[0-9]*' + req.query.search.value + '[0-9]*' }},
+                        {status: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
+                        {title: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
+                    ]
+                    
+                }, 
+                '-_id userID title dateCreated description penalty status lastUpdated')
             .sort(getSortValue(req.query.order[0]))
             .skip(parseInt(req.query.start))
             .limit(parseInt(req.query.length));
@@ -262,7 +272,7 @@ exports.reservations_get = async function (req, res) {
             let datatable = {
                 recordsTotal: count,
                 recordsFiltered: count,
-                data: data
+                data: data,
             }
 
             res.send(datatable);
