@@ -243,7 +243,6 @@ exports.reservation_details = async function (req, res) {
 // }
 
 exports.reservations_get = async function (req, res) {
-    console.log(req.query);
     try {
         var statuses = ['On Rent', 'Uncleared', 'Returned', 'Denied'];
 
@@ -261,8 +260,8 @@ exports.reservations_get = async function (req, res) {
                         {title: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
                     ]
                     
-                }, 
-                '-_id userID title dateCreated description penalty status lastUpdated')
+                },
+                '-item')
             .sort(getSortValue(req.query.order[0]))
             .skip(parseInt(req.query.start))
             .limit(parseInt(req.query.length));
@@ -284,8 +283,24 @@ exports.reservations_get = async function (req, res) {
 }
 
 function getSortValue(order) {
-    
-    if (order == null) return {'lastUpdated': -1};
+
+    /*
+    { "data": "userID" },
+    { "data": "onItemType" },
+    { "data": "title" },
+    { "data": "dateCreated" },
+    { "data": "description" },
+    { "data": "status" },
+    { "data": "remarks", "visible": false },
+    { "data": "_id", "visible": false },
+    { "data": "penalty", "visible": false },
+    { "data": "lastUpdated", "visible": false },
+    */
+
+    if (order == null) {
+        console.log('Null')
+        return {'lastUpdated': -1};  
+    } 
 
     let dir = (order.dir === 'asc') ? 1: -1;
 
@@ -293,16 +308,22 @@ function getSortValue(order) {
         case '0':
             return {'userID': dir};
         case '1':
-            return {'type': dir};
+            return {'onItemType': dir};
         case '2':
-            return {'dateCreated': dir};
+            return {'title': dir};
         case '3':
-            return {'description': dir};
+            return {'dateCreated': dir};
         case '4':
-            return {'penalty': dir};
+            return {'description': dir};
         case '5':
             return {'status': dir};
         case '6':
+            return {'remarks': dir};
+        case '7':
+            return {'_id': dir};
+        case '8':
+            return {'penalty': dir};
+        case '9':
             return {'lastUpdated': dir};
     }
 }
@@ -330,6 +351,7 @@ exports.uncleared_get = async function (req, res) {
 }
 
 exports.reservation_update = async function (req, res) {
+    console.log('update')
     const errors = validationResult(req);
 
     if (errors.isEmpty()) {

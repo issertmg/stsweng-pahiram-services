@@ -18,15 +18,25 @@ $(document).ready(function () {
       url: '/reservations/manage/get-reservations',
       dataSrc: 'data'
     },
+    'createdRow': function(row, data, dataIndex) {
+      $(row).attr('data-toggle', 'modal');
+      $(row).attr('data-target', '#editReservationModal');
+      $(row).css('cursor', 'pointer');
+      console.log(data);
+    },
     columns: [
       { "data": "userID" },
+      { "data": "onItemType" },
       { "data": "title" },
       { "data": "dateCreated" },
       { "data": "description" },
-      { "data": "penalty" },
       { "data": "status" },
-      { "data": "lastUpdated" }
-    ]
+      { "data": "remarks", "visible": false },
+      { "data": "_id", "visible": false },
+      { "data": "penalty", "visible": false },
+      { "data": "lastUpdated", "visible": false },
+    ],
+    "order": [[ 9, "desc" ]]
   });
 
   // $.get('/reservations/manage/get-reservations',
@@ -251,6 +261,7 @@ $('#delReservationModal').on('show.bs.modal', (event) => {
  * @returns <void> - nothing
  */
 $('#approveReservationModal').on('show.bs.modal', (event) => {
+
   var btn = $(event.relatedTarget).prev();
   var reservation = {
     id: btn.data('id'),
@@ -352,19 +363,26 @@ $('#denyReservationModal').on('show.bs.modal', (event) => {
  * @returns <void> - nothing
  */
 $('#editReservationModal').on('show.bs.modal', (event) => {
-  var btn = $(event.relatedTarget);
-  var reservation = {
-    id: btn.data('id'),
-    title: btn.data('title'),
-    userID: btn.data('userid'),
-    dateCreated: btn.data('datecreated'),
-    status: btn.data('status'),
-    description: btn.data('description'),
-    remarks: btn.data('remarks'),
-    penalty: btn.data('penalty'),
-    type: btn.data('type'),
-    paymentDate: btn.data('paymentdate')
-  }
+
+  console.log(event.relatedTarget.tagName);
+
+  let reservation;
+  if (event.relatedTarget.tagName === 'DIV') {
+    let btn = $(event.relatedTarget);
+    reservation = {
+      _id: btn.data('id'),
+      title: btn.data('title'),
+      userID: btn.data('userid'),
+      dateCreated: btn.data('datecreated'),
+      status: btn.data('status'),
+      description: btn.data('description'),
+      remarks: btn.data('remarks'),
+      penalty: btn.data('penalty'),
+      type: btn.data('type'),
+      paymentDate: btn.data('paymentdate')
+    }
+  } else
+    reservation = $('#otherReservationsTable').DataTable().row(event.relatedTarget).data();
 
   $('#unclearedError').text('Loading...').removeClass('error-label');
   $('#userInfo').text('Loading...');
@@ -398,7 +416,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
   $('#description').text(reservation.description);
   $('#editRemarks').val(reservation.remarks);
   $('#penalty').val(reservation.penalty);
-  $('#reservationID').val(reservation.id);
+  $('#reservationID').val(reservation._id);
   $('#onItemType').val(reservation.type);
   $('#paymentDate').val(payDateString);
   $('#currentStatus').val(reservation.status);
@@ -531,7 +549,7 @@ $('#statusSubmit').click(function() {
   else {
     $('#penaltyAlert').show()
   }
-})
+});
 
 /**
  * Checks if the status to be is valid with respect to the current status.
