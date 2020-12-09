@@ -244,7 +244,12 @@ exports.reservation_details = async function (req, res) {
 
 exports.reservations_get = async function (req, res) {
     try {
-        var statuses = ['On Rent', 'Uncleared', 'Returned', 'Denied'];
+        let statuses = [];
+        if (req.query.columns[5].search.value === '' ||
+            req.query.columns[5].search.value === 'All')
+            statuses = ['On Rent', 'Uncleared', 'Returned', 'Denied'];
+        else
+            statuses.push(req.query.columns[5].search.value);
 
         count = await Reservation
             .find({status: statuses})
@@ -257,7 +262,7 @@ exports.reservations_get = async function (req, res) {
                     $or: [
                         {userID: { $regex: '[0-9]*' + req.query.search.value + '[0-9]*' }},
                         {status: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
-                        {title: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
+                        {onItemType: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
                     ]
                     
                 },
