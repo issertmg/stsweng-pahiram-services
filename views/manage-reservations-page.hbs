@@ -19,6 +19,8 @@
   <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
 
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+  
   <script src="/js/validator.min.js" type="text/javascript"></script>
 
   <title>Manage Reservations</title>
@@ -172,37 +174,32 @@
                     <div class="row">
                       <div class="col-md-3 col-6 input-group mb-2">
                         <div class="form-group form-inline my-auto flex-fill">
-                          <input type="search" id="searchBox" class="form-control" placeholder="ID Number">
+                          <input type="search" id="searchBox" class="form-control" placeholder="Search">
                         </div>
                       </div>
                       <div class="col-md-3 col-6 mb-2 d-flex align-items-center">
-                        <select class="form-control custom-select" name="statusFilter" id="statusFilter">
-                          <option value="filter-all">All</option>
-                          <option value="filter-onrent">On Rent</option>
-                          <option value="filter-returned">Returned</option>
-                          <option value="filter-uncleared">Uncleared</option>
-                          <option value="filter-denied">Denied</option>
+                        <select class="form-control custom-select" name="typeFilter" id="typeFilter">
+                          <option value="All">All</option>
+                          <option value="Locker">Locker</option>
+                          <option value="Equipment">Equipment</option>
                         </select>
-                      </div>
-                      <div class="col-md-6 d-flex" style="overflow-x: auto;">
-                        <nav class="ml-md-auto mr-md-0 mx-auto">
-                          <ul class="pagination d-flex align-items-center" id="resPagination">
-                          </ul>
-                        </nav>
                       </div>
                     </div>
 
                     <div class="col-12 table-responsive px-0">
-                      <table class="table table-hover">
+                      <table class="table table-hover" id="otherReservationsTable">
                         <thead class="">
                           <tr class="active head">
-                            <th></th>
                             <th>ID number</th>
                             <th>Date requested</th>
+                            <th>Type</th>
+                            <th>Title</th>
                             <th>Description</th>
-                            <th>Penalty</th>
                             <th>Status</th>
-                            <th></th>
+                            <th>Remarks</th>
+                            <th>ID</th>
+                            <th>Penalty</th>
+                            <th>Last Updated</th>
                           </tr>
                         </thead>
                         <tbody id="reservationsTable">
@@ -474,6 +471,7 @@
     integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
     crossorigin="anonymous"></script>
   <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
   <script type="text/javascript" src="/js/manage-reservations.js"></script>
   <script type="text/javascript" src="/js/styles.js"></script>
 </body>

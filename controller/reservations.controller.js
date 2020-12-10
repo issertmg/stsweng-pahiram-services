@@ -193,52 +193,91 @@ exports.reservation_details = async function (req, res) {
 
 exports.reservations_get = async function (req, res) {
     try {
-        var reservations = new Object();
-        const itemsPerPage = 5;
+        let type = [];
+        if (req.query.columns[2].search.value === '' ||
+            req.query.columns[2].search.value === 'All')
+            type = ['Locker', 'Equipment'];
+        else
+            type.push(req.query.columns[2].search.value);
 
-        var statuses = []
-        switch (req.query.status) {
-            case 'onrent':
-                statuses.push('On Rent');
-                break;
-            case 'uncleared':
-                statuses.push('Uncleared');
-                break;
-            case 'returned':
-                statuses.push('Returned');
-                break;
-            case 'denied':
-                statuses.push('Denied');
-                break;
-            default:
-                statuses.push('On Rent');
-                statuses.push('Uncleared');
-                statuses.push('Returned');
-                statuses.push('Denied');
-        }
+        let sortObject;
+        if (req.query.order[0] == null)
+            sortObject = getSortValue(-1, -1);  // default sort
+        else
+            sortObject = getSortValue(req.query.order[0].column, req.query.order[0].dir);
 
-        reservations.totalCt = await Reservation
-            .find({
-                status: statuses,
-                userID: { $regex: '[0-9]*' + req.query.idnum + '[0-9]*' }
-            })
+        count = await Reservation
+            .find({onItemType: type})
             .countDocuments();
 
-        reservations.items = await Reservation
-            .find({
-                status: statuses,
-                userID: { $regex: '[0-9]*' + req.query.idnum + '[0-9]*' }
-            })
-            .sort({ lastUpdated: -1 })
-            .skip((req.query.page - 1) * itemsPerPage)
-            .limit(itemsPerPage);
+        data = await Reservation
+            .find(
+                {
+                    onItemType: type, 
+                    $or: [
+                        {userID: { $regex: '[0-9]*' + req.query.search.value + '[0-9]*' }},
+                        {status: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
+                        {onItemType: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
+                    ]
+                    
+                },
+                '-item')
+            .sort(sortObject)
+            .skip(parseInt(req.query.start))
+            .limit(parseInt(req.query.length));
 
-        if (reservations) {
-            res.send(reservations);
+        if (data && count) {
+
+            let datatable = {
+                recordsTotal: count,
+                recordsFiltered: count,
+                data: data,
+            }
+
+            res.send(datatable);
         }
 
     } catch (error) {
         console.log(error);
+    }
+}
+
+/**
+ * Determines the field to sort and the order
+ * @param column - the column number of the DataTable 
+ * @param dir  - the direction (asc or desc)
+ */
+function getSortValue(column, direction) {
+    if (column == null || direction == null) {
+        console.log('Null')
+        return {'lastUpdated': -1};  
+    } 
+
+    let dir = (direction === 'asc') ? 1: -1;
+
+    switch (column) {
+        case '0':
+            return {'userID': dir};
+        case '1':
+            return {'dateCreated': dir};
+        case '2':
+            return {'onItemType': dir};
+        case '3':
+            return {'title': dir};
+        case '4':
+            return {'description': dir};
+        case '5':
+            return {'status': dir};
+        case '6':
+            return {'remarks': dir};
+        case '7':
+            return {'_id': dir};
+        case '8':
+            return {'penalty': dir};
+        case '9':
+            return {'lastUpdated': dir};
+        default:
+            return {'lastUpdated': -1}
     }
 }
 
@@ -265,13 +304,12 @@ exports.uncleared_get = async function (req, res) {
 }
 
 exports.reservation_update = async function (req, res) {
+    console.log('update')
     const errors = validationResult(req);
 
     if (errors.isEmpty()) {
         try {
             var user = await User.findOne({ idNum: parseInt(req.session.idNum) });
-
-            console.log(req.body);
 
             if (user) {
                 var status;
@@ -415,3 +453,4 @@ function userIsAdmin(user) {
     return user.type == 'studentRep';
 }
 exports.userIsAdmin = userIsAdmin;
+exports.getSortValue = getSortValue;
