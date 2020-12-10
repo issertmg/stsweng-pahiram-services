@@ -3,14 +3,6 @@
  * @returns <void> - nothing
  */
 $(document).ready(function () {
-	var pagination;
-	var pageNum;
-	var pageStart;
-	var pageEnd;
-	var idNum = '';
-	var stat = 'all';
-	const itemsPerPage = 5;
-
 	$("#otherReservationsTable").DataTable({
 		processing: true,
 		serverSide: true,
@@ -46,20 +38,7 @@ $(document).ready(function () {
 
 	});
 
-	// $.get('/reservations/manage/get-reservations',
-	//   {page: 1, idnum: '', status: 'all'},
-	//   function (data, status) {
-	//   pagination = Math.ceil(data.totalCt / itemsPerPage);
-	//   pageNum = 1;
-	//   pageStart = 1;
-	//   pageEnd = pagination > 5 ? 5 : pagination;
-	//   removePagination();
-	//   if (data.totalCt > itemsPerPage)
-	//     setupPagination(pagination, pageStart, pageEnd, pageNum, idNum, stat);
-	//   displayReservations(data.items);
-	// });
-
-	$("#statusFilter").on("change", function () {
+	$("#typeFilter").on("change", function () {
 		$('#otherReservationsTable').DataTable()
 			.column(2)
 			.search($(this).val())
@@ -73,168 +52,6 @@ $(document).ready(function () {
 			.draw();
 	});
 });
-
-// $(document).ajaxStart(function () {
-// 	$('table').css('filter', 'opacity(0.3)');
-// 	$('.page-link').css('pointer-events', 'none');
-// 	$('.page-link').css('filter', 'opacity(0.3)');
-// });
-
-// $(document).ajaxComplete(function () {
-// 	$('table').css('filter', 'opacity(1)');
-// 	$('.page-link').css('pointer-events', 'auto');
-// 	$('.page-link').css('filter', 'opacity(1)');
-// });
-
-/**
- * Removes the pagination for the table containing the reservations.
- * @returns <void> - nothing
- */
-function removePagination() {
-	$('#resPagination .page-item').remove();
-}
-
-/**
- * Setup the pagination for the table containing the reservations.
- * @returns <void> - nothing
- */
-function setupPagination(pagination, pageStart, pageEnd, pageNum, idNum, stat) {
-	$('#resPagination').append(`
-      <li class="page-item">
-        <a class="page-link" href="#otherResCard" id="prevPage">
-          <div class="icon" id="arrow-left"/>
-        </a>
-      </li>
-    `);
-	for (var i = pageStart; i <= pageEnd; i++) {
-		$('#resPagination').append(
-			'<li class="page-item' + ((i == pageNum) ? ' active' : '') + '">' +
-			'<a class="page-link page-number" href="#otherResCard">' +
-			i +
-			'</a>' +
-			'</li>'
-		);
-	}
-	$('#resPagination').append(`
-      <li class="page-item">
-        <a class="page-link" href="#otherResCard" id="nextPage">
-          <div class="icon" id="arrow-right"/>
-        </a>
-      </li>
-    `);
-
-	$('#resPagination .page-link').click(function () {
-		var offset = 0;
-		if ($(this).attr('id') == 'nextPage')
-			offset = 1;
-		else if ($(this).attr('id') == 'prevPage')
-			offset = -1;
-		else if (pagination == 1)
-			offset = 0;
-		else
-			offset = $(this).text() - pageNum;
-
-		var maxPageShiftR = pagination - pageEnd;
-		var maxPageShiftL = pageStart - 1;
-
-		if (pageNum + offset >= 1 && pageNum + offset <= pagination && offset != 0) {
-			$.get('/reservations/manage/get-reservations',
-				{ page: pageNum + offset, idnum: idNum, status: stat },
-				function (data, status) {
-					if (pageNum + offset >= 1 && pageNum + offset <= pagination) {
-						if (offset > 0 && offset <= maxPageShiftR && pageNum + offset > (pageStart + pageEnd) / 2
-							|| offset < 0 && -1 * offset <= maxPageShiftL && pageNum + offset < (pageStart + pageEnd) / 2) {
-							pageStart += offset;
-							pageEnd += offset;
-						} else if (offset > 0 && offset > maxPageShiftR) {
-							pageStart += maxPageShiftR;
-							pageEnd += maxPageShiftR;
-						} else if (offset < 0 && -1 * offset > maxPageShiftL) {
-							pageStart -= maxPageShiftL;
-							pageEnd -= maxPageShiftL;
-						}
-					}
-					pageNum += offset;
-					updatePagination(pageStart, pageEnd, pageNum)
-					displayReservations(data.items);
-				});
-		}
-	});
-}
-
-function updatePagination(pageStart, pageEnd, pageNum) {
-	$('#resPagination .page-number').each(function (index, element) {
-		$(element).text(pageStart + index);
-		if ($(element).text() != pageNum)
-			$(element).parent().removeClass('active');
-		else
-			$(element).parent().addClass('active');
-	})
-}
-
-/**
- * Displays the reservations.
- * @returns <void> - nothing
- */
-function displayReservations(reservations) {
-	$('#reservationsTable tr').remove();
-	$('.empty-note').remove();
-
-	if (reservations.length == 0) {
-		$('#otherResCard .card-body').append(
-			'<div class="empty-note text-center font-italic">' + 'Nothing to display' + '</div>'
-		);
-	}
-
-	reservations.forEach(function (reservation) {
-
-		var stat;
-		if (reservation.status == 'Uncleared')
-			stat = 'status-uncleared';
-		else if (reservation.status == 'On Rent')
-			stat = 'status-on-rent';
-		else if (reservation.status == 'Returned')
-			stat = 'status-returned';
-		else if (reservation.status == 'Denied')
-			stat = 'status-denied';
-
-		$('#reservationsTable').append(
-			'<tr>' +
-			'<td>' +
-			'<div class="icon mr-2 col-1" id="' + ((reservation.onItemType == 'Locker') ? 'locker' : 'equipment') + '"/>' +
-			'</td>' +
-			'<td>' + reservation.userID + '</td>' +
-			'<td>' + (new Date(reservation.dateCreated)).toDateString() + '</td>' +
-			'<td class="description">' +
-			((reservation.onItemType == 'Equipment') ? reservation.title + '; ' : '') +
-			reservation.description +
-			'</td>' +
-			'<td>' + (reservation.penalty > 0 ? 'Php ' + reservation.penalty : 'N/A') + '</td>' +
-			'<td>' +
-			'<div class="badge badge-pill ' + stat + '">' +
-			reservation.status +
-			'</div>' +
-			'</td>' +
-			'<td>' +
-			'<a class="table-link" data-toggle="modal" ' +
-			'data-title="' + reservation.title + '" ' +
-			'data-userid="' + reservation.userID + '" ' +
-			'data-datecreated="' + (new Date(reservation.dateCreated)).toDateString() + '" ' +
-			'data-status="' + reservation.status + '" ' +
-			'data-description="' + reservation.description + '" ' +
-			'data-remarks="' + reservation.remarks + '" ' +
-			'data-penalty="' + reservation.penalty + '" ' +
-			'data-type="' + reservation.onItemType + '" ' +
-			'data-id="' + reservation._id + '" ' +
-			'data-paymentdate="' + reservation.pickupPayDate + '" ' +
-			'href="#editReservationModal">' +
-			'<div class="icon col-1 pr-3 table-link" title="Edit Reservation" id="edit"/>' +
-			'</a>' +
-			'</td>' +
-			'</tr>'
-		);
-	});
-}
 
 /**
  * Initializes the DeleteReservation modal.
