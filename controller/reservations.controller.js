@@ -243,6 +243,8 @@ exports.reservation_details = async function (req, res) {
 // }
 
 exports.reservations_get = async function (req, res) {
+    console.log('query');
+    console.log(req.query);
     try {
         let statuses = [];
         if (req.query.columns[5].search.value === '' ||
@@ -250,6 +252,8 @@ exports.reservations_get = async function (req, res) {
             statuses = ['On Rent', 'Uncleared', 'Returned', 'Denied'];
         else
             statuses.push(req.query.columns[5].search.value);
+
+        console.log('Status: ' + statuses)
 
         count = await Reservation
             .find({status: statuses})

@@ -36,9 +36,9 @@ $(document).ready(function () {
 			{ "data": "lastUpdated", "visible": false },
 		],
 		"order": [[9, "desc"]],
-		"bLengthChange": false,
 		"responsive": true,
-		"searching": false
+		"dom": "ipt"
+
 	});
 
 	// $.get('/reservations/manage/get-reservations',
@@ -55,57 +55,31 @@ $(document).ready(function () {
 	// });
 
 	$("#statusFilter").on("change", function () {
-
-		console.log($(this).val());
-
 		$('#otherReservationsTable').DataTable()
 			.column(5)
 			.search($(this).val())
 			.draw();
-
-		// stat = $(this).val().split('-')[1];
-		// $.get('/reservations/manage/get-reservations',
-		// 	{ page: 1, idnum: idNum, status: stat },
-		// 	function (data, status) {
-		// 		pagination = Math.ceil(data.totalCt / itemsPerPage);
-		// 		pageNum = 1;
-		// 		pageStart = 1;
-		// 		pageEnd = pagination > 5 ? 5 : pagination;
-		// 		removePagination();
-		// 		if (data.totalCt > itemsPerPage)
-		// 			setupPagination(pagination, pageStart, pageEnd, pageNum, idNum, stat)
-		// 		displayReservations(data.items);
-		// 	});
 	});
 
-	$("#searchBox").on("keyup", function () {
-		idNum = $(this).val();
-		$.get('/reservations/manage/get-reservations',
-			{ page: 1, idnum: idNum, status: stat },
-			function (data, status) {
-				pagination = Math.ceil(data.totalCt / itemsPerPage);
-				pageNum = 1;
-				pageStart = 1;
-				pageEnd = pagination > 5 ? 5 : pagination;
-				removePagination();
-				if (data.totalCt > itemsPerPage)
-					setupPagination(pagination, pageStart, pageEnd, pageNum, idNum, stat)
-				displayReservations(data.items);
-			});
+	$("#searchBox").on("keyup paste", function () {
+		console.log($(this).val())
+		$('#otherReservationsTable').DataTable()
+			.search($(this).val())
+			.draw();
 	});
 });
 
-$(document).ajaxStart(function () {
-	$('table').css('filter', 'opacity(0.3)');
-	$('.page-link').css('pointer-events', 'none');
-	$('.page-link').css('filter', 'opacity(0.3)');
-});
+// $(document).ajaxStart(function () {
+// 	$('table').css('filter', 'opacity(0.3)');
+// 	$('.page-link').css('pointer-events', 'none');
+// 	$('.page-link').css('filter', 'opacity(0.3)');
+// });
 
-$(document).ajaxComplete(function () {
-	$('table').css('filter', 'opacity(1)');
-	$('.page-link').css('pointer-events', 'auto');
-	$('.page-link').css('filter', 'opacity(1)');
-});
+// $(document).ajaxComplete(function () {
+// 	$('table').css('filter', 'opacity(1)');
+// 	$('.page-link').css('pointer-events', 'auto');
+// 	$('.page-link').css('filter', 'opacity(1)');
+// });
 
 /**
  * Removes the pagination for the table containing the reservations.

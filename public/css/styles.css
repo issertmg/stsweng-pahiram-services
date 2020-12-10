@@ -363,7 +363,7 @@ h1, h2, h3, h4, h5 {
 
 .btn-primary {
     color: #f7f7f7 !important;
-    background-color: #38b98a;
+    background-color: #38b98a !important;
     border: solid #38b98a 1px;
 }
 
