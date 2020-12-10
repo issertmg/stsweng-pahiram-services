@@ -16,6 +16,7 @@ $(document).ready(function () {
             if (locker.length != 0) {
                 $('#panelid').val(panelid);
                 $('#lockernumber').val(lockernumber);
+                $('#submitLockerForm').off("click");
                 $('#lockerForm').submit();
             } else {
                 alert("Please select a locker you want to rent.");
