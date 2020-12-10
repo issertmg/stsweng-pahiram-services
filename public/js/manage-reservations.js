@@ -27,7 +27,12 @@ $(document).ready(function () {
 			{ "data": "userID" },
 			{ "data": "onItemType" },
 			{ "data": "title" },
-			{ "data": "dateCreated" },
+			{
+				"data": "dateCreated",
+				"render": function (data, type, row, meta) {
+					return (new Date(data)).toDateString();
+				}
+			},
 			{ "data": "description" },
 			{ "data": "status" },
 			{ "data": "remarks", "visible": false },
