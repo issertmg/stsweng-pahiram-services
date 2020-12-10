@@ -191,57 +191,6 @@ exports.reservation_details = async function (req, res) {
     });
 }
 
-// exports.reservations_get = async function (req, res) {
-//     try {
-//         var reservations = new Object();
-//         const itemsPerPage = 5;
-
-//         var statuses = []
-//         switch (req.query.status) {
-//             case 'onrent':
-//                 statuses.push('On Rent');
-//                 break;
-//             case 'uncleared':
-//                 statuses.push('Uncleared');
-//                 break;
-//             case 'returned':
-//                 statuses.push('Returned');
-//                 break;
-//             case 'denied':
-//                 statuses.push('Denied');
-//                 break;
-//             default:
-//                 statuses.push('On Rent');
-//                 statuses.push('Uncleared');
-//                 statuses.push('Returned');
-//                 statuses.push('Denied');
-//         }
-
-//         reservations.totalCt = await Reservation
-//             .find({
-//                 status: statuses,
-//                 userID: { $regex: '[0-9]*' + req.query.idnum + '[0-9]*' }
-//             })
-//             .countDocuments();
-
-//         reservations.items = await Reservation
-//             .find({
-//                 status: statuses,
-//                 userID: { $regex: '[0-9]*' + req.query.idnum + '[0-9]*' }
-//             })
-//             .sort({ lastUpdated: -1 })
-//             .skip((req.query.page - 1) * itemsPerPage)
-//             .limit(itemsPerPage);
-
-//         if (reservations) {
-//             res.send(reservations);
-//         }
-
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
-
 exports.reservations_get = async function (req, res) {
     try {
         let type = [];
@@ -250,6 +199,12 @@ exports.reservations_get = async function (req, res) {
             type = ['Locker', 'Equipment'];
         else
             type.push(req.query.columns[2].search.value);
+
+        let sortObject;
+        if (req.query.order[0] == null)
+            sortObject = getSortValue(-1, -1);  // default sort
+        else
+            sortObject = getSortValue(req.query.order[0].column, req.query.order[0].dir);
 
         count = await Reservation
             .find({onItemType: type})
@@ -267,7 +222,7 @@ exports.reservations_get = async function (req, res) {
                     
                 },
                 '-item')
-            .sort(getSortValue(req.query.order[0]))
+            .sort(sortObject)
             .skip(parseInt(req.query.start))
             .limit(parseInt(req.query.length));
 
@@ -287,29 +242,20 @@ exports.reservations_get = async function (req, res) {
     }
 }
 
-function getSortValue(order) {
-
-    /*
-    { "data": "userID" },
-    { "data": "onItemType" },
-    { "data": "title" },
-    { "data": "dateCreated" },
-    { "data": "description" },
-    { "data": "status" },
-    { "data": "remarks", "visible": false },
-    { "data": "_id", "visible": false },
-    { "data": "penalty", "visible": false },
-    { "data": "lastUpdated", "visible": false },
-    */
-
-    if (order == null) {
+/**
+ * Determines the field to sort and the order
+ * @param column - the column number of the DataTable 
+ * @param dir  - the direction (asc or desc)
+ */
+function getSortValue(column, direction) {
+    if (column == null || direction == null) {
         console.log('Null')
         return {'lastUpdated': -1};  
     } 
 
-    let dir = (order.dir === 'asc') ? 1: -1;
+    let dir = (direction === 'asc') ? 1: -1;
 
-    switch (order.column) {
+    switch (column) {
         case '0':
             return {'userID': dir};
         case '1':
@@ -330,6 +276,8 @@ function getSortValue(order) {
             return {'penalty': dir};
         case '9':
             return {'lastUpdated': dir};
+        default:
+            return {'lastUpdated': -1}
     }
 }
 
@@ -362,8 +310,6 @@ exports.reservation_update = async function (req, res) {
     if (errors.isEmpty()) {
         try {
             var user = await User.findOne({ idNum: parseInt(req.session.idNum) });
-
-            console.log(req.body);
 
             if (user) {
                 var status;
@@ -507,3 +453,4 @@ function userIsAdmin(user) {
     return user.type == 'studentRep';
 }
 exports.userIsAdmin = userIsAdmin;
+exports.getSortValue = getSortValue;

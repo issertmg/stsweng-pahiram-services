@@ -116,8 +116,6 @@ $('#approveReservationModal').on('show.bs.modal', (event) => {
 	$.get('/reservations/manage/get-user',
 		{ idnum: reservation.userID },
 		function (data) {
-			console.log('data')
-			console.log(data)
 			if (data)
 				$('#approveUserInfo').text(data);
 		}

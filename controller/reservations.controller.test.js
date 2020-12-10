@@ -95,3 +95,65 @@ describe('Admin Checker', () => {
         expect(result).toBe(true);
     });
 });
+
+describe('Get Sort Parameters', () => {
+    it('When the column number is valid and the direction is ASCENDING, the appropriate column name and direction is returned.', () => {
+        // Arrange
+        const column = '0';
+        const dir = 'asc';
+
+        // Act
+        const result = reservation.getSortValue(column, dir);
+
+        // Assert
+        expect(result).toEqual({'userID': 1});
+    });
+
+    it('When the column number is valid and the direction is DESCENDING, the appropriate column name and direction is returned.', () => {
+        // Arrange
+        const column = '2';
+        const dir = 'desc';
+
+        // Act
+        const result = reservation.getSortValue(column, dir);
+
+        // Assert
+        expect(result).toEqual({'onItemType': -1});
+    });
+
+    it('When the column number is not among the choices, the default column lastUpdated and default sort order -1 are set.', () => {
+        // Arrange
+        const column = '100';
+        const dir = 'asc';
+
+        // Act
+        const result = reservation.getSortValue(column, dir);
+
+        // Assert
+        expect(result).toEqual({'lastUpdated': -1});
+    });
+
+    it('When the sort order is neither asc nor desc, the default sort order -1 is set.', () => {
+        // Arrange
+        const column = '1';
+        const dir = 'something_else';
+
+        // Act
+        const result = reservation.getSortValue(column, dir);
+
+        // Assert
+        expect(result).toEqual({'dateCreated': -1});
+    });
+
+    it('When one of the two parameters is null, the default sort is set.', () => {
+        // Arrange
+        const column = null;
+        const dir = 'asc';
+
+        // Act
+        const result = reservation.getSortValue(column, dir);
+
+        // Assert
+        expect(result).toEqual({'lastUpdated': -1});
+    });
+});
