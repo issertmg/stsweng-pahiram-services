@@ -47,6 +47,6 @@
     min-height: 70vh;
 }
 
-td.description, span.description, #description {
+div.description, td.description, span.description, #description {
     word-break: break-word;
 }
