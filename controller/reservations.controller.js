@@ -243,26 +243,22 @@ exports.reservation_details = async function (req, res) {
 // }
 
 exports.reservations_get = async function (req, res) {
-    console.log('query');
-    console.log(req.query);
     try {
-        let statuses = [];
-        if (req.query.columns[5].search.value === '' ||
-            req.query.columns[5].search.value === 'All')
-            statuses = ['On Rent', 'Uncleared', 'Returned', 'Denied'];
+        let type = [];
+        if (req.query.columns[2].search.value === '' ||
+            req.query.columns[2].search.value === 'All')
+            type = ['Locker', 'Equipment'];
         else
-            statuses.push(req.query.columns[5].search.value);
-
-        console.log('Status: ' + statuses)
+            type.push(req.query.columns[2].search.value);
 
         count = await Reservation
-            .find({status: statuses})
+            .find({onItemType: type})
             .countDocuments();
 
         data = await Reservation
             .find(
                 {
-                    status: statuses, 
+                    onItemType: type, 
                     $or: [
                         {userID: { $regex: '[0-9]*' + req.query.search.value + '[0-9]*' }},
                         {status: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
@@ -317,11 +313,11 @@ function getSortValue(order) {
         case '0':
             return {'userID': dir};
         case '1':
-            return {'onItemType': dir};
-        case '2':
-            return {'title': dir};
-        case '3':
             return {'dateCreated': dir};
+        case '2':
+            return {'onItemType': dir};
+        case '3':
+            return {'title': dir};
         case '4':
             return {'description': dir};
         case '5':

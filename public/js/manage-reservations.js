@@ -25,14 +25,14 @@ $(document).ready(function () {
 		},
 		columns: [
 			{ "data": "userID" },
-			{ "data": "onItemType" },
-			{ "data": "title" },
 			{
 				"data": "dateCreated",
 				"render": function (data, type, row, meta) {
 					return (new Date(data)).toDateString();
 				}
 			},
+			{ "data": "onItemType" },
+			{ "data": "title" },
 			{ "data": "description" },
 			{ "data": "status" },
 			{ "data": "remarks", "visible": false },
@@ -61,7 +61,7 @@ $(document).ready(function () {
 
 	$("#statusFilter").on("change", function () {
 		$('#otherReservationsTable').DataTable()
-			.column(5)
+			.column(2)
 			.search($(this).val())
 			.draw();
 	});
