@@ -19,6 +19,7 @@ $(document).ready(function () {
                 $('#equipmentid').val(equipmentid);
 
                 if (reason.trim().length != 0) {
+                    $('#submitEquipmentForm').off("click");
                     $('#equipmentForm').submit();
                 }
                 else {
