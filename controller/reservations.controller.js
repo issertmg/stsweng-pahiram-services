@@ -15,7 +15,7 @@ const EQUIPMENT_PENALTY_INCREMENT = 20;
  * Marks all unreturned equipment as uncleared, and increments penalty charges for uncleared reservations every 6:30PM.
  * @returns {Promise<void>} - nothing
  */
-cron.schedule('0 12 0 * * *', async function () {
+cron.schedule('59 23 * * *', async function () {
 
     try {
         // for already uncleared equipment, increment penalty by 20

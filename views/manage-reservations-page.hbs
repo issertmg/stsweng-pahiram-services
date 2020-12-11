@@ -68,7 +68,7 @@
                             {{#if (isLocker onItemType)}}
                               <span class="description">{{description}}</span>
                             {{else}}
-                              <span class="description">{{title}}; {{description}}</span>
+                              <span class="description">{{item.brand}} {{item.name}} ({{item.model}}); {{description}}</span>
                             {{/if}}
                           </div>
                         </div>
@@ -99,9 +99,9 @@
                           <div>
                             <div class="font-weight-bold">{{userID}}</div>
                             {{#if (isLocker onItemType)}}
-                              <span class="">{{description}}</span>
+                              <span class="description">{{description}}</span>
                             {{else}}
-                              <span class="">{{title}}; {{description}}</span>
+                              <span class="description">{{item.brand}} {{item.name}} ({{item.model}}); {{description}}</span>
                             {{/if}}
                           </div>
                         </div>
@@ -145,7 +145,7 @@
                           {{/if}}
                         </div>
                         {{#if remarks}}
-                        <div>
+                        <div class="description">
                           Remarks: {{remarks}}
                         </div>
                         {{/if}}
