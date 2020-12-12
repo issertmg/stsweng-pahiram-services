@@ -81,6 +81,7 @@ $('#demoteModal').on('show.bs.modal', (event) => {
   var btn = $(event.relatedTarget);
   id = btn.data('id');
   $('#demoteUserID').val(id);
+  $('#demoteErrorAlert').hide();
 });
 
 function displayPeople(pips) {
@@ -197,3 +198,17 @@ function updatePagination(pageStart, pageEnd, pageNum) {
       $(element).parent().addClass('active');
   })
 }
+
+$('#demoteUserBtn').click(function() {
+  $.get('/profile/get-count-of-studentrep',
+      {},
+      function(data, status) {
+        if (data.count < 2) {
+          $('#demoteErrorAlert').show();
+        }
+        else {
+          $('#demoteUserBtn').off("click");
+          $('#demoteUserForm').submit();
+        }
+      });
+});

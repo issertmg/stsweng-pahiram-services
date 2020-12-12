@@ -129,3 +129,15 @@ exports.people_demote = async function (req, res) {
     }
     res.redirect('/profile/manage');
 }
+
+exports.count_studentrep_get = async function (req, res) {
+    try {
+        const studentRepCount = await User.find({
+            type: "studentRep"
+        }).countDocuments();
+        res.send({count: studentRepCount});
+    }
+    catch (err) {
+        console.log(err);
+    }
+}

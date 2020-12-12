@@ -183,10 +183,13 @@
                 User will lose administrative privileges.
                 Changes will reflect the user upon restarting his/her session.
               </p>
+              <div class="alert alert-danger" role="alert" id="demoteErrorAlert">
+                  Cannot demote last studentRep.
+              </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-warning" id="demoteUserBtn">Demote</button>
+              <button type="button" class="btn btn-warning" id="demoteUserBtn">Demote</button>
             </div>
           </form>
         </div>
