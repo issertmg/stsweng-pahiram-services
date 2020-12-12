@@ -57,9 +57,7 @@ exports.people_get = async function (req, res) {
                     $or: [
                         {idNum: { $regex: '[0-9]*' + req.query.search.value + '[0-9]*' }},
                         {firstName: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
-                        {lastName: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
-                        {college: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
-                        {type: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}}
+                        {lastName: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}}
                     ]
                 })
             .sort(sortObject)
@@ -176,10 +174,14 @@ function getSortValue(column, direction) {
         case '2':
             return {'lastName': dir};
         case '3':
-            return {'college': dir};
+            return {'email': dir};
         case '4':
-            return {'type': dir};
+            return {'degreeProg': dir};
         case '5':
+            return {'college': dir};
+        case '6':
+            return {'type': dir};
+        case '7':
             return {'contactNum': dir};
         default:
             return {'idNum': 1}

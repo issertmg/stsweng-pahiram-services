@@ -12,10 +12,11 @@ router.post('/manage/promote', UserAuth.userIsAdmin, user_controller.people_prom
 router.post('/manage/demote', UserAuth.userIsAdmin, user_controller.people_demote);
 router.get('/manage/get-people', UserAuth.userIsAdmin, user_controller.people_get);
 
+
+
 router.get('/', user_controller.profile_details);
 router.post('/', validation.editProfileValidation(), user_controller.profile_update);
 
 // AJAX
 router.get('/get-count-of-studentrep', UserAuth.userIsAdmin, user_controller.count_studentrep_get);
-
 module.exports = router;
