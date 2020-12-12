@@ -6,6 +6,43 @@ $(document).ready(function () {
   var idNum = '';
   const itemsPerPage = 10;
 
+  $("#peopleTable").DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+      url: '/profile/manage/get-people',
+      dataSrc: 'data'
+    },
+    'createdRow': function (row, data, dataIndex) {
+      $(row).attr('data-toggle', 'modal');
+      $(row).attr('data-target', '#editReservationModal');
+      $(row).css('cursor', 'pointer');
+    },
+    columns: [
+      {
+        "data": "dpURL",
+        "render": function (data, type, row, meta) {
+          return `<div class="profile-icon" style="background-image: url('` + data + `');"></div>`;
+        }
+      },
+      { "data": "idNum" },
+      // {
+      //   "data": "dateCreated",
+      //   "render": function (data, type, row, meta) {
+      //     return (new Date(data)).toDateString();
+      //   }
+      // },
+      { "data": "lastName" },
+      { "data": "college" },
+      { "data": "type" },
+      { "data": "contactNum" },
+    ],
+    "order": [[4, "desc"]],
+    "responsive": true,
+    "dom": "ipt"
+  });
+
+  /*
   $.get('/profile/manage/get-people', {page: 1, idnum: ''}, function (data, status) {
     pagination = Math.ceil(data.totalCt / itemsPerPage);
     pageNum = 1;
@@ -16,22 +53,27 @@ $(document).ready(function () {
     if (data.totalCt > itemsPerPage)
       setupPagination(pagination, pageStart, pageEnd, pageNum, idNum);
     displayPeople(data.items);
+
+
+  $("#typeFilter").on("change", function () {
+    $('#otherReservationsTable').DataTable()
+        .column(2)
+        .search($(this).val())
+        .draw();
   });
 
-  $("#searchBox").on("keyup", function () {
-    idNum = $(this).val();
-    $.get('/profile/manage/get-people', 
-        {page: 1, idnum: idNum},
-        function (data, status) {
-      pagination = Math.ceil(data.totalCt / itemsPerPage);
-      pageNum = 1;
-      pageStart = 1;
-      pageEnd = pagination > 5 ? 5 : pagination;
-      removePagination();
-      if (data.totalCt > itemsPerPage)
-        setupPagination(pagination, pageStart, pageEnd, pageNum, idNum)
-      displayPeople(data.items);
-    });
+  $("#searchBox").on("keyup paste", function () {
+    console.log($(this).val())
+    $('#otherReservationsTable').DataTable()
+        .search($(this).val())
+        .draw();
+  });*/
+
+  $("#searchBox").on("keyup paste", function () {
+    console.log($(this).val())
+    $('#peopleTable').DataTable()
+        .search($(this).val())
+        .draw();
   });
 });
 
