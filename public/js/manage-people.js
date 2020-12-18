@@ -10,11 +10,18 @@ $(document).ready(function () {
       url: '/profile/manage/get-people',
       dataSrc: 'data'
     },
-    'createdRow': function (row, data, dataIndex) {
-      $(row).attr('data-toggle', 'modal');
-      $(row).attr('data-target', '#editReservationModal');
-      $(row).css('cursor', 'pointer');
-    },
+    // 'createdRow': function (row, data, dataIndex) {
+    //   $(row).attr('data-toggle', 'modal');
+    //   $(row).attr('data-target', '#editProfileModal');
+    //   $(row).attr('data-id', data._id);
+    //   $(row).attr('data-fname', data.firstName);
+    //   $(row).attr('data-lname', data.lastName);
+    //   $(row).attr('data-idnum', data.idNum);
+    //   $(row).attr('data-college', data.college);
+    //   $(row).attr('data-degprog', data.degreeProg);
+    //   $(row).attr('data-mobile', data.contactNum);
+    //   $(row).css('cursor', 'pointer');
+    // },
     columns: [
       {
         "data": "dpURL",
