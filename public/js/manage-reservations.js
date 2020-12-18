@@ -19,13 +19,18 @@ $(document).ready(function () {
 			{ "data": "userID" },
 			{
 				"data": "dateCreated",
-				"render": function (data, type, row, meta) {
+				"render": function (data, type, row) {
 					return (new Date(data)).toDateString();
 				}
 			},
 			{ "data": "onItemType" },
 			{ "data": "title" },
-			{ "data": "description" },
+			{ 
+				"data": "description",
+				"render": function (data, type, row) {
+					return data.length > 50 ? data.substr(0, 50) + '...' : data;
+				} 
+			},
 			{ "data": "status" },
 			{ "data": "remarks", "visible": false },
 			{ "data": "_id", "visible": false },
@@ -46,7 +51,8 @@ $(document).ready(function () {
 	});
 
 	$("#searchBox").on("keyup paste", function () {
-		console.log($(this).val())
+		let str = $(this).val();
+		$(this).val(str.substring(0, 15));
 		$('#otherReservationsTable').DataTable()
 			.search($(this).val())
 			.draw();
