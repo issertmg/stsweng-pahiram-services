@@ -2,6 +2,12 @@ const User = require('../model/user.model');
 
 const { validationResult } = require('express-validator');
 
+/**
+ * Renders and loads the Manage People page.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.people_details = function (req, res) {
 
     var colleges = User.schema.path('college').enumValues;
@@ -15,17 +21,20 @@ exports.people_details = function (req, res) {
         },
         colleges: colleges
     });
-
 }
 
+/**
+ * Updates the info of a user.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.people_update = async function (req, res) {
 
     try {
         await User.findByIdAndUpdate(
             req.body.id,
             {
-                firstName: req.body.firstName,
-                lastName: req.body.lastName,
                 idNum: req.body.idNum,
                 college: req.body.college,
                 degreeProg: req.body.degProg,
@@ -40,6 +49,12 @@ exports.people_update = async function (req, res) {
     res.redirect('/profile/manage');
 }
 
+/**
+ * AJAX function used to initialize the table containing the users' info in the Manage People page.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.people_get = async function (req, res) {
     try {
         let sortObject;
@@ -77,6 +92,12 @@ exports.people_get = async function (req, res) {
     }
 }
 
+/**
+ * Renders and loads the User Profile page.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.profile_details = async function (req, res) {
     try {
         var user = await User.findOne({ idNum: req.session.idNum });
@@ -100,6 +121,12 @@ exports.profile_details = async function (req, res) {
     }
 };
 
+/**
+ * Updates the profile of a user.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.profile_update = async function (req, res) {
     try {
         var errors = validationResult(req);
@@ -112,13 +139,18 @@ exports.profile_update = async function (req, res) {
                 await User.findOneAndUpdate(filter, update);
             }
         }
-            
         res.redirect('/profile');
     } catch (err) {
         console.log(err);
     }
 }
 
+/**
+ * Promotes a student user to studentRep type given the user's id.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.people_promote = async function (req, res) {
     try {
         await User.findByIdAndUpdate(
@@ -131,6 +163,12 @@ exports.people_promote = async function (req, res) {
     res.redirect('/profile/manage');
 }
 
+/**
+ * Demotes a studentRep user to student type given the user's id.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.people_demote = async function (req, res) {
     try {
         await User.findByIdAndUpdate(
@@ -143,6 +181,12 @@ exports.people_demote = async function (req, res) {
     res.redirect('/profile/manage');
 }
 
+/**
+ * AJAX function for getting the count of studentRep users.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.count_studentrep_get = async function (req, res) {
     try {
         const studentRepCount = await User.find({
@@ -156,7 +200,7 @@ exports.count_studentrep_get = async function (req, res) {
 }
 
 /**
- * Determines the field to sort and the order
+ * Determines the field to sort and the order.
  * @param column - the column number of the DataTable
  * @param dir  - the direction (asc or desc)
  */
@@ -185,5 +229,28 @@ function getSortValue(column, direction) {
             return {'contactNum': dir};
         default:
             return {'idNum': 1}
+    }
+}
+
+/**
+ * AJAX function for checking if a user with the same contact number and/or id number already exists.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
+exports.check_mobile_id_duplicate_get = async function (req, res) {
+    try {
+        const duplicateMobile = await User.find({
+            _id: {$ne: req.query.userid},
+            contactNum: req.query.mobile
+        }).countDocuments();
+        const duplicateID = await User.find({
+            _id: {$ne: req.query.userid},
+            idNum: req.query.idnumber
+        }).countDocuments();
+        res.send({duplicateMobile: duplicateMobile, duplicateID: duplicateID});
+    }
+    catch (err) {
+        console.log(err);
     }
 }

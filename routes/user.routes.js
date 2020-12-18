@@ -19,4 +19,5 @@ router.post('/', validation.editProfileValidation(), user_controller.profile_upd
 
 // AJAX
 router.get('/get-count-of-studentrep', UserAuth.userIsAdmin, user_controller.count_studentrep_get);
+router.get('/check-for-duplicates', UserAuth.userIsAdmin, user_controller.check_mobile_id_duplicate_get);
 module.exports = router;
