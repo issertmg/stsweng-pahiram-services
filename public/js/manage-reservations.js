@@ -19,18 +19,13 @@ $(document).ready(function () {
 			{ "data": "userID" },
 			{
 				"data": "dateCreated",
-				"render": function (data, type, row) {
+				"render": function (data, type, row, meta) {
 					return (new Date(data)).toDateString();
 				}
 			},
 			{ "data": "onItemType" },
 			{ "data": "title" },
-			{ 
-				"data": "description",
-				"render": function (data, type, row) {
-					return data.length > 50 ? data.substr(0, 50) + '...' : data;
-				} 
-			},
+			{ "data": "description" },
 			{ "data": "status" },
 			{ "data": "remarks", "visible": false },
 			{ "data": "_id", "visible": false },
