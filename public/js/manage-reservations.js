@@ -51,7 +51,8 @@ $(document).ready(function () {
 	});
 
 	$("#searchBox").on("keyup paste", function () {
-		console.log($(this).val())
+		let str = $(this).val();
+		$(this).val(str.substring(0, 15));
 		$('#otherReservationsTable').DataTable()
 			.search($(this).val())
 			.draw();
