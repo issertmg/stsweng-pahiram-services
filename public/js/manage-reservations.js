@@ -24,7 +24,15 @@ $(document).ready(function () {
 				}
 			},
 			{ "data": "onItemType" },
-			{ "data": "title" },
+			{ "data": function (data) {
+					if (data.onItemType === "Equipment") {
+						return data.item.brand + " " + data.item.name + " (" + data.item.model + ")";
+					}
+					else{
+						return data.title;
+					}
+				}
+			},
 			{ 
 				"data": "description",
 				"render": function (data, type, row) {
