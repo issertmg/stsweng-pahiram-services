@@ -15,6 +15,12 @@ const EQUIPMENT_PENALTY_INCREMENT = 20;
  * Marks all unreturned equipment as uncleared, and increments penalty charges for uncleared reservations every 6:30PM.
  * @returns {Promise<void>} - nothing
  */
+cron.schedule('*/15 * * * * *', function () {
+    console.log("work1")
+})
+cron.schedule('*/15 * * * * *', function () {
+    console.log("work2")
+})
 cron.schedule('*/15 * * * * *', async function () {
 console.log("ran");
     let today = new Date();
@@ -23,7 +29,7 @@ console.log("ran");
     tomorrow.setDate(tomorrow.getDate()+1);
 
     try {
-        // for already uncleared equipment, increment penalty by 20
+        // for already uncleared equipment, increment penalty by 20 (working)
         await Reservation
             .updateMany(
                 {
@@ -37,7 +43,7 @@ console.log("ran");
                 }
             );
 
-        // set unreturned equipment as uncleared
+        // set unreturned equipment as uncleared (working)
         await Reservation
             .updateMany(
                 {
@@ -52,22 +58,23 @@ console.log("ran");
                 }
             );
 
-        // set for-pickup equipment as returned
+        // set for-pickup equipment as returned (working)
         const reservations1 = await Reservation.find({
             onItemType: 'Equipment',
             status: 'For Pickup',
-            pickupPayDate: Date.now()
+            pickupPayDate: {"$gte": today, "$lt": tomorrow}
         });
-        let i;
-        for (i in reservations1) {
-            await Equipment.findByIdAndUpdate(i.item, { $inc: { onRent: -1 } });
+
+        for (let i = 0; i < reservations1.length; i++) {
+            await Equipment.findByIdAndUpdate(reservations1[i].item, { $inc: { onRent: -1 } });
         }
+
         await Reservation
             .updateMany(
                 {
                     onItemType: 'Equipment',
                     status: 'For Pickup',
-                    pickupPayDate: Date.now()
+                    pickupPayDate: {"$gte": today, "$lt": tomorrow}
                 },
                 {
                     status: 'Returned',
