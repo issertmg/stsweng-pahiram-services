@@ -79,10 +79,17 @@ $(document).ready(function () {
     ],
     "order": [[2, "asc"]],
     "responsive": true,
-    "dom": "ipt"
+    "dom": "ipt",
+    columnDefs: [
+      {targets: 0, bSortable: false}
+    ]
   });
 
-  $("#searchBox").on("keyup paste", function () {
+  $("#searchBox").on("keyup paste change", function () {
+    let str = $(this).val();
+    if (str.length > 100) {
+      $(this).val(str.slice(0,100))
+    }
     $('#peopleTable').DataTable()
         .search($(this).val())
         .draw();
@@ -229,7 +236,7 @@ function isFilledEditModal() {
  */
 function isValidIDNumber() {
   let idNum = validator.trim($('#idNum').val());
-  return validator.isInt(idNum) && (idNum.length === 8);
+  return validator.isNumeric(idNum, {no_symbols: true}) && validator.isLength(idNum,{min: 8, max: 8});
 }
 
 /**
@@ -238,7 +245,7 @@ function isValidIDNumber() {
  */
 function isValidPhoneNumber() {
   let mobile = validator.trim($('#mobile').val());
-  return validator.isInt(mobile) && (mobile.length === 10);
+  return validator.isNumeric(mobile, {no_symbols: true}) && validator.isLength(mobile,{min: 10, max: 10});
 }
 
 /**
@@ -283,5 +290,13 @@ $("#mobile").on("keyup change", function() {
   let inputElement = $(this);
   if (inputElement.val().length > 10) {
     inputElement.val(inputElement.val().slice(0, 10));
+  }
+});
+
+
+$("#idNum").on("input", function() {
+  let inputElement = $(this);
+  if (inputElement.val() <= 0 || inputElement.val() > 99999999) {
+    inputElement.val("");
   }
 });

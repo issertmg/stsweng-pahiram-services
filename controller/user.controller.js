@@ -1,5 +1,5 @@
 const User = require('../model/user.model');
-
+const Reservation = require('../model/reservation.model');
 const { validationResult } = require('express-validator');
 
 /**
@@ -32,16 +32,24 @@ exports.people_details = function (req, res) {
 exports.people_update = async function (req, res) {
 
     try {
-        await User.findByIdAndUpdate(
-            req.body.id,
-            {
-                idNum: req.body.idNum,
-                college: req.body.college,
-                degreeProg: req.body.degProg,
-                contactNum: req.body.mobile
+        const errors = validationResult(req);
+        if (errors.isEmpty()) {
+            const user = await User.findById(req.body.id);
+            const formerIdNum = user.idNum;
+            await User.findByIdAndUpdate(
+                req.body.id,
+                {
+                    idNum: req.body.idNum,
+                    college: req.body.college,
+                    degreeProg: req.body.degProg,
+                    contactNum: req.body.mobile
+                }
+            );
+            await Reservation.updateMany({ userID: formerIdNum }, { userID: req.body.idNum });
+            if (req.session.idNum === formerIdNum) {
+                req.session.idNum = req.body.idNum;
             }
-        );
-
+        }
     } catch (err) {
         console.log(err);
     }
@@ -92,6 +100,15 @@ exports.people_get = async function (req, res) {
                             $expr: {
                                 $regexMatch: {
                                     input: "$idNum",
+                                    regex: req.query.search.value,  //Your text search here
+                                    options: "i"
+                                }
+                            }
+                        },
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: { "$concat": ["$lastName", " ", "$firstName"]},
                                     regex: req.query.search.value,  //Your text search here
                                     options: "i"
                                 }
