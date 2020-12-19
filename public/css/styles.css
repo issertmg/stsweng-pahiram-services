@@ -1318,3 +1318,7 @@ select.custom-select.form-control {
     transition: ease 0.5s;
 }
 
+#checkTerms {
+    margin-left: -1.25rem !important;
+}
+
