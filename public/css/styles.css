@@ -337,7 +337,7 @@ h1, h2, h3, h4, h5 {
 }
 
 .btn-round {
-    border-radius: 50px;
+    border-radius: 50px !important;
     padding: 8px 24px;
 }
 
@@ -829,7 +829,7 @@ tr {
 */
 
 .form-group .form-control, .form-group .form-control-file, input {
-    background-color: #eef5f3 !important;
+    background-color: #eef5f3;
     border-radius: 8px !important;
     padding: 8px 16px;
     min-height: 3rem;
