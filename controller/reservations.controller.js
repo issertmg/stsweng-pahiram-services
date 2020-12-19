@@ -172,7 +172,7 @@ exports.reservation_details = async function (req, res) {
             .populate('item');
 
         var pickupPayToday = await Reservation
-            .find({ status: ['For Pickup', 'To Pay'] }).sort({ pickupPayDate: -1 });
+            .find({ status: ['For Pickup', 'To Pay'] }).sort({ pickupPayDate: -1 }).populate('item');
 
     } catch (err) {
         console.log(err);
@@ -220,11 +220,10 @@ exports.reservations_get = async function (req, res) {
                         {onItemType: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
                     ]
                     
-                },
-                '-item')
+                })
             .sort(sortObject)
             .skip(parseInt(req.query.start))
-            .limit(parseInt(req.query.length));
+            .limit(parseInt(req.query.length)).populate('item');
 
         if (data && count) {
 
