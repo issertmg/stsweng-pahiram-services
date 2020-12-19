@@ -85,7 +85,11 @@ $(document).ready(function () {
     ]
   });
 
-  $("#searchBox").on("keyup paste", function () {
+  $("#searchBox").on("keyup paste change", function () {
+    let str = $(this).val();
+    if (str.length > 100) {
+      $(this).val(str.slice(0,100))
+    }
     $('#peopleTable').DataTable()
         .search($(this).val())
         .draw();
@@ -241,7 +245,7 @@ function isValidIDNumber() {
  */
 function isValidPhoneNumber() {
   let mobile = validator.trim($('#mobile').val());
-  return validator.isInt(mobile) && (mobile.length === 10);
+  return validator.isNumeric(mobile, {no_symbols: true}) && (mobile.length === 10);
 }
 
 /**
