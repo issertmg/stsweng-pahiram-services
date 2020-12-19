@@ -70,10 +70,35 @@ exports.people_get = async function (req, res) {
             .find(
                 {
                     $or: [
-                        {idNum: { $regex: '[0-9]*' + req.query.search.value + '[0-9]*' }},
-                        {firstName: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
-                        {lastName: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}}
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: { "$concat": ["$lastName", ", ", "$firstName"]},
+                                    regex: req.query.search.value,  //Your text search here
+                                    options: "i"
+                                }
+                            }
+                        },
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: { "$concat": ["$firstName", " ", "$lastName"]},
+                                    regex: req.query.search.value,  //Your text search here
+                                    options: "i"
+                                }
+                            }
+                        },
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: "$idNum",
+                                    regex: req.query.search.value,  //Your text search here
+                                    options: "i"
+                                }
+                            }
+                        }
                     ]
+
                 })
             .sort(sortObject)
             .skip(parseInt(req.query.start))
