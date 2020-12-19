@@ -79,7 +79,10 @@ $(document).ready(function () {
     ],
     "order": [[2, "asc"]],
     "responsive": true,
-    "dom": "ipt"
+    "dom": "ipt",
+    columnDefs: [
+      {targets: 0, bSortable: false}
+    ]
   });
 
   $("#searchBox").on("keyup paste", function () {
