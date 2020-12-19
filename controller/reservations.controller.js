@@ -15,7 +15,12 @@ const EQUIPMENT_PENALTY_INCREMENT = 20;
  * Marks all unreturned equipment as uncleared, and increments penalty charges for uncleared reservations every 6:30PM.
  * @returns {Promise<void>} - nothing
  */
-cron.schedule('59 23 * * *', async function () {
+cron.schedule('*/15 * * * * *', async function () {
+console.log("ran");
+    let today = new Date();
+    let tomorrow = new Date(today);
+    today.setHours(0,0,0,0);
+    tomorrow.setDate(tomorrow.getDate()+1);
 
     try {
         // for already uncleared equipment, increment penalty by 20
@@ -71,22 +76,23 @@ cron.schedule('59 23 * * *', async function () {
                 }
             );
 
-        // set pending equipment as denied
+        // set pending equipment as denied (working)
         const reservations2 = await Reservation.find({
             onItemType: 'Equipment',
             status: 'Pending',
-            pickupPayDate: Date.now()
+            pickupPayDate: {"$gte": today, "$lt": tomorrow}
         });
 
-        for (i in reservations2) {
-            await Equipment.findByIdAndUpdate(i.item, { $inc: { onRent: -1 } });
+        for (let i = 0; i < reservations2.length; i++) {
+            await Equipment.findByIdAndUpdate(reservations2[i].item, { $inc: { onRent: -1 } });
         }
+
         await Reservation
             .updateMany(
                 {
                     onItemType: 'Equipment',
                     status: 'Pending',
-                    pickupPayDate: Date.now()
+                    pickupPayDate: {"$gte": today, "$lt": tomorrow}
                 },
                 {
                     status: 'Denied',
@@ -94,7 +100,7 @@ cron.schedule('59 23 * * *', async function () {
                     remarks: 'Reservation was not approved on time, please try again'
                 }
             );
-        
+        console.log("up to here");
     } catch (err) {
         console.log(err);
     }
