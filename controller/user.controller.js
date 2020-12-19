@@ -96,6 +96,15 @@ exports.people_get = async function (req, res) {
                                     options: "i"
                                 }
                             }
+                        },
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: { "$concat": ["$lastName", " ", "$firstName"]},
+                                    regex: req.query.search.value,  //Your text search here
+                                    options: "i"
+                                }
+                            }
                         }
                     ]
 
