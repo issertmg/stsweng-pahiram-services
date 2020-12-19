@@ -236,7 +236,7 @@ function isFilledEditModal() {
  */
 function isValidIDNumber() {
   let idNum = validator.trim($('#idNum').val());
-  return validator.isInt(idNum) && (idNum.length === 8);
+  return validator.isNumeric(idNum, {no_symbols: true}) && validator.isLength(idNum,{min: 8, max: 8});
 }
 
 /**
@@ -245,7 +245,7 @@ function isValidIDNumber() {
  */
 function isValidPhoneNumber() {
   let mobile = validator.trim($('#mobile').val());
-  return validator.isNumeric(mobile, {no_symbols: true}) && (mobile.length === 10);
+  return validator.isNumeric(mobile, {no_symbols: true}) && validator.isLength(mobile,{min: 10, max: 10});
 }
 
 /**
@@ -290,5 +290,13 @@ $("#mobile").on("keyup change", function() {
   let inputElement = $(this);
   if (inputElement.val().length > 10) {
     inputElement.val(inputElement.val().slice(0, 10));
+  }
+});
+
+
+$("#idNum").on("input", function() {
+  let inputElement = $(this);
+  if (inputElement.val() <= 0 || inputElement.val() > 99999999) {
+    inputElement.val("");
   }
 });
