@@ -75,14 +75,14 @@ cron.schedule('0 59 23 * * MON,TUE,WED,THU,FRI *', async function () {
             );
 
         // set for-pickup equipment as returned (working)
-        const reservations1 = await Reservation.find({
+        const reservations = await Reservation.find({
             onItemType: 'Equipment',
             status: 'For Pickup',
             pickupPayDate: {"$gte": today, "$lt": tomorrow}
         });
 
-        for (let i = 0; i < reservations1.length; i++) {
-            await Equipment.findByIdAndUpdate(reservations1[i].item, { $inc: { onRent: -1 } });
+        for (let i = 0; i < reservations.length; i++) {
+            await Equipment.findByIdAndUpdate(reservations[i].item, { $inc: { onRent: -1 } });
         }
 
         await Reservation
