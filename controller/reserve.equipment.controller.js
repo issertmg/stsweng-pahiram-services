@@ -46,7 +46,7 @@ exports.reserve_equipment = async function (req, res) {
 
             pickupDate = getNextWeekDayDate(pickupDate);
             let pickupTime = getPickupTime(parseInt(req.body.borrowtime));
-            pickupDate.setHours(pickupTime[0],pickupTime[1],0);
+            pickupDate.setHours(pickupTime[0],pickupTime[1],0, 0);
 
             let descString = reason + ", " + "on " + pickupDate.toLocaleString('en-US');
             let reservation = new Reservation({
