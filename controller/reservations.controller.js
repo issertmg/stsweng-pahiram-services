@@ -12,13 +12,40 @@ const EQUIPMENT_PENALTY_INITIAL = 50;
 const EQUIPMENT_PENALTY_INCREMENT = 20;
 
 /**
- * Marks all unreturned equipment as uncleared, and increments penalty charges for uncleared reservations every 6:30PM.
+ * Marks all pending equipment reservation as denied if the equipment is still pending an hour before the planned pickup time.
  * @returns {Promise<void>} - nothing
  */
-cron.schedule('59 23 * * *', async function () {
+cron.schedule('0 30 6 * * MON,TUE,WED,THU,FRI *', function () {
+    setAllPendingToDenied(7, 30)
+});
+cron.schedule('0 15 8 * * MON,TUE,WED,THU,FRI *', function () {
+    setAllPendingToDenied(9, 15)
+});
+cron.schedule('0 0 10 * * MON,TUE,WED,THU,FRI *', function () {
+    setAllPendingToDenied(11, 0)
+});
+cron.schedule('0 45 11 * * MON,TUE,WED,THU,FRI *', function () {
+    setAllPendingToDenied(12, 45)
+});
+cron.schedule('0 30 13 * * MON,TUE,WED,THU,FRI *', function () {
+    setAllPendingToDenied(14, 30)
+});
+cron.schedule('0 15 15 * * MON,TUE,WED,THU,FRI *', function () {
+    setAllPendingToDenied(16, 15)
+});
 
+/**
+ * Marks all unreturned equipment as uncleared, increments penalty charges for uncleared reservations,
+ * and sets all equipment reservation for pickup to returned every 11:59PM.
+ * @returns {Promise<void>} - nothing
+ */
+cron.schedule('0 59 23 * * MON,TUE,WED,THU,FRI *', async function () {
+    let today = new Date();
+    let tomorrow = new Date(today);
+    today.setHours(0,0,0,0);
+    tomorrow.setDate(tomorrow.getDate()+1);
     try {
-        // for already uncleared equipment, increment penalty by 20
+        // for already uncleared equipment, increment penalty by 20 (working)
         await Reservation
             .updateMany(
                 {
@@ -32,7 +59,7 @@ cron.schedule('59 23 * * *', async function () {
                 }
             );
 
-        // set unreturned equipment as uncleared
+        // set unreturned equipment as uncleared (working)
         await Reservation
             .updateMany(
                 {
@@ -47,22 +74,23 @@ cron.schedule('59 23 * * *', async function () {
                 }
             );
 
-        // set for-pickup equipment as returned
-        const reservations1 = await Reservation.find({
+        // set for-pickup equipment as returned (working)
+        const reservations = await Reservation.find({
             onItemType: 'Equipment',
             status: 'For Pickup',
-            pickupPayDate: Date.now()
+            pickupPayDate: {"$gte": today, "$lt": tomorrow}
         });
-        let i;
-        for (i in reservations1) {
-            await Equipment.findByIdAndUpdate(i.item, { $inc: { onRent: -1 } });
+
+        for (let i = 0; i < reservations.length; i++) {
+            await Equipment.findByIdAndUpdate(reservations[i].item, { $inc: { onRent: -1 } });
         }
+
         await Reservation
             .updateMany(
                 {
                     onItemType: 'Equipment',
                     status: 'For Pickup',
-                    pickupPayDate: Date.now()
+                    pickupPayDate: {"$gte": today, "$lt": tomorrow}
                 },
                 {
                     status: 'Returned',
@@ -71,34 +99,9 @@ cron.schedule('59 23 * * *', async function () {
                 }
             );
 
-        // set pending equipment as denied
-        const reservations2 = await Reservation.find({
-            onItemType: 'Equipment',
-            status: 'Pending',
-            pickupPayDate: Date.now()
-        });
-
-        for (i in reservations2) {
-            await Equipment.findByIdAndUpdate(i.item, { $inc: { onRent: -1 } });
-        }
-        await Reservation
-            .updateMany(
-                {
-                    onItemType: 'Equipment',
-                    status: 'Pending',
-                    pickupPayDate: Date.now()
-                },
-                {
-                    status: 'Denied',
-                    lastUpdated: Date.now(),
-                    remarks: 'Reservation was not approved on time, please try again'
-                }
-            );
-        
     } catch (err) {
         console.log(err);
     }
-
 });
 
 hbs.registerHelper('dateStr', (date) => { return date == null ? '' : date.toDateString(); });
@@ -154,6 +157,12 @@ exports.myReservations = async function (req, res) {
     }
 };
 
+/**
+ * Renders and loads the Manage Reservation page
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.reservation_details = async function (req, res) {
     var now = new Date();
     var dateToday = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
@@ -191,6 +200,12 @@ exports.reservation_details = async function (req, res) {
     });
 }
 
+/**
+ * AJAX function used in DataTables for displaying the reservations
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.reservations_get = async function (req, res) {
     try {
         let type = [];
@@ -280,6 +295,12 @@ function getSortValue(column, direction) {
     }
 }
 
+/**
+ * AJAX function to send the user's firstname and lastname, given the idNum attribute
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.user_get = async function (req, res) {
     try {
         var user = await User.findOne({ idNum: req.query.idnum });
@@ -292,6 +313,12 @@ exports.user_get = async function (req, res) {
     }
 }
 
+/**
+ * AJAX function to get all reservation with uncleared status
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.uncleared_get = async function (req, res) {
     try {
         var uncleared = await Reservation.find({ userID: req.query.idnum, status: 'Uncleared' });
@@ -302,6 +329,12 @@ exports.uncleared_get = async function (req, res) {
     }
 }
 
+/**
+ * Updates a reservation from the database.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.reservation_update = async function (req, res) {
     console.log('update')
     const errors = validationResult(req);
@@ -453,3 +486,46 @@ function userIsAdmin(user) {
 }
 exports.userIsAdmin = userIsAdmin;
 exports.getSortValue = getSortValue;
+
+/**
+ * Sets all pending equipment reservation to denied given the hour and minute of pickup.
+ * @param hours - the hour of the pickupDate
+ * @param minutes - the minute of the pickupDate
+ * @returns {Promise<void>}
+ */
+async function setAllPendingToDenied (hours, minutes) {
+    let today = new Date();
+    today.setUTCHours(hours, minutes, 0, 0);
+    try {
+        const reservations = await Reservation.find({
+            onItemType: 'Equipment',
+            status: 'Pending',
+            pickupPayDate: today
+        });
+
+        for (let i = 0; i < reservations.length; i++) {
+            await Equipment
+                .findByIdAndUpdate(
+                    reservations[i].item,
+                    { $inc: { onRent: -1 } }
+                );
+        }
+
+        await Reservation
+            .updateMany(
+                {
+                    onItemType: 'Equipment',
+                    status: 'Pending',
+                    pickupPayDate: today
+                },
+                {
+                    status: 'Denied',
+                    lastUpdated: Date.now(),
+                    remarks: 'Reservation was not approved on time, please try again'
+                }
+            );
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
