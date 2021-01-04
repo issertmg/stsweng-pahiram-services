@@ -24,11 +24,11 @@ $(document).ready(function () {
 				}
 			},
 			{ "data": "onItemType" },
-			{ "data": function (data) {
+			{ 
+				"data": function (data) {
 					if (data.onItemType === "Equipment") {
-						return data.item.brand + " " + data.item.name + " (" + data.item.model + ")";
-					}
-					else{
+						return data.title + ": " + data.item.brand + " (" + data.item.model + ")";
+					} else {
 						return data.title;
 					}
 				}
