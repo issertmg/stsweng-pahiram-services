@@ -73,3 +73,11 @@
 .equipment-card:hover .equipment-img {
     transform: translateY(-68px);
 }
+
+.btn.btn-toggle {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
