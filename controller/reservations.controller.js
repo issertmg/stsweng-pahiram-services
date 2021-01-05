@@ -6,6 +6,7 @@ const User = require('../model/user.model');
 const Equipment = require('../model/equipment.model');
 const Locker = require('../model/locker.model');
 
+const validator = require('validator');
 const { validationResult } = require('express-validator');
 
 const EQUIPMENT_PENALTY_INITIAL = 50;
@@ -337,9 +338,15 @@ exports.uncleared_get = async function (req, res) {
  */
 exports.reservation_update = async function (req, res) {
     console.log('update')
+    let paymentDateValidityFlag = true;
+
+    if (!validator.isEmpty(req.body.paymentDate))
+        if (!isValidPaymentDate(new Date(req.body.paymentDate)))
+            paymentDateValidityFlag = false
+
     const errors = validationResult(req);
 
-    if (errors.isEmpty()) {
+    if (errors.isEmpty() && paymentDateValidityFlag) {
         try {
             var user = await User.findOne({ idNum: parseInt(req.session.idNum) });
 
@@ -529,3 +536,14 @@ async function setAllPendingToDenied (hours, minutes) {
         console.log(err);
     }
 }
+
+/**
+ * Checks if a date is a valid "To Pay" or Payment date
+ * @param date - the date object
+ * @returns {boolean} - true if the date is at least the present date; false otherwise
+ */
+function isValidPaymentDate(date) {
+    let today = new Date();
+    return date >= today;
+}
+exports.isValidPaymentDate = isValidPaymentDate;
