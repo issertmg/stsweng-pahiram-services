@@ -157,3 +157,40 @@ describe('Get Sort Parameters', () => {
         expect(result).toEqual({'lastUpdated': -1});
     });
 });
+
+describe('Payment Date Checker', () => {
+    it('When the set payment date is the date yesterday, then it should return false', () => {
+        // Arrange
+        const paymentDate = new Date();
+        paymentDate.setDate(paymentDate.getDate() - 1);
+
+        // Act
+        const result = reservation.isValidPaymentDate(paymentDate);
+
+        // Assert
+        expect(result).toBe(false);
+    });
+
+    it('When the set payment date is the date today, then it should return true', () => {
+        // Arrange
+        const paymentDate = new Date();
+
+        // Act
+        const result = reservation.isValidPaymentDate(paymentDate);
+
+        // Assert
+        expect(result).toBe(true);
+    });
+
+    it('When the set payment date is the date tomorrow, then it should return true', () => {
+        // Arrange
+        const paymentDate = new Date();
+        paymentDate.setDate(paymentDate.getDate() + 1);
+
+        // Act
+        const result = reservation.isValidPaymentDate(paymentDate);
+
+        // Assert
+        expect(result).toBe(true);
+    });
+});

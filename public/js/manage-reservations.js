@@ -65,7 +65,29 @@ $(document).ready(function () {
 			.search($(this).val())
 			.draw();
 	});
+
+	limitDatePicker();
 });
+
+/**
+ * Limits the date picker selection used in setting Locker reservations to "To Pay"
+ * @returns <void> - nothing
+ */
+function limitDatePicker() {
+	let dtToday = new Date();
+
+	let month = dtToday.getMonth() + 1;
+	let day = dtToday.getDate();
+	let year = dtToday.getFullYear();
+	if(month < 10)
+		month = '0' + month.toString();
+	if(day < 10)
+		day = '0' + day.toString();
+
+	let minDate = year + '-' + month + '-' + day;
+	$('#approvePaymentDate').attr('min', minDate);
+	$('#paymentDate').attr('min', minDate);
+}
 
 /**
  * Initializes the DeleteReservation modal.
