@@ -513,7 +513,7 @@ exports.getSortValue = getSortValue;
  */
 async function setAllPendingToDenied (hours, minutes) {
     let today = new Date();
-    today.setUTCHours(hours, minutes, 0, 0);
+    today.setHours(hours, minutes, 0, 0);
     try {
         const reservations = await Reservation.find({
             onItemType: 'Equipment',
