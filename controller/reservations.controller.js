@@ -555,6 +555,7 @@ async function setAllPendingToDenied (hours, minutes) {
  */
 function isValidPaymentDate(date) {
     let today = new Date();
+    today.setUTCHours(0,0,0,0)
     return date >= today;
 }
 exports.isValidPaymentDate = isValidPaymentDate;

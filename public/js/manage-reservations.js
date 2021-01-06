@@ -219,7 +219,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 			remarks: btn.data('remarks'),
 			penalty: btn.data('penalty'),
 			type: btn.data('type'),
-			paymentDate: btn.data('paymentdate')
+			pickupPayDate: btn.data('paymentdate')
 		}
 	} else
 		reservation = $('#otherReservationsTable').DataTable().row(event.relatedTarget).data();
@@ -245,7 +245,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 		}
 	);
 
-	var payDate = reservation.paymentDate == '' ? new Date() : new Date(reservation.paymentDate);
+	var payDate = (reservation.pickupPayDate === '' || reservation.pickupPayDate === null) ? new Date() : new Date(reservation.pickupPayDate);
 	var payDateString = payDate.getFullYear() + '-'
 		+ ((payDate.getMonth() <= 8) ? '0' : '') + (payDate.getMonth() + 1) + '-'
 		+ ((payDate.getDate() <= 9) ? '0' : '') + payDate.getDate();
@@ -304,8 +304,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 	}
 	$('.select-selected').show();
 
-	var pickupPayText;
-	if (reservation.type == 'Locker')
+	if (reservation.onItemType === 'Locker' || reservation.type === 'Locker')
 		$('[value="status-manage-pickup-pay"]').text('To Pay')
 	else
 		$('[value="status-manage-pickup-pay"]').text('For Pickup')
@@ -348,10 +347,13 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 		else
 			$('#penaltyForm').css('display', 'none');
 
-		if (status == 'status-manage-pickup-pay' && reservation.type == 'Locker')
+		if (status == 'status-manage-pickup-pay' && (reservation.type === 'Locker' ||
+			reservation.onItemType === 'Locker'))
 			$('#paymentForm').css('display', 'flex');
 		else
 			$('#paymentForm').css('display', 'none');
+
+
 	});
 
 	$('#status').change();
