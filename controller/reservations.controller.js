@@ -340,7 +340,7 @@ exports.reservation_update = async function (req, res) {
     console.log('update')
     let paymentDateValidityFlag = true;
 
-    if (!validator.isEmpty(req.body.paymentDate))
+    if (!validator.isEmpty(req.body.paymentDate) && req.body.onItemType === 'Locker')
         if (!isValidPaymentDate(new Date(req.body.paymentDate)))
             paymentDateValidityFlag = false
 
