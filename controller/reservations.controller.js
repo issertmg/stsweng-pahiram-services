@@ -452,16 +452,17 @@ exports.reservation_delete = async function (req, res) {
         var user = await User.findOne({ idNum: req.session.idNum });
 
         if (userIsAdmin(user) || (reservation.userID == req.session.idNum && isCancellable(reservation))) {
-
-            if (reservation.onItemType == 'Equipment' 
-                    && (reservation.status == 'On Rent'
-                        || reservation.status == 'For Pickup'
-                        || reservation.status == 'Pending')) {
-                await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
-            } else if (reservation.onItemType == 'Locker') {
-                await Locker.findByIdAndUpdate(reservation.item, { status: 'vacant' });
+            if (reservationIsDeletable(reservation.status)) {
+                if (reservation.onItemType === 'Equipment' 
+                        && (reservation.status === 'On Rent'
+                            || reservation.status === 'For Pickup'
+                            || reservation.status === 'Pending')) {
+                    await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
+                } else if (reservation.onItemType === 'Locker') {
+                    await Locker.findByIdAndUpdate(reservation.item, { status: 'vacant' });
+                }
+                await Reservation.findByIdAndDelete(reservation._id);
             }
-            await Reservation.findByIdAndDelete(reservation._id);
         }
     } catch (err) { console.log(err); };
 
@@ -470,6 +471,16 @@ exports.reservation_delete = async function (req, res) {
     else
         res.redirect('/reservations');
 };
+
+/**
+ * Checks if the reservation is deletable.
+ * @param status - the reservation status
+ * @returns {boolean} - true if status is either Returned or Denied; false otherwise.
+ */
+function reservationIsDeletable(status) {
+    return (status === 'Returned' || status === 'Denied');
+}
+exports.reservationIsDeletable = reservationIsDeletable;
 
 /**
  * Checks if a reservation is cancellable.

@@ -275,21 +275,25 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 			$('[value="status-manage-pending"]').prop('disabled', false).show();
 			$('[value="status-manage-pickup-pay"]').prop('disabled', false).show();
 			$('[value="status-manage-denied"]').prop('disabled', false).show();
+			$('#deleteReservationBtn').hide();
 			break;
 		case 'To Pay':
 		case 'For Pickup':
 			$('[value="status-manage-pickup-pay"]').prop('disabled', false).show();
 			$('[value="status-manage-on-rent"]').prop('disabled', false).show();
 			$('[value="status-manage-denied"]').prop('disabled', false).show();
+			$('#deleteReservationBtn').hide();
 			break;
 		case 'On Rent':
 			$('[value="status-manage-on-rent"]').prop('disabled', false).show();
 			$('[value="status-manage-uncleared"]').prop('disabled', false).show();
 			$('[value="status-manage-returned"]').prop('disabled', false).show();
+			$('#deleteReservationBtn').hide();
 			break;
 		case 'Uncleared':
 			$('[value="status-manage-uncleared"]').prop('disabled', false).show();
 			$('[value="status-manage-returned"]').prop('disabled', false).show();
+			$('#deleteReservationBtn').hide();
 			break;
 		case 'Returned':
 			$('[value="status-manage-returned"]').prop('disabled', false).show();
