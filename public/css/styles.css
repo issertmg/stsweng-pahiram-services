@@ -337,7 +337,7 @@ h1, h2, h3, h4, h5 {
 }
 
 .btn-round {
-    border-radius: 50px;
+    border-radius: 50px !important;
     padding: 8px 24px;
 }
 
@@ -363,7 +363,7 @@ h1, h2, h3, h4, h5 {
 
 .btn-primary {
     color: #f7f7f7 !important;
-    background-color: #38b98a;
+    background-color: #38b98a !important;
     border: solid #38b98a 1px;
 }
 
@@ -828,7 +828,7 @@ tr {
 * Forms
 */
 
-.form-group .form-control, .form-group .form-control-file {
+.form-group .form-control, .form-group .form-control-file, input {
     background-color: #eef5f3;
     border-radius: 8px !important;
     padding: 8px 16px;
@@ -836,6 +836,10 @@ tr {
     border: solid #f7f7f7 1px;
     margin: 0 !important;
     transition: 0.2s ease;
+}
+
+input {
+    margin-left: 8px !important;
 }
 
 .form-control.form-lg {
@@ -857,14 +861,14 @@ tr {
     padding: 8px 16px;
 }
 
-.form-group .form-control:hover, .form-group .form-control-file:hover {
-    border-color: #38b98a;
+.form-group .form-control:hover, .form-group .form-control-file:hover, input:hover {
+    border-color: #38b98a !important;
     /* background-color: #fff; */
 }
 
-.form-group .form-control:active, .form-group .form-control:focus {
-    background-color: #fff;
-    border-color: #38b98a;
+.form-group .form-control:active, .form-group .form-control:focus, input:focus {
+    background-color: #fff !important;
+    border-color: #38b98a !important;
     box-shadow: none;
 }
 
@@ -1312,5 +1316,9 @@ select.custom-select.form-control {
 .main {
     z-index: 100;
     transition: ease 0.5s;
+}
+
+#checkTerms {
+    margin-left: -1.25rem !important;
 }
 

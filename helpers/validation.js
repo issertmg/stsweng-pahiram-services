@@ -69,6 +69,40 @@ const validation = {
                 .isLength({min: 10, max: 10})
                 .isNumeric({no_symbols: true})
         ];
+    },
+
+    updateReservationValidation: function () {
+        return [
+            check('penalty', 'Penalty should be 0 or a positive number').notEmpty()
+                .isFloat({min: 0}),
+            check('remarks', 'Maximum length of remarks is 250 characters')
+                .isLength({max: 250})
+        ];
+    },
+
+    updateUserValidation: function () {
+        return [
+            check('idNum', 'ID number should be an integer and contain 8 digits').notEmpty()
+                .isNumeric({no_symbols: true})
+                .isLength({min: 8, max: 8}),
+            check('college', 'College is invalid').notEmpty()
+                .isIn([
+                    'College of Education',
+                    'College of Computer Studies',
+                    'College of Liberal Arts',
+                    'College of Science',
+                    'College of Engineering',
+                    'College of Business',
+                    'School of Economics']),
+            check('degProg', 'Degree program should only contain letters and/or dash').notEmpty()
+                .isLength({min: 1, max: 15}).custom((degProg, {req}) => {
+                let regex = /[a-z\-\s]*/i;
+                return degProg.match(regex)[0] === degProg;
+            }),
+            check('mobile','Phone cannot be empty and should be valid').notEmpty()
+                .isLength({min: 10, max: 10})
+                .isNumeric({no_symbols: true})
+        ];
     }
 }
 

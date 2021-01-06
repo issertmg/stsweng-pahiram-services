@@ -1,37 +1,98 @@
 $(document).ready(function () {
-  var pagination;
-  var pageNum;
-  var pageStart;
-  var pageEnd;
-  var idNum = '';
-  const itemsPerPage = 10;
-
-  $.get('/profile/manage/get-people', {page: 1, idnum: ''}, function (data, status) {
-    pagination = Math.ceil(data.totalCt / itemsPerPage);
-    pageNum = 1;
-    pageStart = 1;
-    pageEnd = pagination > 5 ? 5 : pagination;
-
-    removePagination();
-    if (data.totalCt > itemsPerPage)
-      setupPagination(pagination, pageStart, pageEnd, pageNum, idNum);
-    displayPeople(data.items);
+   /**
+   * Initializes the table containing the user infos.
+   * @returns <void> - nothing
+   */
+  $("#peopleTable").DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+      url: '/profile/manage/get-people',
+      dataSrc: 'data'
+    },
+    // 'createdRow': function (row, data, dataIndex) {
+    //   $(row).attr('data-toggle', 'modal');
+    //   $(row).attr('data-target', '#editProfileModal');
+    //   $(row).attr('data-id', data._id);
+    //   $(row).attr('data-fname', data.firstName);
+    //   $(row).attr('data-lname', data.lastName);
+    //   $(row).attr('data-idnum', data.idNum);
+    //   $(row).attr('data-college', data.college);
+    //   $(row).attr('data-degprog', data.degreeProg);
+    //   $(row).attr('data-mobile', data.contactNum);
+    //   $(row).css('cursor', 'pointer');
+    // },
+    columns: [
+      {
+        "data": "dpURL",
+        "render": function (data, type, row, meta) {
+          return `<div class="profile-icon" style="background-image: url('` + data + `');"></div>`;
+        }
+      },
+      { "data": "idNum" },
+      { "data": function (data) {
+                  return data.lastName +', ' + data.firstName;
+                }
+      },
+      { "data": "email" },
+      { "data": "degreeProg" },
+      { "data": "college" },
+      { "data": "type" },
+      { "data": "contactNum" },
+      {
+        "data": function (data, type, row, meta) {
+                  if (data.type === "studentRep") {
+                    return `<a class="table-link btn btn-warning mr-4" 
+                               data-toggle="modal" data-id="`+ data._id +
+                              `" href="#demoteModal">Demote
+                             </a>` +
+                            `<a class="table-link mr-2" data-toggle="modal" 
+                               data-fname="`+ data.firstName +
+                               `" data-lname="`+ data.lastName +
+                               `" data-idnum="`+ data.idNum +
+                               `" data-college="`+ data.college +
+                               `" data-degprog="`+ data.degreeProg +
+                               `" data-mobile="`+ data.contactNum +
+                               `" data-id="`+ data._id +
+                               `" href="#editProfileModal"><div class="icon" id="edit"></div>
+                             </a>`;
+                  }
+                  else {
+                    return `<a class="table-link btn btn-secondary mr-4" 
+                               data-toggle="modal" data-id="`+ data._id +
+                              `" href="#promoteModal">Promote
+                            </a>` +
+                           `<a class="table-link mr-2" data-toggle="modal" 
+                                     data-fname="`+ data.firstName +
+                              `" data-lname="`+ data.lastName +
+                              `" data-idnum="`+ data.idNum +
+                              `" data-college="`+ data.college +
+                              `" data-degprog="`+ data.degreeProg +
+                              `" data-mobile="`+ data.contactNum +
+                              `" data-id="`+ data._id +
+                              `" href="#editProfileModal"><div class="icon" id="edit"></div>
+                            </a>`;
+                  }
+              },
+          "className": "d-flex align-items-center justify-content-end"
+      }
+    ],
+    "order": [[2, "asc"]],
+    "responsive": true,
+    "dom": "ipt",
+    columnDefs: [
+      {targets: 0, bSortable: false}
+    ]
   });
 
-  $("#searchBox").on("keyup", function () {
-    idNum = $(this).val();
-    $.get('/profile/manage/get-people', 
-        {page: 1, idnum: idNum},
-        function (data, status) {
-      pagination = Math.ceil(data.totalCt / itemsPerPage);
-      pageNum = 1;
-      pageStart = 1;
-      pageEnd = pagination > 5 ? 5 : pagination;
-      removePagination();
-      if (data.totalCt > itemsPerPage)
-        setupPagination(pagination, pageStart, pageEnd, pageNum, idNum)
-      displayPeople(data.items);
-    });
+  $("#searchBox").on("keyup paste change", function () {
+    let str = $(this).val();
+    if (str.length > 100) {
+      $(this).val(str.slice(0,100))
+    }
+    $('#peopleTable').DataTable()
+        .search($(this).val())
+        .draw();
   });
 });
 
@@ -47,8 +108,12 @@ $(document).ajaxComplete(function () {
   $('.page-link').css('filter', 'opacity(1)');
 });
 
+/**
+ * Initializes the Edit Profile Modal upon opening.
+ * @returns <void> - nothing
+ */
 $('#editProfileModal').on('show.bs.modal', (event) => {
-
+  hideAllAlert();
   var btn = $(event.relatedTarget);
   var person = {
     id: btn.data('id'),
@@ -71,129 +136,167 @@ $('#editProfileModal').on('show.bs.modal', (event) => {
   $('#id').val(person.id);
 });
 
+/**
+ * Initializes the Promote Modal upon opening.
+ * @returns <void> - nothing
+ */
 $('#promoteModal').on('show.bs.modal', (event) => {
   var btn = $(event.relatedTarget);
   id = btn.data('id');
   $('#promoteUserID').val(id);
 });
 
+/**
+ * Initializes the Demote Modal upon opening.
+ * @returns <void> - nothing
+ */
 $('#demoteModal').on('show.bs.modal', (event) => {
   var btn = $(event.relatedTarget);
   id = btn.data('id');
   $('#demoteUserID').val(id);
+  $('#demoteErrorAlert').hide();
 });
 
-function displayPeople(pips) {
-  $('#peopleTable tbody *').remove();
-  $('.empty-note').remove();
+/**
+ * Validates the Demote User form before submitting.
+ * @returns <void> - nothing
+ */
+$('#demoteUserBtn').click(function() {
+  $.get('/profile/get-count-of-studentrep',
+      {},
+      function(data, status) {
+        if (data.count < 2) {
+          $('#demoteErrorAlert').show();
+        }
+        else {
+          $('#demoteUserBtn').off("click");
+          $('#demoteUserForm').submit();
+        }
+      });
+});
 
-  if (pips.length == 0) {
-    $('.card').append(
-      '<div class="empty-note text-center font-italic">' + 'Nothing to display' + '</div>'
-    );
+/**
+ * Validates the Edit Profile form before submitting.
+ * @returns <void> - nothing
+ */
+$('#approveStatusSubmit').click(function() {
+  hideAllAlert();
+  if (!isFilledEditModal()) {
+    $("#emptyAlert").show();
   }
-  pips.forEach(function (person) {
-    $('#peopleTable tbody').append(
-      '<tr>' +
-      '<td><div class="profile-icon" style="background-image: url(\''+ person.dpURL +'\');"></div></td>' +
-      '<td>' + person.idNum + '</td>' +
-      '<td>' + person.lastName + ', ' + person.firstName + '</td>' +
-      '<td>' + person.type + '</td>' +
-      '<td>+63' + person.contactNum + '</td>' +
-      '<td class="d-flex align-items-center justify-content-end">' +
-        ((person.type == 'student') ? 
-          '<a class="table-link btn btn-secondary mr-4" data-toggle="modal" data-id="' + person._id + '" href="#promoteModal">Promote</a>' : 
-          '<a class="table-link btn btn-warning mr-4" data-toggle="modal" data-id="' + person._id + '" href="#demoteModal">Demote</a>') +
-        '<a class="table-link mr-2" data-toggle="modal" '+
-            'data-fname="' + person.firstName + '" ' +
-            'data-lname="' + person.lastName + '" ' +
-            'data-idnum="' + person.idNum + '" ' +
-            'data-college="' + person.college + '" ' +
-            'data-degprog="' + person.degreeProg + '" ' +
-            'data-mobile="' + person.contactNum + '" ' +
-            'data-id="' + person._id + '" ' +
-            'href="#editProfileModal">' +
-          '<div class="icon" id="edit"></div>' +
-        '</a>' +
-      '</td>'
-    );
-  });
-}
-
-function removePagination() {
-  $('#peoplePagination .page-item').remove();
-}
-
-function setupPagination(pagination, pageStart, pageEnd, pageNum, idNum) {
-  $('#peoplePagination').append(`
-    <li class="page-item">
-      <a class="page-link" href="#otherResCard" id="prevPage">
-        <div class="icon" id="arrow-left"/>
-      </a>
-    </li>
-  `);
-  for (var i = pageStart; i <= pageEnd; i++) {
-    $('#peoplePagination').append(
-      '<li class="page-item' + ((i == pageNum) ? ' active' : '') + '">' +
-      '<a class="page-link page-number" href="#otherResCard">' +
-      i +
-      '</a>' +
-      '</li>'
-    );
+  else if (!isValidIDNumber()){
+    $("#idnumAlert").show();
   }
-  $('#peoplePagination').append(`
-    <li class="page-item">
-      <a class="page-link" href="#otherResCard" id="nextPage">
-        <div class="icon" id="arrow-right"/>
-      </a>
-    </li>
-  `);
-
-  $('#peoplePagination .page-link').click(function () {
-    var offset = 0;
-    if ($(this).attr('id') == 'nextPage')
-      offset = 1;
-    else if ($(this).attr('id') == 'prevPage')
-      offset = -1;
-    else if (pagination == 1)
-      offset = 0;
-    else
-      offset = $(this).text() - pageNum;
-
-    var maxPageShiftR = pagination - pageEnd;
-    var maxPageShiftL = pageStart - 1;
-
-    if (pageNum + offset >= 1 && pageNum + offset <= pagination && offset != 0) {
-      $.get('/profile/manage/get-people',
-        {page: pageNum + offset, idnum: idNum},
-        function (data, status) {
-          if (pageNum + offset >= 1 && pageNum + offset <= pagination) {
-            if (offset > 0 && offset <= maxPageShiftR && pageNum + offset > (pageStart + pageEnd) / 2
-              || offset < 0 && -1 * offset <= maxPageShiftL && pageNum + offset < (pageStart + pageEnd) / 2) {
-              pageStart += offset;
-              pageEnd += offset;
-            } else if (offset > 0 && offset > maxPageShiftR) {
-              pageStart += maxPageShiftR;
-              pageEnd += maxPageShiftR;
-            } else if (offset < 0 && -1 * offset > maxPageShiftL) {
-              pageStart -= maxPageShiftL;
-              pageEnd -= maxPageShiftL;
+  else if (!isValidPhoneNumber()) {
+    $("#mobileAlert").show();
+  }
+  else if (!isValidDegreeProgram()) {
+    $("#degreeAlert").show();
+  }
+  else {
+    $.get('/profile/check-for-duplicates',
+            {userid: $("#id").val(), mobile: $("#mobile").val(), idnumber: $("#idNum").val()},
+            function(data, status) {
+              if (data.duplicateMobile) {
+                $('#dupeMobileAlert').show();
+              }
+              if (data.duplicateID) {
+                $('#dupeIdnumAlert').show();
+              }
+              if (!data.duplicateMobile && !data.duplicateID){
+                $('#approveStatusSubmit').off("click");
+                $('#editProfileForm').submit();
+              }
             }
-          }
-          pageNum += offset;
-          updatePagination(pageStart, pageEnd, pageNum)
-          displayPeople(data.items);
-        });
-    }
-  });
+    );
+  }
+});
+
+/**
+ * Checks if the id number, college, degree program, and mobile fields in the Edit Profile form are empty.
+ * @returns {boolean} - true if id number, college, degree program, and mobile fields are filled; false otherwise
+ */
+function isFilledEditModal() {
+  let idNum = validator.trim($('#idNum').val());
+  let college = validator.trim($('#college').val());
+  let degProg = validator.trim($('#degProg').val());
+  let mobile = validator.trim($('#mobile').val());
+
+  let idNumEmpty = validator.isEmpty(idNum);
+  let collegeEmpty = validator.isEmpty(college);
+  let degProgEmpty = validator.isEmpty(degProg);
+  let mobileEmpty = validator.isEmpty(mobile);
+
+  return !idNumEmpty && !collegeEmpty && !degProgEmpty && !mobileEmpty;
 }
 
-function updatePagination(pageStart, pageEnd, pageNum) {
-  $('#peoplePagination .page-number').each(function (index, element) {
-    $(element).text(pageStart + index);
-    if ($(element).text() != pageNum)
-      $(element).parent().removeClass('active');
-    else
-      $(element).parent().addClass('active');
-  })
+/**
+ * Checks if the id number field in the Edit Profile form is valid.
+ * @returns {boolean} - true if id number is an integer and is 8 at length; false otherwise
+ */
+function isValidIDNumber() {
+  let idNum = validator.trim($('#idNum').val());
+  return validator.isNumeric(idNum, {no_symbols: true}) && validator.isLength(idNum,{min: 8, max: 8});
 }
+
+/**
+ * Checks if the mobile number field in the Edit Profile form is valid.
+ * @returns {boolean} - true if mobile number is an integer and is 10 at length; false otherwise
+ */
+function isValidPhoneNumber() {
+  let mobile = validator.trim($('#mobile').val());
+  return validator.isNumeric(mobile, {no_symbols: true}) && validator.isLength(mobile,{min: 10, max: 10});
+}
+
+/**
+ * Checks if the degree program field in the Edit Profile form is valid.
+ * @returns {boolean} - true if degree program only contains letters, -(dash), and/or whitespaces; false otherwise
+ */
+function isValidDegreeProgram() {
+  let regex = /[a-z\-\s]*/i;
+  let degProg = validator.trim($('#degProg').val());
+  return degProg.match(regex)[0] === degProg;
+}
+
+/**
+ * Hides all alerts in Edit Profile form
+ * @returns {void} - nothing
+ */
+function hideAllAlert() {
+  $("#emptyAlert").hide();
+  $("#idnumAlert").hide();
+  $("#mobileAlert").hide();
+  $("#degreeAlert").hide();
+  $("#dupeMobileAlert").hide();
+  $("#dupeIdnumAlert").hide();
+}
+
+/**
+ * Limits the length of input in degree program field in Edit Profile form to 15 characters.
+ * @returns {void} - nothing
+ */
+$("#degProg").on("keyup change", function() {
+  let inputElement = $(this);
+  if (inputElement.val().length > 15) {
+    inputElement.val(inputElement.val().slice(0, 15));
+  }
+});
+
+/**
+ * Limits the length of input in mobile number field in Edit Profile form to 10 characters.
+ * @returns {void} - nothing
+ */
+$("#mobile").on("keyup change", function() {
+  let inputElement = $(this);
+  if (inputElement.val().length > 10) {
+    inputElement.val(inputElement.val().slice(0, 10));
+  }
+});
+
+
+$("#idNum").on("input", function() {
+  let inputElement = $(this);
+  if (inputElement.val() <= 0 || inputElement.val() > 99999999) {
+    inputElement.val("");
+  }
+});

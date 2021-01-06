@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --verbose",
+    "test": "jest --verbose --detectOpenHandles --forceExit",
     "start": "node index.js"
   },
   "repository": {
@@ -23,6 +23,8 @@
     "cloudinary": "^1.23.0",
     "cookie-parser": "^1.4.4",
     "cookie-session": "^1.4.0",
+    "datatables.net": "^1.10.22",
+    "datatables.net-dt": "^1.10.22",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-validator": "^6.4.0",

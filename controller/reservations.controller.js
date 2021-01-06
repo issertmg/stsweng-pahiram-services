@@ -6,17 +6,47 @@ const User = require('../model/user.model');
 const Equipment = require('../model/equipment.model');
 const Locker = require('../model/locker.model');
 
+const validator = require('validator');
+const { validationResult } = require('express-validator');
+
 const EQUIPMENT_PENALTY_INITIAL = 50;
 const EQUIPMENT_PENALTY_INCREMENT = 20;
 
 /**
- * Marks all unreturned equipment as uncleared, and increments penalty charges for uncleared reservations every 6:30PM.
+ * Marks all pending equipment reservation as denied if the equipment is still pending an hour before the planned pickup time.
  * @returns {Promise<void>} - nothing
  */
-cron.schedule('0 12 0 * * *', async function () {
+cron.schedule('0 30 6 * * MON,TUE,WED,THU,FRI *', function () {
+    setAllPendingToDenied(7, 30)
+});
+cron.schedule('0 15 8 * * MON,TUE,WED,THU,FRI *', function () {
+    setAllPendingToDenied(9, 15)
+});
+cron.schedule('0 0 10 * * MON,TUE,WED,THU,FRI *', function () {
+    setAllPendingToDenied(11, 0)
+});
+cron.schedule('0 45 11 * * MON,TUE,WED,THU,FRI *', function () {
+    setAllPendingToDenied(12, 45)
+});
+cron.schedule('0 30 13 * * MON,TUE,WED,THU,FRI *', function () {
+    setAllPendingToDenied(14, 30)
+});
+cron.schedule('0 15 15 * * MON,TUE,WED,THU,FRI *', function () {
+    setAllPendingToDenied(16, 15)
+});
 
+/**
+ * Marks all unreturned equipment as uncleared, increments penalty charges for uncleared reservations,
+ * and sets all equipment reservation for pickup to returned every 11:59PM.
+ * @returns {Promise<void>} - nothing
+ */
+cron.schedule('0 59 23 * * MON,TUE,WED,THU,FRI *', async function () {
+    let today = new Date();
+    let tomorrow = new Date(today);
+    today.setHours(0,0,0,0);
+    tomorrow.setDate(tomorrow.getDate()+1);
     try {
-        // for already uncleared equipment, increment penalty by 20
+        // for already uncleared equipment, increment penalty by 20 (working)
         await Reservation
             .updateMany(
                 {
@@ -30,7 +60,7 @@ cron.schedule('0 12 0 * * *', async function () {
                 }
             );
 
-        // set unreturned equipment as uncleared
+        // set unreturned equipment as uncleared (working)
         await Reservation
             .updateMany(
                 {
@@ -45,10 +75,34 @@ cron.schedule('0 12 0 * * *', async function () {
                 }
             );
 
+        // set for-pickup equipment as returned (working)
+        const reservations = await Reservation.find({
+            onItemType: 'Equipment',
+            status: 'For Pickup',
+            pickupPayDate: {"$gte": today, "$lt": tomorrow}
+        });
+
+        for (let i = 0; i < reservations.length; i++) {
+            await Equipment.findByIdAndUpdate(reservations[i].item, { $inc: { onRent: -1 } });
+        }
+
+        await Reservation
+            .updateMany(
+                {
+                    onItemType: 'Equipment',
+                    status: 'For Pickup',
+                    pickupPayDate: {"$gte": today, "$lt": tomorrow}
+                },
+                {
+                    status: 'Returned',
+                    lastUpdated: Date.now(),
+                    remarks: 'You did not pickup the equipment within the reservation date'
+                }
+            );
+
     } catch (err) {
         console.log(err);
     }
-
 });
 
 hbs.registerHelper('dateStr', (date) => { return date == null ? '' : date.toDateString(); });
@@ -104,6 +158,12 @@ exports.myReservations = async function (req, res) {
     }
 };
 
+/**
+ * Renders and loads the Manage Reservation page
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.reservation_details = async function (req, res) {
     var now = new Date();
     var dateToday = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
@@ -122,7 +182,7 @@ exports.reservation_details = async function (req, res) {
             .populate('item');
 
         var pickupPayToday = await Reservation
-            .find({ status: ['For Pickup', 'To Pay'] }).sort({ pickupPayDate: -1 });
+            .find({ status: ['For Pickup', 'To Pay'] }).sort({ pickupPayDate: -1 }).populate('item');
 
     } catch (err) {
         console.log(err);
@@ -141,50 +201,55 @@ exports.reservation_details = async function (req, res) {
     });
 }
 
+/**
+ * AJAX function used in DataTables for displaying the reservations
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.reservations_get = async function (req, res) {
     try {
-        var reservations = new Object();
-        const itemsPerPage = 5;
+        let type = [];
+        if (req.query.columns[2].search.value === '' ||
+            req.query.columns[2].search.value === 'All')
+            type = ['Locker', 'Equipment'];
+        else
+            type.push(req.query.columns[2].search.value);
 
-        var statuses = []
-        switch (req.query.status) {
-            case 'onrent':
-                statuses.push('On Rent');
-                break;
-            case 'uncleared':
-                statuses.push('Uncleared');
-                break;
-            case 'returned':
-                statuses.push('Returned');
-                break;
-            case 'denied':
-                statuses.push('Denied');
-                break;
-            default:
-                statuses.push('On Rent');
-                statuses.push('Uncleared');
-                statuses.push('Returned');
-                statuses.push('Denied');
-        }
+        let sortObject;
+        if (req.query.order[0] == null)
+            sortObject = getSortValue(-1, -1);  // default sort
+        else
+            sortObject = getSortValue(req.query.order[0].column, req.query.order[0].dir);
 
-        reservations.totalCt = await Reservation
-            .find({
-                status: statuses,
-                userID: { $regex: '[0-9]*' + req.query.idnum + '[0-9]*' }
-            })
+        count = await Reservation
+            .find({onItemType: type})
             .countDocuments();
 
-        reservations.items = await Reservation
-            .find({
-                status: statuses,
-                userID: { $regex: '[0-9]*' + req.query.idnum + '[0-9]*' }
-            })
-            .sort({ lastUpdated: -1 })
-            .skip((req.query.page - 1) * itemsPerPage)
-            .limit(itemsPerPage);
+        data = await Reservation
+            .find(
+                {
+                    onItemType: type, 
+                    $or: [
+                        {userID: { $regex: '[0-9]*' + req.query.search.value + '[0-9]*' }},
+                        {status: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
+                        {onItemType: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
+                    ]
+                    
+                })
+            .sort(sortObject)
+            .skip(parseInt(req.query.start))
+            .limit(parseInt(req.query.length)).populate('item');
 
-        if (reservations) {
-            res.send(reservations);
+        if (data && count) {
+
+            let datatable = {
+                recordsTotal: count,
+                recordsFiltered: count,
+                data: data,
+            }
+
+            res.send(datatable);
         }
 
     } catch (error) {
@@ -192,6 +257,51 @@ exports.reservations_get = async function (req, res) {
     }
 }
 
+/**
+ * Determines the field to sort and the order
+ * @param column - the column number of the DataTable 
+ * @param dir  - the direction (asc or desc)
+ */
+function getSortValue(column, direction) {
+    if (column == null || direction == null) {
+        console.log('Null')
+        return {'lastUpdated': -1};  
+    } 
+
+    let dir = (direction === 'asc') ? 1: -1;
+
+    switch (column) {
+        case '0':
+            return {'userID': dir};
+        case '1':
+            return {'dateCreated': dir};
+        case '2':
+            return {'onItemType': dir};
+        case '3':
+            return {'title': dir};
+        case '4':
+            return {'description': dir};
+        case '5':
+            return {'status': dir};
+        case '6':
+            return {'remarks': dir};
+        case '7':
+            return {'_id': dir};
+        case '8':
+            return {'penalty': dir};
+        case '9':
+            return {'lastUpdated': dir};
+        default:
+            return {'lastUpdated': -1}
+    }
+}
+
+/**
+ * AJAX function to send the user's firstname and lastname, given the idNum attribute
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.user_get = async function (req, res) {
     try {
         var user = await User.findOne({ idNum: req.query.idnum });
@@ -204,6 +314,12 @@ exports.user_get = async function (req, res) {
     }
 }
 
+/**
+ * AJAX function to get all reservation with uncleared status
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.uncleared_get = async function (req, res) {
     try {
         var uncleared = await Reservation.find({ userID: req.query.idnum, status: 'Uncleared' });
@@ -214,94 +330,112 @@ exports.uncleared_get = async function (req, res) {
     }
 }
 
+/**
+ * Updates a reservation from the database.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
 exports.reservation_update = async function (req, res) {
-    try {
-        var user = await User.findOne({ idNum: parseInt(req.session.idNum) });
+    console.log('update')
+    let paymentDateValidityFlag = true;
 
-        console.log(req.body);
+    if (!validator.isEmpty(req.body.paymentDate))
+        if (!isValidPaymentDate(new Date(req.body.paymentDate)))
+            paymentDateValidityFlag = false
 
-        if (user) {
-            var status;
-            var reservation = await Reservation.findById(req.body.reservationID);
-            switch (req.body.status) {
-                case 'status-manage-pending':
-                    status = 'Pending';
-                    if (req.body.onItemType == 'Locker') { 
-                        await Locker.findByIdAndUpdate(reservation.item, { status: 'occupied' }); 
-                    }
-                    else { 
-                        if (reservation.status == 'Denied' || reservation.status == 'Returned') {
-                            await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+    const errors = validationResult(req);
+
+    if (errors.isEmpty() && paymentDateValidityFlag) {
+        try {
+            var user = await User.findOne({ idNum: parseInt(req.session.idNum) });
+
+            if (user) {
+                var status;
+                var reservation = await Reservation.findById(req.body.reservationID);
+                switch (req.body.status) {
+                    case 'status-manage-pending':
+                        status = 'Pending';
+                        if (req.body.onItemType == 'Locker') {
+                            await Locker.findByIdAndUpdate(reservation.item, { status: 'occupied' });
                         }
-                    }
-                    break;
-                case 'status-manage-pickup-pay':
-                    status = (req.body.onItemType == 'Locker') ? 'To Pay' : 'For Pickup';        
-                    if (req.body.onItemType == 'Locker') { 
-                        await Locker.findByIdAndUpdate(reservation.item, { status: 'occupied' }); 
-                    }
-                    else { 
-                        if (reservation.status == 'Denied' || reservation.status == 'Returned') {
-                            await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+                        else {
+                            if (reservation.status == 'Denied' || reservation.status == 'Returned') {
+                                await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+                            }
                         }
-                    }                    
-                    break;
-                case 'status-manage-on-rent':
-                    status = 'On Rent';                    
-                    if (req.body.onItemType == 'Locker') { 
-                        await Locker.findByIdAndUpdate(reservation.item, { status: 'occupied' }); 
-                    }
-                    else { 
-                        if (reservation.status == 'Denied' || reservation.status == 'Returned') {
-                            await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+                        break;
+                    case 'status-manage-pickup-pay':
+                        status = (req.body.onItemType == 'Locker') ? 'To Pay' : 'For Pickup';
+                        if (req.body.onItemType == 'Locker') {
+                            await Locker.findByIdAndUpdate(reservation.item, { status: 'occupied' });
                         }
-                    }                    
-                    break;
-                case 'status-manage-returned':
-                    status = 'Returned';
-                    if (req.body.onItemType == 'Locker') { 
-                        await Locker.findByIdAndUpdate(reservation.item, { status: 'vacant' }); 
-                    }
-                    else { 
-                        if (reservation.status != 'Denied' && reservation.status != 'Returned') {
-                            await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
+                        else {
+                            if (reservation.status == 'Denied' || reservation.status == 'Returned') {
+                                await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+                            }
                         }
-                    }
-                    break;
-                case 'status-manage-uncleared':
-                    status = 'Uncleared';                    
-                    if (req.body.onItemType == 'Locker') { 
-                        await Locker.findByIdAndUpdate(reservation.item, { status: 'uncleared' }); 
-                    }
-                    else { 
-                        if (reservation.status == 'Denied' || reservation.status == 'Returned') {
-                            await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+                        break;
+                    case 'status-manage-on-rent':
+                        status = 'On Rent';
+                        if (req.body.onItemType == 'Locker') {
+                            await Locker.findByIdAndUpdate(reservation.item, { status: 'occupied' });
                         }
-                    }
-                    break;
-                case 'status-manage-denied':
-                    status = 'Denied';                    
-                    if (req.body.onItemType == 'Locker') { 
-                        await Locker.findByIdAndUpdate(reservation.item, { status: 'vacant' }); 
-                    }
-                    else { 
-                        if (reservation.status != 'Denied' && reservation.status != 'Returned') {
-                            await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
+                        else {
+                            if (reservation.status == 'Denied' || reservation.status == 'Returned') {
+                                await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+                            }
                         }
-                    }                    
-                    break;
+                        break;
+                    case 'status-manage-returned':
+                        status = 'Returned';
+                        if (req.body.onItemType == 'Locker') {
+                            await Locker.findByIdAndUpdate(reservation.item, { status: 'vacant' });
+                        }
+                        else {
+                            if (reservation.status != 'Denied' && reservation.status != 'Returned') {
+                                await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
+                            }
+                        }
+                        break;
+                    case 'status-manage-uncleared':
+                        status = 'Uncleared';
+                        if (req.body.onItemType == 'Locker') {
+                            await Locker.findByIdAndUpdate(reservation.item, { status: 'uncleared' });
+                        }
+                        else {
+                            if (reservation.status == 'Denied' || reservation.status == 'Returned') {
+                                await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: 1 } });
+                            }
+                        }
+                        break;
+                    case 'status-manage-denied':
+                        status = 'Denied';
+                        if (req.body.onItemType == 'Locker') {
+                            await Locker.findByIdAndUpdate(reservation.item, { status: 'vacant' });
+                        }
+                        else {
+                            if (reservation.status != 'Denied' && reservation.status != 'Returned') {
+                                await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
+                            }
+                        }
+                        break;
+                }
+
+                if (userIsAdmin(user))
+                    await Reservation.findByIdAndUpdate(req.body.reservationID, {
+                        status: status,
+                        remarks: req.body.remarks,
+                        penalty: req.body.status == 'status-manage-uncleared' ? req.body.penalty : 0,
+                        lastUpdated: Date.now(),
+                        pickupPayDate: req.body.paymentDate
+                    });
             }
-
-            if (userIsAdmin(user))
-                await Reservation.findByIdAndUpdate(req.body.reservationID, {
-                    status: status,
-                    remarks: req.body.remarks,
-                    penalty: req.body.status == 'status-manage-uncleared' ? req.body.penalty : 0,
-                    lastUpdated: Date.now(),
-                    pickupPayDate: req.body.paymentDate
-                });
-        }
-    } catch (err) { console.log(err); };
+        } catch (err) { console.log(err); };
+    }
+    else {
+        console.log(errors);
+    }
 
     res.redirect('/reservations/manage');
 }
@@ -358,3 +492,58 @@ function userIsAdmin(user) {
     return user.type == 'studentRep';
 }
 exports.userIsAdmin = userIsAdmin;
+exports.getSortValue = getSortValue;
+
+/**
+ * Sets all pending equipment reservation to denied given the hour and minute of pickup.
+ * @param hours - the hour of the pickupDate
+ * @param minutes - the minute of the pickupDate
+ * @returns {Promise<void>}
+ */
+async function setAllPendingToDenied (hours, minutes) {
+    let today = new Date();
+    today.setUTCHours(hours, minutes, 0, 0);
+    try {
+        const reservations = await Reservation.find({
+            onItemType: 'Equipment',
+            status: 'Pending',
+            pickupPayDate: today
+        });
+
+        for (let i = 0; i < reservations.length; i++) {
+            await Equipment
+                .findByIdAndUpdate(
+                    reservations[i].item,
+                    { $inc: { onRent: -1 } }
+                );
+        }
+
+        await Reservation
+            .updateMany(
+                {
+                    onItemType: 'Equipment',
+                    status: 'Pending',
+                    pickupPayDate: today
+                },
+                {
+                    status: 'Denied',
+                    lastUpdated: Date.now(),
+                    remarks: 'Reservation was not approved on time, please try again'
+                }
+            );
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+/**
+ * Checks if a date is a valid "To Pay" or Payment date
+ * @param date - the date object
+ * @returns {boolean} - true if the date is at least the present date; false otherwise
+ */
+function isValidPaymentDate(date) {
+    let today = new Date();
+    return date >= today;
+}
+exports.isValidPaymentDate = isValidPaymentDate;
