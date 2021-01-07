@@ -111,7 +111,7 @@ cron.schedule('0 59 23 * * MON,TUE,WED,THU,FRI *', async function () {
  * @returns {Promise<void>} - nothing
  */
 cron.schedule('0 59 23 * * SUN,MON,TUE,WED,THU,FRI,SAT *', async function () {
-    let today = new Day();
+    let today = new Date();
 
     try {
         let rental_date = await RentalDates.findOne();
