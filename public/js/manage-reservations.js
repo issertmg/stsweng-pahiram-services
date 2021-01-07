@@ -297,9 +297,11 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 			break;
 		case 'Returned':
 			$('[value="status-manage-returned"]').prop('disabled', false).show();
+			$('#deleteReservationBtn').show();
 			break;
 		case 'Denied':
 			$('[value="status-manage-denied"]').prop('disabled', false).show();
+			$('#deleteReservationBtn').show();
 			break;
 	}
 	$('.select-selected').show();
