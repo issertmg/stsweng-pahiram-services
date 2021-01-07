@@ -10,6 +10,7 @@ $(document).ready(function () {
     $('form').on('submit', function () {
         $('.modal').find('button[type="submit"]').prop('disabled', true);
     })
+    limitDatePicker();
 });
 
 function isFilled() {
@@ -165,6 +166,39 @@ $('#addPanelModal').on('show.bs.modal', function (event) {
     $('.alert').hide();
 });
 
+$('#setRentalDatesModal').on('show.bs.modal', function (event) {
+    $('.alert').hide();
+    let startDateData = $(event.relatedTarget).data('startdate');
+    let endDateData = $(event.relatedTarget).data('enddate');
+    let returnDateData = $(event.relatedTarget).data('returndate');
+
+    let startDate = typeof startDateData === 'undefined' ? new Date() : new Date(startDateData);
+    let startDateString = startDate.getFullYear() + '-'
+        + ((startDate.getMonth() <= 8) ? '0' : '') + (startDate.getMonth() + 1) + '-'
+        + ((startDate.getDate() <= 9) ? '0' : '') + startDate.getDate();
+
+    let endDate = typeof endDateData === 'undefined' ? new Date() : new Date(endDateData);
+    let endDateString = endDate.getFullYear() + '-'
+        + ((endDate.getMonth() <= 8) ? '0' : '') + (endDate.getMonth() + 1) + '-'
+        + ((endDate.getDate() <= 9) ? '0' : '') + endDate.getDate();
+
+    let returnDate = typeof returnDateData === 'undefined' ? new Date() : new Date(returnDateData);
+    let returnDateString = returnDate.getFullYear() + '-'
+        + ((returnDate.getMonth() <= 8) ? '0' : '') + (returnDate.getMonth() + 1) + '-'
+        + ((returnDate.getDate() <= 9) ? '0' : '') + returnDate.getDate();
+
+    $("#startDate").val(startDateString);
+    $("#endDate").val(endDateString);
+    $("#returnDate").val(returnDateString);
+
+    let startTimeString = startDate.toTimeString();
+    startTimeString = startTimeString.split(' ')[0].slice(0, 5);
+    let endTimeString = endDate.toTimeString();
+    endTimeString = endTimeString.split(' ')[0].slice(0, 5);
+    $("#startTime").val(startTimeString);
+    $("#endTime").val(endTimeString);
+});
+
 $('#addPanelSubmit').click(async function () {
     $('.alert').hide();
     if (isFilled()) {
@@ -232,4 +266,101 @@ function updateQueryStringParameter(key, value) {
     } else {
         window.location.href = uri + separator + key + "=" + value;
     }
+}
+
+$('#setRentalDatesButton').click(function() {
+    $('.alert').hide();
+    if (!isFilledRentalDates) {
+        $("#emptyRentalDateAlert").show();
+    }
+    else if (!isValidStartDate())  {
+        $("#startDateAlert").show();
+    }
+    else if (!isValidEndDate()) {
+        $("#endDateAlert").show();
+    }
+    else if (!isValidReturnDate()) {
+        $("#returnDateAlert").show();
+    }
+    else {
+        $('#setRentalDatesButton').off("click");
+        $('#setRentalDatesForm').submit();
+    }
+});
+
+function isFilledRentalDates() {
+    let startDate = validator.trim($("#startDate").val());
+    let endDate =  validator.trim($("#endDate").val());
+    let returnDate =  validator.trim($("#returnDate").val());
+    let startTime =  validator.trim($("#startTime").val());
+    let endTime =  validator.trim($("#endTime").val());
+
+    return !validator.isEmpty(startDate) && !validator.isEmpty(endDate) &&
+        !validator.isEmpty(returnDate) && !validator.isEmpty(startTime) && !validator.isEmpty(endTime);
+}
+
+function isValidStartDate () {
+    let startDate = $("#startDate").val();
+    let startDateObject = new Date(startDate);
+    let currentDate = new Date();
+
+    let startTimeString = $("#startTime").val();
+    let startTimeHour = startTimeString.split(':')[0];
+    let startTimeMinute = startTimeString.split(':')[1];
+    startDateObject.setHours(startTimeHour, startTimeMinute, 0);
+
+
+    return startDateObject >= currentDate;
+}
+
+function isValidEndDate () {
+    let startDate = $("#startDate").val();
+    let endDate = $("#endDate").val();
+    let startDateObject = new Date(startDate);
+    let endDateObject = new Date(endDate);
+
+    let startTimeString = $("#startTime").val();
+    let startTimeHour = startTimeString.split(':')[0];
+    let startTimeMinute = startTimeString.split(':')[1];
+    startDateObject.setHours(startTimeHour, startTimeMinute, 0);
+
+    let endTimeString = $("#endTime").val();
+    let endTimeHour = endTimeString.split(':')[0];
+    let endTimeMinute = endTimeString.split(':')[1];
+    endDateObject.setHours(endTimeHour, endTimeMinute, 0);
+
+    return endDateObject >= startDateObject;
+}
+
+function isValidReturnDate() {
+    let endDate = $("#endDate").val();
+    let returnDate = $("#returnDate").val();
+    let endDateObject = new Date(endDate);
+    let returnDateObject = new Date(returnDate);
+
+    let endTimeString = $("#endTime").val();
+    let endTimeHour = endTimeString.split(':')[0];
+    let endTimeMinute = endTimeString.split(':')[1];
+    endDateObject.setHours(endTimeHour, endTimeMinute, 0);
+
+    returnDateObject.setHours(23, 59, 59);
+
+    return returnDateObject > endDateObject;
+}
+
+function limitDatePicker() {
+    let dtToday = new Date();
+
+    let month = dtToday.getMonth() + 1;
+    let day = dtToday.getDate();
+    let year = dtToday.getFullYear();
+    if(month < 10)
+        month = '0' + month.toString();
+    if(day < 10)
+        day = '0' + day.toString();
+
+    let minDate = year + '-' + month + '-' + day;
+    $('#startDate').attr('min', minDate);
+    $('#endDate').attr('min', minDate);
+    $('#returnDate').attr('min', minDate);
 }

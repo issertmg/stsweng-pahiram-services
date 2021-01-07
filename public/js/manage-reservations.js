@@ -261,6 +261,9 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 	$('#paymentDate').val(payDateString);
 	$('#currentStatus').val(reservation.status);
 
+	if ($('#onItemType').val() === '')
+		$('#onItemType').val(reservation.onItemType)
+
 	// Hide all select options
 	$('[value="status-manage-pending"]').prop('disabled', true).hide();
 	$('[value="status-manage-pickup-pay"]').prop('disabled', true).hide();

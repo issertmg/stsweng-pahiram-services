@@ -1,6 +1,7 @@
 const Panel = require('../model/panel.model');
 const Locker = require('../model/locker.model');
 const Reservation = require('../model/reservation.model');
+const RentalDates = require('../model/rental.dates.model');
 const User = require('../model/user.model');
 const hbs = require('hbs');
 const {validationResult} = require('express-validator');
@@ -73,6 +74,7 @@ exports.panel_details = async function (req, res) {
             let panel = await Panel.find({building: req.query.bldg, level: req.query.flr}).populate('lockers');
             let panel_floor = await Panel.find({building: req.query.bldg}).distinct('level').populate('lockers');
             let panel_building = await Panel.find().distinct('building').populate('lockers');
+            let rentalDatesConfig = await RentalDates.findOne();
 
             if (panel.length) {
                 res.render('manage-lockers-page', {
@@ -84,7 +86,8 @@ exports.panel_details = async function (req, res) {
                     },
                     panel_buildings: panel_building,
                     panel_floors: panel_floor.sort(),
-                    panels: panel
+                    panels: panel,
+                    rentalDatesConfig: rentalDatesConfig
                 });
             } else res.redirect("/manage-lockers/?bldg=" + req.query.bldg);
         } catch (err) {
@@ -105,6 +108,7 @@ exports.panel_details = async function (req, res) {
     } else {
         try {
             let panel_building = await Panel.find().distinct('building').populate();
+            let rentalDatesConfig = await RentalDates.findOne();
             if (panel_building[0] != null) {
                 try {
                     let panel_floor = await Panel.find({building: panel_building[0]}).distinct('level');
@@ -120,13 +124,47 @@ exports.panel_details = async function (req, res) {
                         dp: req.session.passport.user.profile.photos[0].value,
                         name: req.session.passport.user.profile.displayName,
                         type: req.session.type
-                    }
+                    },
+                    rentalDatesConfig: rentalDatesConfig
                 });
             }
         } catch (err) {
             console.log(err);
         }
     }
+}
+
+exports.set_rental_dates = async function (req, res) {
+    try {
+        let startDate = new Date(req.body.startDate);
+        startDate.setHours(req.body.startTime.split(":")[0], req.body.startTime.split(":")[1]);
+        let endDate = new Date(req.body.endDate);
+        endDate.setHours(req.body.endTime.split(":")[0], req.body.endTime.split(":")[1]);
+        let returnDate = new Date(req.body.returnDate);
+        returnDate.setHours(23, 59, 59, 0);
+
+        if (isValidRentalDates(startDate, endDate, returnDate)){
+            let rentalDateConfig = await RentalDates.findOne();
+            if (rentalDateConfig) {
+                await RentalDates.findOneAndUpdate({}, {
+                    startDate: startDate,
+                    endDate: endDate,
+                    returnDate: returnDate
+                });
+            }
+            else {
+                let newRentalDateConfig = new RentalDates({
+                    startDate: startDate,
+                    endDate: endDate,
+                    returnDate: returnDate
+                });
+                await newRentalDateConfig.save();
+            }
+        }
+    } catch (err) {
+        console.log(err);
+    }
+    res.redirect("/manage-lockers/");
 }
 
 exports.panel_update = async function (req, res) {
@@ -279,6 +317,11 @@ function isPanelDeletable(lockers) {
         if (lockers[i].status === 'occupied' || lockers[i].status === 'uncleared')
             return false;
     return true;
+}
+
+function isValidRentalDates(startDate, endDate, returnDate) {
+    let currentDate = new Date();
+    return (startDate >= currentDate) && (endDate >= startDate) && (returnDate > endDate);
 }
 
 exports.getMissingPanelNumber = getMissingPanelNumber;
