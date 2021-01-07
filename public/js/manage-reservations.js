@@ -65,7 +65,29 @@ $(document).ready(function () {
 			.search($(this).val())
 			.draw();
 	});
+
+	limitDatePicker();
 });
+
+/**
+ * Limits the date picker selection used in setting Locker reservations to "To Pay"
+ * @returns <void> - nothing
+ */
+function limitDatePicker() {
+	let dtToday = new Date();
+
+	let month = dtToday.getMonth() + 1;
+	let day = dtToday.getDate();
+	let year = dtToday.getFullYear();
+	if(month < 10)
+		month = '0' + month.toString();
+	if(day < 10)
+		day = '0' + day.toString();
+
+	let minDate = year + '-' + month + '-' + day;
+	$('#approvePaymentDate').attr('min', minDate);
+	$('#paymentDate').attr('min', minDate);
+}
 
 /**
  * Initializes the DeleteReservation modal.
@@ -197,7 +219,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 			remarks: btn.data('remarks'),
 			penalty: btn.data('penalty'),
 			type: btn.data('type'),
-			paymentDate: btn.data('paymentdate')
+			pickupPayDate: btn.data('paymentdate')
 		}
 	} else
 		reservation = $('#otherReservationsTable').DataTable().row(event.relatedTarget).data();
@@ -223,7 +245,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 		}
 	);
 
-	var payDate = reservation.paymentDate == '' ? new Date() : new Date(reservation.paymentDate);
+	var payDate = (reservation.pickupPayDate === '' || reservation.pickupPayDate === null) ? new Date() : new Date(reservation.pickupPayDate);
 	var payDateString = payDate.getFullYear() + '-'
 		+ ((payDate.getMonth() <= 8) ? '0' : '') + (payDate.getMonth() + 1) + '-'
 		+ ((payDate.getDate() <= 9) ? '0' : '') + payDate.getDate();
@@ -253,33 +275,38 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 			$('[value="status-manage-pending"]').prop('disabled', false).show();
 			$('[value="status-manage-pickup-pay"]').prop('disabled', false).show();
 			$('[value="status-manage-denied"]').prop('disabled', false).show();
+			$('#deleteReservationBtn').hide();
 			break;
 		case 'To Pay':
 		case 'For Pickup':
 			$('[value="status-manage-pickup-pay"]').prop('disabled', false).show();
 			$('[value="status-manage-on-rent"]').prop('disabled', false).show();
 			$('[value="status-manage-denied"]').prop('disabled', false).show();
+			$('#deleteReservationBtn').hide();
 			break;
 		case 'On Rent':
 			$('[value="status-manage-on-rent"]').prop('disabled', false).show();
 			$('[value="status-manage-uncleared"]').prop('disabled', false).show();
 			$('[value="status-manage-returned"]').prop('disabled', false).show();
+			$('#deleteReservationBtn').hide();
 			break;
 		case 'Uncleared':
 			$('[value="status-manage-uncleared"]').prop('disabled', false).show();
 			$('[value="status-manage-returned"]').prop('disabled', false).show();
+			$('#deleteReservationBtn').hide();
 			break;
 		case 'Returned':
 			$('[value="status-manage-returned"]').prop('disabled', false).show();
+			$('#deleteReservationBtn').show();
 			break;
 		case 'Denied':
 			$('[value="status-manage-denied"]').prop('disabled', false).show();
+			$('#deleteReservationBtn').show();
 			break;
 	}
 	$('.select-selected').show();
 
-	var pickupPayText;
-	if (reservation.type == 'Locker')
+	if (reservation.onItemType === 'Locker' || reservation.type === 'Locker')
 		$('[value="status-manage-pickup-pay"]').text('To Pay')
 	else
 		$('[value="status-manage-pickup-pay"]').text('For Pickup')
@@ -322,10 +349,13 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 		else
 			$('#penaltyForm').css('display', 'none');
 
-		if (status == 'status-manage-pickup-pay' && reservation.type == 'Locker')
+		if (status == 'status-manage-pickup-pay' && (reservation.type === 'Locker' ||
+			reservation.onItemType === 'Locker'))
 			$('#paymentForm').css('display', 'flex');
 		else
 			$('#paymentForm').css('display', 'none');
+
+
 	});
 
 	$('#status').change();

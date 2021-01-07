@@ -99,7 +99,7 @@ const validation = {
                 let regex = /[a-z\-\s]*/i;
                 return degProg.match(regex)[0] === degProg;
             }),
-            check('mobile', ).notEmpty()
+            check('mobile','Phone cannot be empty and should be valid').notEmpty()
                 .isLength({min: 10, max: 10})
                 .isNumeric({no_symbols: true})
         ];

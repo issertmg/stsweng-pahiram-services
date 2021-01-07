@@ -6,6 +6,7 @@ const User = require('../model/user.model');
 const Equipment = require('../model/equipment.model');
 const Locker = require('../model/locker.model');
 
+const validator = require('validator');
 const { validationResult } = require('express-validator');
 
 const EQUIPMENT_PENALTY_INITIAL = 50;
@@ -337,9 +338,15 @@ exports.uncleared_get = async function (req, res) {
  */
 exports.reservation_update = async function (req, res) {
     console.log('update')
+    let paymentDateValidityFlag = true;
+
+    if (!validator.isEmpty(req.body.paymentDate) && req.body.onItemType === 'Locker')
+        if (!isValidPaymentDate(new Date(req.body.paymentDate)))
+            paymentDateValidityFlag = false
+
     const errors = validationResult(req);
 
-    if (errors.isEmpty()) {
+    if (errors.isEmpty() && paymentDateValidityFlag) {
         try {
             var user = await User.findOne({ idNum: parseInt(req.session.idNum) });
 
@@ -445,16 +452,17 @@ exports.reservation_delete = async function (req, res) {
         var user = await User.findOne({ idNum: req.session.idNum });
 
         if (userIsAdmin(user) || (reservation.userID == req.session.idNum && isCancellable(reservation))) {
-
-            if (reservation.onItemType == 'Equipment' 
-                    && (reservation.status == 'On Rent'
-                        || reservation.status == 'For Pickup'
-                        || reservation.status == 'Pending')) {
-                await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
-            } else if (reservation.onItemType == 'Locker') {
-                await Locker.findByIdAndUpdate(reservation.item, { status: 'vacant' });
+            if (reservationIsDeletable(reservation.status)) {
+                if (reservation.onItemType === 'Equipment' 
+                        && (reservation.status === 'On Rent'
+                            || reservation.status === 'For Pickup'
+                            || reservation.status === 'Pending')) {
+                    await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
+                } else if (reservation.onItemType === 'Locker') {
+                    await Locker.findByIdAndUpdate(reservation.item, { status: 'vacant' });
+                }
+                await Reservation.findByIdAndDelete(reservation._id);
             }
-            await Reservation.findByIdAndDelete(reservation._id);
         }
     } catch (err) { console.log(err); };
 
@@ -463,6 +471,16 @@ exports.reservation_delete = async function (req, res) {
     else
         res.redirect('/reservations');
 };
+
+/**
+ * Checks if the reservation is deletable.
+ * @param status - the reservation status
+ * @returns {boolean} - true if status is either Returned or Denied; false otherwise.
+ */
+function reservationIsDeletable(status) {
+    return (status === 'Returned' || status === 'Denied');
+}
+exports.reservationIsDeletable = reservationIsDeletable;
 
 /**
  * Checks if a reservation is cancellable.
@@ -495,7 +513,7 @@ exports.getSortValue = getSortValue;
  */
 async function setAllPendingToDenied (hours, minutes) {
     let today = new Date();
-    today.setUTCHours(hours, minutes, 0, 0);
+    today.setHours(hours, minutes, 0, 0);
     try {
         const reservations = await Reservation.find({
             onItemType: 'Equipment',
@@ -529,3 +547,15 @@ async function setAllPendingToDenied (hours, minutes) {
         console.log(err);
     }
 }
+
+/**
+ * Checks if a date is a valid "To Pay" or Payment date
+ * @param date - the date object
+ * @returns {boolean} - true if the date is at least the present date; false otherwise
+ */
+function isValidPaymentDate(date) {
+    let today = new Date();
+    today.setUTCHours(0,0,0,0)
+    return date >= today;
+}
+exports.isValidPaymentDate = isValidPaymentDate;
