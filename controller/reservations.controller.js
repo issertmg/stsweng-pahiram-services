@@ -5,6 +5,7 @@ const Reservation = require('../model/reservation.model');
 const User = require('../model/user.model');
 const Equipment = require('../model/equipment.model');
 const Locker = require('../model/locker.model');
+const RentalDates = require('../model/rental.dates.model');
 
 const validator = require('validator');
 const { validationResult } = require('express-validator');
@@ -16,23 +17,23 @@ const EQUIPMENT_PENALTY_INCREMENT = 20;
  * Marks all pending equipment reservation as denied if the equipment is still pending an hour before the planned pickup time.
  * @returns {Promise<void>} - nothing
  */
-cron.schedule('0 30 6 * * MON,TUE,WED,THU,FRI *', function () {
-    setAllPendingToDenied(7, 30)
+cron.schedule('0 30 6 * * MON,TUE,WED,THU,FRI *', async function () {
+    await setAllPendingToDenied(7, 30)
 });
-cron.schedule('0 15 8 * * MON,TUE,WED,THU,FRI *', function () {
-    setAllPendingToDenied(9, 15)
+cron.schedule('0 15 8 * * MON,TUE,WED,THU,FRI *', async function () {
+    await setAllPendingToDenied(9, 15)
 });
-cron.schedule('0 0 10 * * MON,TUE,WED,THU,FRI *', function () {
-    setAllPendingToDenied(11, 0)
+cron.schedule('0 0 10 * * MON,TUE,WED,THU,FRI *', async function () {
+    await setAllPendingToDenied(11, 0)
 });
-cron.schedule('0 45 11 * * MON,TUE,WED,THU,FRI *', function () {
-    setAllPendingToDenied(12, 45)
+cron.schedule('0 45 11 * * MON,TUE,WED,THU,FRI *', async function () {
+    await setAllPendingToDenied(12, 45)
 });
-cron.schedule('0 30 13 * * MON,TUE,WED,THU,FRI *', function () {
-    setAllPendingToDenied(14, 30)
+cron.schedule('0 30 13 * * MON,TUE,WED,THU,FRI *', async function () {
+    await setAllPendingToDenied(14, 30)
 });
-cron.schedule('0 15 15 * * MON,TUE,WED,THU,FRI *', function () {
-    setAllPendingToDenied(16, 15)
+cron.schedule('0 15 15 * * MON,TUE,WED,THU,FRI *', async function () {
+    await setAllPendingToDenied(16, 15)
 });
 
 /**
@@ -102,6 +103,36 @@ cron.schedule('0 59 23 * * MON,TUE,WED,THU,FRI *', async function () {
 
     } catch (err) {
         console.log(err);
+    }
+});
+
+/**
+ * Marks all unreturned locker as uncleared, and adds penalty charges every return date.
+ * @returns {Promise<void>} - nothing
+ */
+cron.schedule('0 59 23 * * SUN,MON,TUE,WED,THU,FRI,SAT *', async function () {
+    let today = new Day();
+
+    try {
+        let rental_date = await RentalDates.findOne();
+        if (rental_date) {
+            let return_date = new Date(rental_date.returnDate);
+            if (today.getMonth() === return_date.getMonth() &&
+                today.getDate() === return_date.getDate() &&
+                today.getFullYear() === return_date.getFullYear()) {
+
+                await Reservation.updateMany(
+                    {status: 'On Rent', onItemType: 'Locker'},
+                    {status: 'Uncleared', penalty: 200}
+                );
+                await Locker.updateMany(
+                    {status: 'occupied'},
+                    {status: 'uncleared'}
+                )
+            }
+        }
+    } catch (err) {
+        console.log(err)
     }
 });
 

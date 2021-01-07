@@ -141,7 +141,7 @@ exports.set_rental_dates = async function (req, res) {
         let endDate = new Date(req.body.endDate);
         endDate.setHours(req.body.endTime.split(":")[0], req.body.endTime.split(":")[1]);
         let returnDate = new Date(req.body.returnDate);
-        returnDate.setHours(23, 59, 59);
+        returnDate.setHours(23, 59, 59, 0);
 
         if (isValidRentalDates(startDate, endDate, returnDate)){
             let rentalDateConfig = await RentalDates.findOne();
