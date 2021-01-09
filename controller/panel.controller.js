@@ -144,6 +144,7 @@ exports.set_rental_dates = async function (req, res) {
         returnDate.setHours(23, 59, 59, 0);
 
         if (isValidRentalDates(startDate, endDate, returnDate)){
+
             let rentalDateConfig = await RentalDates.findOne();
             if (rentalDateConfig) {
                 await RentalDates.findOneAndUpdate({}, {
@@ -320,8 +321,19 @@ function isPanelDeletable(lockers) {
 }
 
 function isValidRentalDates(startDate, endDate, returnDate) {
+    let flag = false;
     let currentDate = new Date();
-    return (startDate >= currentDate) && (endDate >= startDate) && (returnDate > endDate);
+
+    startDate.setMinutes(startDate.getMinutes() + 1);
+    returnDate.setHours(endDate.getHours(), endDate.getMinutes(), 0);
+
+    if ((startDate >= currentDate) && (endDate >= startDate) && (returnDate > endDate))
+        flag = true;
+
+    startDate.setMinutes(startDate.getMinutes() - 1);
+    returnDate.setHours(23, 59, 59);
+
+    return flag;
 }
 
 exports.getMissingPanelNumber = getMissingPanelNumber;
