@@ -320,9 +320,11 @@ function isValidEndDate () {
     let endDateObject = new Date(endDate);
 
     let startTimeString = $("#startTime").val();
+
     let startTimeHour = startTimeString.split(':')[0];
     let startTimeMinute = startTimeString.split(':')[1];
     startDateObject.setHours(startTimeHour, startTimeMinute, 0);
+    startDateObject.setMinutes(startDateObject.getMinutes() + 1);
 
     let endTimeString = $("#endTime").val();
     let endTimeHour = endTimeString.split(':')[0];
@@ -337,13 +339,6 @@ function isValidReturnDate() {
     let returnDate = $("#returnDate").val();
     let endDateObject = new Date(endDate);
     let returnDateObject = new Date(returnDate);
-
-    let endTimeString = $("#endTime").val();
-    let endTimeHour = endTimeString.split(':')[0];
-    let endTimeMinute = endTimeString.split(':')[1];
-    endDateObject.setHours(endTimeHour, endTimeMinute, 0);
-
-    returnDateObject.setHours(23, 59, 59);
 
     return returnDateObject > endDateObject;
 }
