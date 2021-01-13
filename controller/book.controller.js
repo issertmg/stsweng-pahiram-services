@@ -3,17 +3,15 @@ const hbs = require('hbs');
 
 const { validationResult } = require('express-validator');
 
-
-
 /**
- * Loads and renders the manage book page.
+ * Loads and renders the Manage Books page.
  * @param req - the HTTP request object
  * @param res - the HTTP response object
  * @returns {Promise<void>} - nothing
  */
 exports.book_details = async function (req, res) {
-        res.render('manage-book-page', {
-            active: { active_manage_equipment: true },
+    res.render('manage-books-page', {
+            active: { active_manage_books: true },
             sidebarData: {
                 dp: req.session.passport.user.profile.photos[0].value,
                 name: req.session.passport.user.profile.displayName,
@@ -23,7 +21,7 @@ exports.book_details = async function (req, res) {
 };
 
 /**
- * AJAX function used to initialize the table books infos in the Manage Book page.
+ * AJAX function used to initialize the table books infos in the Manage Books page.
  * @param req - the HTTP request object
  * @param res - the HTTP response object
  * @returns {Promise<void>} - nothing
