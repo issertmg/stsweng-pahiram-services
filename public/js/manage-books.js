@@ -104,8 +104,12 @@ $('#deleteBookModal').on('show.bs.modal', (event) => {
     onRent: btn.data('onrent'),
     quantity: btn.data('quantity')
   }
-  $('#deleteBookModalLabel').text('Delete Book: ' );
+  $('#deleteBookModalLabel').text('Delete Book' );
   $('#delHiddenBookID').val(book.id);
+
+  $('#deleteHeader').show();
+  $('#deleteBookButton').show();
+  $('.alert').hide();
 });
 
 /**
@@ -148,9 +152,22 @@ $('#editBookModal').on('show.bs.modal', (event) => {
  * @returns <void> - nothing
  */
 $('#deleteBookButton').click(function() {
-  
+  $.get('/manage-books/onrent',
+      {bookid: $('#delHiddenBookID').val()},
+      function(data, status) {
+    console.log(data)
+        if (data.onRent != 0) {
+          $('#onRentAlert').show();
+          $('#deleteHeader').hide();
+          $('#deleteBookModal').find('.modal-title').text('Deletion Failed');
+          $('#deleteBookButton').hide(); //TODO
+        }
+        else {
+          $('#deleteEquipButton').off("click");
+          $('#deleteBookForm').submit();
+        }
+      });
 });
-
 
 // SUCCEEDING CODE ARE NOT USED BUT RETAINED FOR REUSING
 

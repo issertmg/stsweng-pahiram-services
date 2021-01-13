@@ -56,5 +56,34 @@ exports.book_get = async function (req, res) {
     }
 }
 
+/**
+ * AJAX function for retrieving an book.
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
+exports.onrent_get = async function (req, res) {
+    try {
+        const book = await Book.findById(req.query.bookid);
+        if (book)
+            res.send(book);
+    } catch (err) {
+        console.log(err);
+    }
+};
 
+/**
+ * Deletes a Book from the database
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
+exports.book_delete = async function (req, res) {
+    try {
+        await Book.findByIdAndDelete(req.body.bookid);
+    } catch (err) {
+        console.log(err);
+    }
+    res.redirect("/manage-books/");
+};
 
