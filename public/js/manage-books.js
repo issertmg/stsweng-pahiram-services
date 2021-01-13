@@ -143,6 +143,14 @@ $('#editBookModal').on('show.bs.modal', (event) => {
   $('#editBookModalLabel').text('Edit Book');
 });
 
+/**
+ * Validates the Delete Book form before submitting.
+ * @returns <void> - nothing
+ */
+$('#deleteBookButton').click(function() {
+  
+});
+
 
 // SUCCEEDING CODE ARE NOT USED BUT RETAINED FOR REUSING
 
