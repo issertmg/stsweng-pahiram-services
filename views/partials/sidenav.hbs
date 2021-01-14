@@ -63,6 +63,12 @@
           </a>
         </li>
         <li class="nav-item">
+            <a class="{{#if act.active_manage_books}}active{{/if}} nav-link" href="/manage-books">
+                <div class="icon mr-2 {{#if act.active_manage_books}}white{{/if}}" id="books"></div>
+                Books
+            </a>
+        </li>
+        <li class="nav-item">
           <a class="{{#if act.active_manage_people}}active{{/if}} nav-link" href="/profile/manage">  
             <div class="icon mr-2 {{#if act.active_manage_people}}white{{/if}}" id="profile"></div>
             People 

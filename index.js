@@ -47,6 +47,7 @@ const reserve = require('./routes/reserve.routes');
 const myReservations = require('./routes/reservations.routes');
 const panel = require('./routes/panel.routes');
 const equipment = require('./routes/equipment.routes');
+const book = require('./routes/book.routes');
 
 // Connecting to the db
 mongoose.connect('mongodb://rootuser:p%40ssword@pahiram-shard-00-00-eypip.mongodb.net:27017,pahiram-shard-00-01-eypip.mongodb.net:27017,pahiram-shard-00-02-eypip.mongodb.net:27017/test?ssl=true&replicaSet=pahiram-shard-0&authSource=admin&retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false }).catch(err => {
@@ -61,6 +62,7 @@ app.use('/reserve', UserAuth.userIsLoggedIn, UserAuth.userIsNew, reserve);
 app.use('/reservations', UserAuth.userIsLoggedIn, UserAuth.userIsNew, myReservations);
 app.use('/manage-lockers', UserAuth.userIsLoggedIn, UserAuth.userIsNew, panel);
 app.use('/manage-equipment', UserAuth.userIsLoggedIn, UserAuth.userIsNew, equipment);
+app.use('/manage-books', UserAuth.userIsLoggedIn, UserAuth.userIsNew, book);
 
 app.use(function(req, res, next) {
     if (req.session.token) {
