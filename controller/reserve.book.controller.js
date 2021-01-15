@@ -14,3 +14,30 @@ exports.book = async function (req, res) {
         console.log(err);
     }
 }
+
+exports.book_get = async function (req, res) {
+    try {
+        const count = await Book.find().countDocuments();
+
+        let data = await Book
+            .find(/* {
+                title: {
+                    $regex: req.query.search.value,
+                    $options: 'i'
+                }
+            } */)
+            .skip(parseInt(req.query.start))
+            .limit(parseInt(req.query.length));
+
+        if (data && count) {
+            let datatable = {
+                recordsTotal: count,
+                recordsFiltered: count,
+                data: data,
+            }
+            res.send(datatable);
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}

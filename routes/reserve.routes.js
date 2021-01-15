@@ -12,6 +12,7 @@ router.get('/', index_controller.home);
 router.get('/locker', reserve_locker_controller.locker);
 router.get('/equipment', reserve_equipment_controller.equipment);
 router.get('/book', reserve_book_controller.book);
+router.get('/book/get', reserve_book_controller.book_get);
 
 router.post('/locker', reserve_locker_controller.reserve_locker);
 router.post('/equipment', validation.reserveEquipmentValidation(), reserve_equipment_controller.reserve_equipment);

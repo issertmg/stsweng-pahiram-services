@@ -18,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
 
-
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
 
   <title>Borrow Book</title>
   <link rel="icon" href="/static/logo.png">
@@ -37,7 +37,7 @@
             <h1 class="col-12 mb-5">Borrow book</h1>
 
 
-            
+
             <div class="card no-hover col-12 p-4">
               <div class="table-responsive">
                 <table class="table table-hover" id="booksTable">
@@ -46,7 +46,7 @@
                       <th>Title</th>
                       <th>Author/s</th>
                       <th>Edition</th>
-                      <th>Number in Stock</th>
+                      <th>In Stock</th>
                       <th></th>
                     </tr>
                   </thead>
@@ -77,6 +77,8 @@
     crossorigin="anonymous"></script>
   <script type="text/javascript" src="/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="/js/styles.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" src="/js/reserve-book.js"></script>
 </body>
 
 </html>
