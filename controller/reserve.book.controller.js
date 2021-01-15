@@ -1,4 +1,5 @@
 const Book = require('../model/book.model');
+const Reservation = require('../model/reservation.model');
 
 exports.book = async function (req, res) {
     try {
@@ -59,3 +60,23 @@ exports.book_get = async function(req, res) {
     }
 }
 
+exports.reserve_book = async function(req, res) {
+    try {
+        let book = await Book.findById(req.body.bookID);
+        if (book && (book.onRent < book.quantity)) {
+            let reservation = new Reservation({
+                title: book.title,
+                userID: req.session.idNum,
+                item: book._id,
+                status: 'Pending',
+                description: "by " + book.authors,
+                onItemType: 'Book'
+            });
+            await reservation.save();
+            await Book.findByIdAndUpdate(book._id, {onRent: book.onRent + 1});
+        }
+        res.redirect("/reservations");
+    } catch (err) {
+        console.log(err);
+    }
+}

@@ -52,6 +52,7 @@ $(document).ready(function () {
 
 $('#borrowBookModal').on('show.bs.modal', (event) => {
     // Default values
+    $('#bookID').val(null);
     $('#titleLabel').text("Updating...");
     $('#authorLabel').text("Updating...");
     $('#edition').text("Updating...");
@@ -61,6 +62,7 @@ $('#borrowBookModal').on('show.bs.modal', (event) => {
     $.get('/reserve/book/get-one',
 		{ _id: book._id },
 		function (data) {
+            $('#bookID').val(data._id);
             $('#titleLabel').text(data.title);
             $('#authorLabel').text(data.authors);
             $('#editionLabel').text((data.edition == null) ? "N/A" : data.edition);

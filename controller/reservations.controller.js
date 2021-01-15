@@ -5,6 +5,7 @@ const Reservation = require('../model/reservation.model');
 const User = require('../model/user.model');
 const Equipment = require('../model/equipment.model');
 const Locker = require('../model/locker.model');
+const Book = require('../model/book.model');
 const RentalDates = require('../model/rental.dates.model');
 
 const validator = require('validator');
@@ -146,6 +147,8 @@ hbs.registerHelper('status-denied', (status) => { return status == 'Denied'; });
 hbs.registerHelper('status-uncleared', (status) => { return status == 'Uncleared'; });
 hbs.registerHelper('status-returned', (status) => { return status == 'Returned'; });
 hbs.registerHelper('isLocker', (type) => { return type == 'Locker';})
+hbs.registerHelper('isBook', (type) => { return type == 'Book';})
+hbs.registerHelper('isEquipment', (type) => { return type == 'Equipment';})
 hbs.registerHelper('cancellable', (status) => { return status == 'Pending' || status == 'For Pickup' || status == 'To Pay';});
 hbs.registerHelper('dateTimeToday', () => {
     const date = new Date();
@@ -172,7 +175,6 @@ exports.myReservations = async function (req, res) {
                 userID: req.session.idNum,
                 status: ['Denied', 'Returned']
             }).sort({ lastUpdated: -1 }).populate('item');
-
         res.render('my-reservations-page', {
             active: { active_my_reservations: true },
             sidebarData: {
