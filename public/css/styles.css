@@ -1326,6 +1326,10 @@ select.custom-select.form-control {
 * Datatables
 */
 
+table.dataTable.no-footer {
+    border: none;
+}
+
 .table .dataTables_wrapper .dataTables_paginate .paginate_button {
     border-radius: 50px;
     transition: ease .25s;
@@ -1350,3 +1354,6 @@ select.custom-select.form-control {
     border: solid #38b98a 1px;
 }
 
+table.dataTable thead .sorting {
+    background-image: none !important;
+}

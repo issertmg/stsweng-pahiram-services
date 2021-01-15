@@ -19,6 +19,7 @@ $(document).ready(function () {
                     return (data.quantity - data.onRent) + ' / ' + data.quantity;
                 }
             },
-        ]
+        ],
+		"dom": "ipt"
     });
 });
