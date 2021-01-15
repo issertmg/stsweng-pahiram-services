@@ -37,7 +37,7 @@
             <h1 class="col-12 mb-5">Borrow book</h1>
 
             <div class="card no-hover col-12 p-4">
-              
+              <label class="font-weight-bold mb-4">Select a book to borrow</label>
               <div class="row">
                 <div class="col-lg-3 col-md-5 col-12 input-group mb-2">
                   <div class="form-group form-inline my-auto flex-fill">
@@ -50,7 +50,7 @@
                   </div>
                 </div>
                 <div class="col-lg-3 col-md-5 col-12 mb-2">
-                  <a class="btn btn-primary" id="clearSearches">
+                  <a class="btn btn-outline" id="clearSearches">
                       Clear Searches
                   </a>
                 </div>
@@ -85,6 +85,47 @@
     </div>
   </div>
 
+  <div class="modal fade" id="borrowBookModal" tabindex="-1" role="dialog"
+    aria-labelledby="borrowBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title mr-2">Reserve a book</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form class="form-horizontal" method="post" action="/reserve/book">
+          <input type="hidden" id="approveReservationID" name="reservationID">
+          <input type="hidden" id="approveReservationType" name="onItemType">
+          <div class="modal-body mx-auto">
+            <div class="d-flex flex-column">
+              <div class="d-flex flex-row align-items-center">
+                <div class="col-3 font-weight-bold">Title</div>
+                <div class="col-9" id="titleLabel"></div>
+              </div>
+              <div class="d-flex flex-row align-items-center">
+                <div class="col-3 font-weight-bold">Author/s</div>
+                <div class="col-9" id="authorLabel"></div>
+              </div>
+              <div class="d-flex flex-row align-items-center">
+                <div class="col-3 font-weight-bold">Edition</div>
+                <div class="col-9" id="editionLabel"></div>
+              </div>
+              <div class="d-flex flex-row align-items-center">
+                <div class="col-3 font-weight-bold">In Stock</div>
+                <div class="col-9" id="stockLabel"></div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
+            <input type="submit" class="btn btn-primary" id="borrowBookSubmit" value="Place Reservation">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"
     integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>

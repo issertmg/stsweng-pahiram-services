@@ -15,7 +15,7 @@ exports.book = async function (req, res) {
     }
 }
 
-exports.book_get = async function (req, res) {
+exports.books_get = async function (req, res) {
     try {
         const count = await Book.find().countDocuments();
 
@@ -45,3 +45,17 @@ exports.book_get = async function (req, res) {
         console.log(err);
     }
 }
+
+exports.book_get = async function(req, res) {
+    try {
+        let book = await Book.findOne({_id: req.query._id});
+
+        console.log(book);
+
+        if (book)
+            res.send(book);
+    } catch (err) {
+        console.log(err);
+    }
+}
+
