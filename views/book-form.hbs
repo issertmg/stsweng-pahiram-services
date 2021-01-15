@@ -36,9 +36,26 @@
           <div class="row px-0 col-lg-10 mx-auto">
             <h1 class="col-12 mb-5">Borrow book</h1>
 
-
-
             <div class="card no-hover col-12 p-4">
+              
+              <div class="row">
+                <div class="col-lg-3 col-md-5 col-12 input-group mb-2">
+                  <div class="form-group form-inline my-auto flex-fill">
+                    <input type="search" id="titleSearch" class="form-control" placeholder="Title">
+                  </div>
+                </div>
+                <div class="col-lg-3 col-md-5 col-12 input-group mb-2">
+                  <div class="form-group form-inline my-auto flex-fill">
+                    <input type="search" id="authorSearch" class="form-control" placeholder="Author">
+                  </div>
+                </div>
+                <div class="col-lg-3 col-md-5 col-12 mb-2">
+                  <a class="btn btn-primary" id="clearSearches">
+                      Clear Searches
+                  </a>
+                </div>
+              </div>
+              
               <div class="table table-responsive">
                 <table class="table table-hover" id="booksTable">
                   <thead class="">

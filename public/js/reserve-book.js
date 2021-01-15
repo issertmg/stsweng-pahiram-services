@@ -22,4 +22,24 @@ $(document).ready(function () {
         ],
 		"dom": "ipt"
     });
+
+    $("#titleSearch").on("keyup paste", function() {
+		let str = $(this).val();
+        $('#booksTable').DataTable()
+            .column(0)
+			.search($(this).val())
+			.draw();
+    });
+    $("#authorSearch").on("keyup paste", function() {
+		let str = $(this).val();
+        $('#booksTable').DataTable()
+            .column(1)
+			.search($(this).val())
+			.draw();
+    });
+    
+    $("#clearSearches").on("click", function() {
+        $("#titleSearch").val("");
+        $("#authorSearch").val("");
+    })
 });

@@ -20,12 +20,16 @@ exports.book_get = async function (req, res) {
         const count = await Book.find().countDocuments();
 
         let data = await Book
-            .find(/* {
+            .find({
                 title: {
-                    $regex: req.query.search.value,
+                    $regex: req.query.columns[0].search.value,
+                    $options: 'i'
+                },
+                authors: {
+                    $regex: req.query.columns[1].search.value,
                     $options: 'i'
                 }
-            } */)
+            })
             .skip(parseInt(req.query.start))
             .limit(parseInt(req.query.length));
 
