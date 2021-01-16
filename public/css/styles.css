@@ -167,6 +167,10 @@ hr {
     background-position: -72px -72px;
 }
 
+.icon#book {
+    background-position: 0px 0px;
+}
+
 .icon#accept {
     background-position: 0px -96px;
 }

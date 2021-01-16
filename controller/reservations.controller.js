@@ -209,6 +209,7 @@ exports.reservation_details = async function (req, res) {
             .find({ status: 'Pending' })
             .where('dateCreated').gte(dateToday).lt(dateTomorrow)
             .populate('item');
+
         var pendingEarlier = await Reservation
             .find({ status: 'Pending' })
             .where('dateCreated').lt(dateToday)
@@ -484,15 +485,21 @@ exports.reservation_delete = async function (req, res) {
         var reservation = await Reservation.findById(req.body.reservationID);
         var user = await User.findOne({ idNum: req.session.idNum });
 
-        if (userIsAdmin(user) || (reservation.userID == req.session.idNum && isCancellable(reservation))) {
-            if (reservationIsDeletable(reservation.status)) {
+        if (userIsAdmin(user) || reservation.userID == req.session.idNum) {
+            if (reservationIsDeletable(reservation.status) || isCancellable(reservation)) {
                 if (reservation.onItemType === 'Equipment' 
                         && (reservation.status === 'On Rent'
                             || reservation.status === 'For Pickup'
                             || reservation.status === 'Pending')) {
+                    console.log('equipment')
                     await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
                 } else if (reservation.onItemType === 'Locker') {
+                    console.log('locker')
+
                     await Locker.findByIdAndUpdate(reservation.item, { status: 'vacant' });
+                } else {
+                    console.log('book')
+                    await Book.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
                 }
                 await Reservation.findByIdAndDelete(reservation._id);
             }

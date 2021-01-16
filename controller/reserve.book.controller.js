@@ -69,7 +69,7 @@ exports.reserve_book = async function(req, res) {
                 userID: req.session.idNum,
                 item: book._id,
                 status: 'Pending',
-                description: "by " + book.authors,
+                description: 'by ' + book.authors,
                 onItemType: 'Book'
             });
             await reservation.save();
