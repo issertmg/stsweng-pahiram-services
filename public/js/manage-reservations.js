@@ -24,15 +24,7 @@ $(document).ready(function () {
 				}
 			},
 			{ "data": "onItemType" },
-			{ 
-				"data": function (data) {
-					if (data.onItemType === "Equipment") {
-						return data.title + ": " + data.item.brand + " (" + data.item.model + ")";
-					} else {
-						return data.title;
-					}
-				}
-			},
+			{ "data": "title" },
 			{ 
 				"data": "description",
 				"render": function (data, type, row) {
@@ -48,7 +40,6 @@ $(document).ready(function () {
 		"order": [[9, "desc"]],
 		"responsive": true,
 		"dom": "ipt"
-
 	});
 
 	$("#typeFilter").on("change", function () {

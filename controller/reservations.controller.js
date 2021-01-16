@@ -246,7 +246,7 @@ exports.reservations_get = async function (req, res) {
         let type = [];
         if (req.query.columns[2].search.value === '' ||
             req.query.columns[2].search.value === 'All')
-            type = ['Locker', 'Equipment'];
+            type = ['Locker', 'Equipment', 'Book'];
         else
             type.push(req.query.columns[2].search.value);
 
