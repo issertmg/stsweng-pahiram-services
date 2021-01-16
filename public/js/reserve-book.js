@@ -28,7 +28,7 @@ $(document).ready(function () {
 		"dom": "ipt"
     });
 
-    $("#titleSearch").on("keyup paste", function() {
+    $("#titleSearch").on("keyup paste change", function() {
         let str = $(this).val();
         $(this).val(str.substring(0, 50));
         $('#booksTable').DataTable()
@@ -36,7 +36,7 @@ $(document).ready(function () {
 			.search($(this).val())
 			.draw();
     });
-    $("#authorSearch").on("keyup paste", function() {
+    $("#authorSearch").on("keyup paste change", function() {
         let str = $(this).val();
         $(this).val(str.substring(0, 50));
         $('#booksTable').DataTable()
@@ -47,6 +47,8 @@ $(document).ready(function () {
     $("#clearSearches").on("click", function() {
         $("#titleSearch").val("");
         $("#authorSearch").val("");
+        $("#titleSearch").trigger("change");
+        $("#authorSearch").trigger("change");
     })
 });
 

@@ -18,7 +18,16 @@ exports.book = async function (req, res) {
 
 exports.books_get = async function (req, res) {
     try {
-        const count = await Book.find().countDocuments();
+        const count = await Book.find({
+            title: {
+                $regex: req.query.columns[0].search.value,
+                $options: 'i'
+            },
+            authors: {
+                $regex: req.query.columns[1].search.value,
+                $options: 'i'
+            }
+        }).countDocuments();
 
         let data = await Book
             .find({
@@ -47,9 +56,9 @@ exports.books_get = async function (req, res) {
     }
 }
 
-exports.book_get = async function(req, res) {
+exports.book_get = async function (req, res) {
     try {
-        let book = await Book.findOne({_id: req.query._id});
+        let book = await Book.findOne({ _id: req.query._id });
 
         console.log(book);
 
@@ -60,7 +69,7 @@ exports.book_get = async function(req, res) {
     }
 }
 
-exports.reserve_book = async function(req, res) {
+exports.reserve_book = async function (req, res) {
     try {
         let book = await Book.findById(req.body.bookID);
         if (book && (book.onRent < book.quantity)) {
@@ -73,7 +82,7 @@ exports.reserve_book = async function(req, res) {
                 onItemType: 'Book'
             });
             await reservation.save();
-            await Book.findByIdAndUpdate(book._id, {onRent: book.onRent + 1});
+            await Book.findByIdAndUpdate(book._id, { onRent: book.onRent + 1 });
         }
         res.redirect("/reservations");
     } catch (err) {
