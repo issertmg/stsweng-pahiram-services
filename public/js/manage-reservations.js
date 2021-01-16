@@ -114,7 +114,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 			description: btn.data('title') + ", " + btn.data('description'),
 			remarks: btn.data('remarks'),
 			penalty: btn.data('penalty'),
-			type: btn.data('type'),
+			onItemType: btn.data('type'),
 			pickupPayDate: btn.data('pickuppaydate')
 		}
 	} else
@@ -146,7 +146,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 	);
 
 	// Get item data
-	$('#itemDetailsLabel').text(reservation.type + ' Details')
+	$('#itemDetailsLabel').text(reservation.onItemType + ' Details')
 	$.get('/reservations/manage/get-one-reservation',
 		{ id: reservation._id },
 		function (data) {
@@ -175,7 +175,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 	$('#editRemarks').val(reservation.remarks);
 	$('#penalty').val(reservation.penalty);
 	$('#reservationID').val(reservation._id);
-	$('#onItemType').val(reservation.type);
+	$('#onItemType').val(reservation.onItemType);
 	$('#pickupPayDate').val(payDateString);
 	$('#currentStatus').val(reservation.status);
 
@@ -227,7 +227,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 	}
 	$('.select-selected').show();
 
-	if (reservation.onItemType === 'Locker' || reservation.type === 'Locker')
+	if (reservation.onItemType === 'Locker')
 		$('[value="status-manage-pickup-pay"]').text('To Pay')
 	else
 		$('[value="status-manage-pickup-pay"]').text('For Pickup')
@@ -270,10 +270,15 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 		else
 			$('#penaltyForm').css('display', 'none');
 
-		if (status == 'status-manage-pickup-pay' && (reservation.type === 'Locker'))
+		if (status == 'status-manage-pickup-pay' && reservation.onItemType === 'Locker') {
+			$('#pickupPayLabel').html('Deadline of Payment')
 			$('#paymentForm').css('display', 'flex');
-		else
+		} else if (status == 'status-manage-pickup-pay' && reservation.onItemType === 'Book') {
+			$('#pickupPayLabel').html('Deadline of Pickup')
+			$('#paymentForm').css('display', 'flex');
+		} else {
 			$('#paymentForm').css('display', 'none');
+		}
 
 
 	});
