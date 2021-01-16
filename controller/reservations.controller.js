@@ -384,8 +384,8 @@ exports.reservation_update = async function (req, res) {
     console.log('update')
     let paymentDateValidityFlag = true;
 
-    if (!validator.isEmpty(req.body.paymentDate) && req.body.onItemType === 'Locker')
-        if (!isValidPaymentDate(new Date(req.body.paymentDate)))
+    if (!validator.isEmpty(req.body.pickupPayDate) && req.body.onItemType === 'Locker')
+        if (!isValidPaymentDate(new Date(req.body.pickupPayDate)))
             paymentDateValidityFlag = false
 
     const errors = validationResult(req);
@@ -472,7 +472,7 @@ exports.reservation_update = async function (req, res) {
                         remarks: req.body.remarks,
                         penalty: req.body.status == 'status-manage-uncleared' ? req.body.penalty : 0,
                         lastUpdated: Date.now(),
-                        pickupPayDate: req.body.paymentDate
+                        pickupPayDate: req.body.pickupPayDate
                     });
             }
         } catch (err) { console.log(err); };

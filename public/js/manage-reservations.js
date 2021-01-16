@@ -85,8 +85,7 @@ function limitDatePicker() {
 		day = '0' + day.toString();
 
 	let minDate = year + '-' + month + '-' + day;
-	$('#approvePaymentDate').attr('min', minDate);
-	$('#paymentDate').attr('min', minDate);
+	$('#pickupPayDate').attr('min', minDate);
 }
 
 /**
@@ -116,10 +115,12 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 			remarks: btn.data('remarks'),
 			penalty: btn.data('penalty'),
 			type: btn.data('type'),
-			pickupPayDate: btn.data('paymentdate')
+			pickupPayDate: btn.data('pickuppaydate')
 		}
 	} else
 		reservation = $('#otherReservationsTable').DataTable().row(event.relatedTarget).data();
+
+	console.log(reservation);
 
 	$('#unclearedError').text('Loading...').removeClass('error-label');
 	$('#userInfo').text('Loading...');
@@ -144,7 +145,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 		}
 	);
 
-	// Get reservation data
+	// Get item data
 	$('#itemDetailsLabel').text(reservation.type + ' Details')
 	$.get('/reservations/manage/get-one-reservation',
 		{ id: reservation._id },
@@ -175,7 +176,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 	$('#penalty').val(reservation.penalty);
 	$('#reservationID').val(reservation._id);
 	$('#onItemType').val(reservation.type);
-	$('#paymentDate').val(payDateString);
+	$('#pickupPayDate').val(payDateString);
 	$('#currentStatus').val(reservation.status);
 
 	if ($('#onItemType').val() === '')
@@ -269,8 +270,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 		else
 			$('#penaltyForm').css('display', 'none');
 
-		if (status == 'status-manage-pickup-pay' && (reservation.type === 'Locker' ||
-			reservation.onItemType === 'Locker'))
+		if (status == 'status-manage-pickup-pay' && (reservation.type === 'Locker'))
 			$('#paymentForm').css('display', 'flex');
 		else
 			$('#paymentForm').css('display', 'none');

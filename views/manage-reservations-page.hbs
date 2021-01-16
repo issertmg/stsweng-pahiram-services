@@ -57,7 +57,7 @@
                         data-target="#editReservationModal" data-title="{{title}}" data-userid="{{userID}}"
                         data-datecreated="{{dateStr dateCreated}}" data-status="{{status}}"
                         data-description="{{description}}" data-remarks="{{remarks}}" data-penalty="{{penalty}}"
-                        data-type="{{onItemType}}" data-id="{{_id}}" data-paymentdate="{{pickupPayDate}}">
+                        data-type="{{onItemType}}" data-id="{{_id}}" data-pickuppaydate="{{pickupPayDate}}">
                         <div class="col-1 icon mb-auto mt-1"
                           id="{{#if (isLocker onItemType)}}locker{{else if (isEquipment onItemType)}}equipment{{else}}book{{/if}}"></div>
                         <div class="d-flex flex-fill flex-column mx-4">
@@ -85,7 +85,7 @@
                         data-target="#editReservationModal" data-title="{{title}}" data-userid="{{userID}}"
                         data-datecreated="{{dateStr dateCreated}}" data-status="{{status}}"
                         data-description="{{description}}" data-remarks="{{remarks}}" data-penalty="{{penalty}}"
-                        data-type="{{onItemType}}" data-id="{{_id}}" data-paymentdate="{{pickupPayDate}}">
+                        data-type="{{onItemType}}" data-id="{{_id}}" data-pickuppaydate="{{pickupPayDate}}">
                         <div class="col-1 icon mb-auto mt-1"
                           id="{{#if (isLocker onItemType)}}locker{{else if (isEquipment onItemType)}}equipment{{else}}book{{/if}}"></div>
                         <div class="d-flex flex-fill flex-column mx-4">
@@ -116,7 +116,7 @@
                   <div class="card-item" data-toggle="modal" data-target="#editReservationModal" data-title="{{title}}"
                     data-userid="{{userID}}" data-datecreated="{{dateStr dateCreated}}" data-status="{{status}}"
                     data-description="{{description}}" data-remarks="{{remarks}}" data-penalty="{{penalty}}"
-                    data-type="{{onItemType}}" data-id="{{_id}}" data-paymentdate="{{pickupPayDate}}">
+                    data-type="{{onItemType}}" data-id="{{_id}}" data-pickuppaydate="{{pickupPayDate}}">
                     <div class="d-flex flex-row flex-nowrap">
                       <div class="col-1 icon mb-auto mt-1 pr-3"
                         id="{{#if (isLocker onItemType)}}locker{{else if (isEquipment onItemType)}}equipment{{else}}book{{/if}}"></div>
@@ -261,8 +261,8 @@
                 </div>
               </div>
               <div class="form-group form-inline input-group" id="paymentForm">
-                <label for="paymentDate" class="col-lg-4 justify-content-start pl-2">Deadline of Payment</label>
-                <input type="date" class="form-control col-lg-8" name="paymentDate" id="paymentDate">
+                <label for="pickupPayDate" class="col-lg-4 justify-content-start pl-2">Deadline of Payment</label>
+                <input type="date" class="form-control col-lg-8" name="pickupPayDate" id="pickupPayDate">
               </div>
               <div class="form-group form-inline input-group" id="remarksForm">
                 <label for="remarks" class="col-lg-4 justify-content-start pl-2">Remarks</label>
