@@ -20,6 +20,12 @@ exports.book = async function (req, res) {
 
 exports.books_get = async function (req, res) {
     try {
+        let sortObject;
+        if (req.query.order[0] == null)
+            sortObject = getSortValue(0, 1)
+        else
+            sortObject = getSortValue(req.query.order[0].column, req.query.order[0].dir);
+
         let count = await Book.find({
             title: {
                 $regex: req.query.columns[0].search.value,
@@ -42,6 +48,7 @@ exports.books_get = async function (req, res) {
                     $options: 'i'
                 }
             })
+            .sort(sortObject)
             .skip(parseInt(req.query.start))
             .limit(parseInt(req.query.length));
 
@@ -106,5 +113,21 @@ async function hasActiveBookReservation(idNum) {
         return count > 0;
     } catch (error) {
         console.log(error);
+    }
+}
+
+function getSortValue(column, direction) {
+    if (column == null || direction == null) {
+        console.log('Null')
+        return {'lastUpdated': -1};  
+    } 
+
+    let dir = (direction === 'asc') ? 1: -1;
+
+    switch (column) {
+        case '0':
+            return {'title': dir};
+        case '1':
+            return {'authors': dir};
     }
 }

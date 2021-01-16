@@ -17,12 +17,14 @@ $(document).ready(function () {
             {
                 "data": function (data) {
                     return (data.edition === null) ? "N/A" : data.edition
-                }
+                },
+                "orderable": false
             },
             {
                 "data": function (data) {
                     return (data.quantity - data.onRent) + ' / ' + data.quantity;
-                }
+                },
+                "orderable": false
             },
         ],
         "responsive": true,
