@@ -491,14 +491,10 @@ exports.reservation_delete = async function (req, res) {
                         && (reservation.status === 'On Rent'
                             || reservation.status === 'For Pickup'
                             || reservation.status === 'Pending')) {
-                    console.log('equipment')
                     await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
                 } else if (reservation.onItemType === 'Locker') {
-                    console.log('locker')
-
                     await Locker.findByIdAndUpdate(reservation.item, { status: 'vacant' });
                 } else {
-                    console.log('book')
                     await Book.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
                 }
                 await Reservation.findByIdAndDelete(reservation._id);
