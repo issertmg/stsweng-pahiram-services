@@ -25,30 +25,29 @@ $(document).ready(function () {
                 }
             },
         ],
+        "responsive": true,
 		"dom": "ipt"
     });
 
-    $("#titleSearch").on("keyup paste change", function() {
+    $("#titleSearch").on("keyup paste", function(e) {
         let str = $(this).val();
         $(this).val(str.substring(0, 50));
+        if (e.code === "Enter")
+            $('#searchBtn').trigger("click");
+    });
+    $("#authorSearch").on("keyup paste", function(e) {
+        let str = $(this).val();
+        $(this).val(str.substring(0, 50));
+        if (e.code === "Enter")
+            $('#searchBtn').trigger("click");
+    });
+    $("#searchBtn").on("click", function() {
         $('#booksTable').DataTable()
             .column(0)
-			.search($(this).val())
-			.draw();
-    });
-    $("#authorSearch").on("keyup paste change", function() {
-        let str = $(this).val();
-        $(this).val(str.substring(0, 50));
-        $('#booksTable').DataTable()
+            .search($('#titleSearch').val())
             .column(1)
-			.search($(this).val())
+			.search($('#authorSearch').val())
 			.draw();
-    });
-    $("#clearSearches").on("click", function() {
-        $("#titleSearch").val("");
-        $("#authorSearch").val("");
-        $("#titleSearch").trigger("change");
-        $("#authorSearch").trigger("change");
     })
 });
 
@@ -72,3 +71,15 @@ $('#borrowBookModal').on('show.bs.modal', (event) => {
 		}
 	);
 });
+
+$(document).ajaxStart(function () {
+    $('table').css('filter', 'opacity(0.3)');
+    $('.page-link').css('pointer-events', 'none');
+    $('.page-link').css('filter', 'opacity(0.3)');
+  });
+  
+  $(document).ajaxComplete(function () {
+    $('table').css('filter', 'opacity(1)');
+    $('.page-link').css('pointer-events', 'auto');
+    $('.page-link').css('filter', 'opacity(1)');
+  });

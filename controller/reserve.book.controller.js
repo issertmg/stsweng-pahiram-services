@@ -18,7 +18,7 @@ exports.book = async function (req, res) {
 
 exports.books_get = async function (req, res) {
     try {
-        const count = await Book.find({
+        let count = await Book.find({
             title: {
                 $regex: req.query.columns[0].search.value,
                 $options: 'i'
@@ -43,12 +43,13 @@ exports.books_get = async function (req, res) {
             .skip(parseInt(req.query.start))
             .limit(parseInt(req.query.length));
 
-        if (data && count) {
+        if (data) {
             let datatable = {
                 recordsTotal: count,
                 recordsFiltered: count,
                 data: data,
             }
+            console.log('sending')
             res.send(datatable);
         }
     } catch (err) {
