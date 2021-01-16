@@ -36,39 +36,49 @@
           <div class="row px-0 col-lg-10 mx-auto">
             <h1 class="col-12 mb-5">Borrow book</h1>
 
-            <div class="card no-hover col-12 p-4">
-              <label class="font-weight-bold mb-4">Select a book to borrow</label>
-              <div class="row">
-                <div class="col-lg-3 col-md-5 col-12 input-group mb-2">
-                  <div class="form-group form-inline my-auto flex-fill">
-                    <input type="search" id="titleSearch" class="form-control" placeholder="Title">
-                  </div>
-                </div>
-                <div class="col-lg-3 col-md-5 col-12 input-group mb-2">
-                  <div class="form-group form-inline my-auto flex-fill">
-                    <input type="search" id="authorSearch" class="form-control" placeholder="Author">
-                  </div>
-                </div>
-                <div class="col-lg-3 col-md-5 col-12 mb-2">
-                  <a class="btn btn-primary" id="searchBtn">
-                      Search
-                  </a>
-                </div>
+            {{#if status}}
+            <div class="col-12 mb-4">
+              <div class="alert alert-danger" role="alert">
+                <strong>Note:</strong> You already have an active book reservation. Form submission button is <i class="font-italic">disabled</i>. 
               </div>
-              
-              <div class="table table-responsive">
-                <table class="table table-hover" id="booksTable">
-                  <thead class="">
-                    <tr class="active head">
-                      <th>Title</th>
-                      <th>Author/s</th>
-                      <th>Edition</th>
-                      <th>In Stock</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  </tbody>
-                </table>
+            </div>
+            {{/if}}
+
+            <div class="col-12">
+              <div class="card no-hover p-4">
+                <label class="font-weight-bold mb-4">Select a book to borrow</label>
+                <div class="row">
+                  <div class="col-lg-3 col-md-5 col-12 input-group mb-2">
+                    <div class="form-group form-inline my-auto flex-fill">
+                      <input type="search" id="titleSearch" class="form-control" placeholder="Title">
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-5 col-12 input-group mb-2">
+                    <div class="form-group form-inline my-auto flex-fill">
+                      <input type="search" id="authorSearch" class="form-control" placeholder="Author">
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-5 col-12 mb-2">
+                    <a class="btn btn-primary" id="searchBtn">
+                        Search
+                    </a>
+                  </div>
+                </div>
+                
+                <div class="table table-responsive">
+                  <table class="table table-hover" id="booksTable">
+                    <thead class="">
+                      <tr class="active head">
+                        <th>Title</th>
+                        <th>Author/s</th>
+                        <th>Edition</th>
+                        <th>In Stock</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
 
@@ -119,7 +129,11 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
+            {{#if status}}
+            <input type="submit" class="btn btn-disabled" id="borrowBookSubmit" value="Place Reservation" disabled>
+            {{else}}
             <input type="submit" class="btn btn-primary" id="borrowBookSubmit" value="Place Reservation">
+            {{/if}}
           </div>
         </form>
       </div>
