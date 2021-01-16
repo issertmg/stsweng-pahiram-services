@@ -23,7 +23,7 @@ const reservationSchema = new mongoose.Schema({
     onItemType: {
         type: String,
         required: true,
-        enum: ['Equipment', 'Locker']
+        enum: ['Book', 'Equipment', 'Locker']
     },
     lastUpdated: { type: Date, default: Date.now() },
     pickupPayDate: { type: Date, default: null }

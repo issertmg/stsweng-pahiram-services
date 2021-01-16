@@ -24,15 +24,7 @@ $(document).ready(function () {
 				}
 			},
 			{ "data": "onItemType" },
-			{ 
-				"data": function (data) {
-					if (data.onItemType === "Equipment") {
-						return data.title + ": " + data.item.brand + " (" + data.item.model + ")";
-					} else {
-						return data.title;
-					}
-				}
-			},
+			{ "data": "title" },
 			{ 
 				"data": "description",
 				"render": function (data, type, row) {
@@ -48,7 +40,6 @@ $(document).ready(function () {
 		"order": [[9, "desc"]],
 		"responsive": true,
 		"dom": "ipt"
-
 	});
 
 	$("#typeFilter").on("change", function () {
@@ -85,8 +76,7 @@ function limitDatePicker() {
 		day = '0' + day.toString();
 
 	let minDate = year + '-' + month + '-' + day;
-	$('#approvePaymentDate').attr('min', minDate);
-	$('#paymentDate').attr('min', minDate);
+	$('#pickupPayDate').attr('min', minDate);
 }
 
 /**
@@ -99,113 +89,10 @@ $('#delReservationModal').on('show.bs.modal', (event) => {
 });
 
 /**
- * Initializes the ApproveReservation modal.
- * @returns <void> - nothing
- */
-$('#approveReservationModal').on('show.bs.modal', (event) => {
-
-	var btn = $(event.relatedTarget).prev();
-	var reservation = {
-		id: btn.data('id'),
-		title: btn.data('title'),
-		userID: btn.data('userid'),
-		dateCreated: btn.data('datecreated'),
-		status: btn.data('status'),
-		description: btn.data('description'),
-		remarks: btn.data('remarks'),
-		penalty: btn.data('penalty'),
-		type: btn.data('type'),
-		paymentDate: btn.data('paymentdate')
-	}
-
-	var payDate = new Date();
-	var payDateString =
-		payDate.getFullYear() + '-'
-		+ ((payDate.getMonth() <= 8) ? '0' : '') + (payDate.getMonth() + 1) + '-'
-		+ ((payDate.getDate() <= 9) ? '0' : '') + payDate.getDate();
-
-	$('#approveReservationTitle').text(reservation.title);
-	$('#approveReservationID').val(reservation.id);
-	$('#approveReservationType').val(reservation.type);
-	$('#approveDateCreated').text(reservation.dateCreated);
-	$('#approveDescription').text(reservation.description);
-	$('#approveRemarks').val(reservation.remarks);
-	$('#approveStatus').val('status-manage-pickup-pay');
-	$('#approvePaymentDate').val(payDateString);
-	$('#approveIDNum').text(reservation.userID);
-	$('#approvePenalty').val(0);
-
-	$('#apUnclearedError').text('Loading...').removeClass('error-label');
-	$('#approveUserInfo').text('Loading...');
-
-
-	$.get('/reservations/manage/get-uncleared',
-		{ idnum: reservation.userID },
-		function (data) {
-			if (jQuery.isEmptyObject(data))
-				$('#apUnclearedError').text('User has no uncleared reservations').removeClass('error-label');
-			else
-				$('#apUnclearedError').text('User has uncleared reservations').addClass('error-label');
-		}
-	);
-
-	$.get('/reservations/manage/get-user',
-		{ idnum: reservation.userID },
-		function (data) {
-			if (data)
-				$('#approveUserInfo').text(data);
-		}
-	);
-
-	$('#approvePenaltyForm').css('display', 'none');
-	$('#approveSelectForm').css('display', 'none');
-
-	if (reservation.type == 'Locker')
-		$('#approvePaymentForm').css('display', 'flex');
-	else
-		$('#approvePaymentForm').css('display', 'none');
-});
-
-/**
- * Initializes the DenyReservation modal.
- * @returns <void> - nothing
- */
-$('#denyReservationModal').on('show.bs.modal', (event) => {
-	var btn = $(event.relatedTarget).prev().prev();
-	var reservation = {
-		id: btn.data('id'),
-		title: btn.data('title'),
-		userID: btn.data('userid'),
-		dateCreated: btn.data('datecreated'),
-		status: btn.data('status'),
-		description: btn.data('description'),
-		remarks: btn.data('remarks'),
-		penalty: btn.data('penalty'),
-		type: btn.data('type')
-	}
-
-	$('#denyReservationTitle').text(reservation.title);
-	$('#denyReservationID').val(reservation.id);
-	$('#denyReservationType').val(reservation.type);
-	$('#denyDateCreated').text(reservation.dateCreated);
-	$('#denyDescription').text(reservation.description);
-	$('#denyRemarks').val(reservation.remarks);
-	$('#denyStatus').val('status-manage-denied');
-	$('#denyIDNum').text(reservation.userID);
-	$('#denyPenalty').val(0);
-
-	$('#denyPenaltyForm').css('display', 'none');
-	$('#denySelectForm').css('display', 'none');
-});
-
-/**
  * Initializes the EditReservation modal.
  * @returns <void> - nothing
  */
 $('#editReservationModal').on('show.bs.modal', (event) => {
-
-	console.log(event.relatedTarget.tagName);
-
 	let reservation;
 	if (event.relatedTarget.tagName === 'DIV') {
 		let btn = $(event.relatedTarget);
@@ -215,18 +102,21 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 			userID: btn.data('userid'),
 			dateCreated: btn.data('datecreated'),
 			status: btn.data('status'),
-			description: btn.data('description'),
+			description: btn.data('title') + ", " + btn.data('description'),
 			remarks: btn.data('remarks'),
 			penalty: btn.data('penalty'),
-			type: btn.data('type'),
-			pickupPayDate: btn.data('paymentdate')
+			onItemType: btn.data('type'),
+			pickupPayDate: btn.data('pickuppaydate')
 		}
 	} else
 		reservation = $('#otherReservationsTable').DataTable().row(event.relatedTarget).data();
 
+	console.log(reservation);
+
 	$('#unclearedError').text('Loading...').removeClass('error-label');
 	$('#userInfo').text('Loading...');
 
+	// Check if user has uncleared reservations
 	$.get('/reservations/manage/get-uncleared',
 		{ idnum: reservation.userID },
 		function (data) {
@@ -237,11 +127,30 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 		}
 	);
 
+	// Get user info
 	$.get('/reservations/manage/get-user',
 		{ idnum: reservation.userID },
 		function (data) {
 			if (data)
 				$('#userInfo').text(data);
+		}
+	);
+
+	// Get item data
+	$('#itemDetailsLabel').text(reservation.onItemType + ' Details')
+	$.get('/reservations/manage/get-one-reservation',
+		{ id: reservation._id },
+		function (data) {
+			$('#itemDetails').html('');
+			for (const key in data.item) {
+				if (key !== '__v' && key !== '_id' && key !== 'imageURL')
+					$('#itemDetails').append(`
+						<div class="d-flex row">
+							<div class="col-2">` + key.charAt(0).toUpperCase() + key.slice(1) + `: </div>
+							<div class="col-10">` + data.item[key] + `</div>
+						</div>
+					`);
+			}
 		}
 	);
 
@@ -257,8 +166,8 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 	$('#editRemarks').val(reservation.remarks);
 	$('#penalty').val(reservation.penalty);
 	$('#reservationID').val(reservation._id);
-	$('#onItemType').val(reservation.type);
-	$('#paymentDate').val(payDateString);
+	$('#onItemType').val(reservation.onItemType);
+	$('#pickupPayDate').val(payDateString);
 	$('#currentStatus').val(reservation.status);
 
 	if ($('#onItemType').val() === '')
@@ -309,7 +218,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 	}
 	$('.select-selected').show();
 
-	if (reservation.onItemType === 'Locker' || reservation.type === 'Locker')
+	if (reservation.onItemType === 'Locker')
 		$('[value="status-manage-pickup-pay"]').text('To Pay')
 	else
 		$('[value="status-manage-pickup-pay"]').text('For Pickup')
@@ -352,11 +261,15 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 		else
 			$('#penaltyForm').css('display', 'none');
 
-		if (status == 'status-manage-pickup-pay' && (reservation.type === 'Locker' ||
-			reservation.onItemType === 'Locker'))
+		if (status == 'status-manage-pickup-pay' && reservation.onItemType === 'Locker') {
+			$('#pickupPayLabel').html('Deadline of Payment')
 			$('#paymentForm').css('display', 'flex');
-		else
+		} else if (status == 'status-manage-pickup-pay' && reservation.onItemType === 'Book') {
+			$('#pickupPayLabel').html('Deadline of Pickup')
+			$('#paymentForm').css('display', 'flex');
+		} else {
 			$('#paymentForm').css('display', 'none');
+		}
 
 
 	});

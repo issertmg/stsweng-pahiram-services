@@ -167,6 +167,10 @@ hr {
     background-position: -72px -72px;
 }
 
+.icon#book {
+    background-position: 0px 0px;
+}
+
 .icon#accept {
     background-position: 0px -96px;
 }
@@ -1322,3 +1326,38 @@ select.custom-select.form-control {
     margin-left: -1.25rem !important;
 }
 
+/* 
+* Datatables
+*/
+
+table.dataTable.no-footer {
+    border: none;
+}
+
+.table .dataTables_wrapper .dataTables_paginate .paginate_button {
+    border-radius: 50px;
+    transition: ease .25s;
+    margin: 0 4px;
+}
+
+.table .dataTables_wrapper .dataTables_paginate .paginate_button:not(.disabled):hover {
+    color: #000 !important;
+    background: #fff;
+    border-color: #51d3a1;
+}
+
+.table .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    color: #f7f7f7 !important;
+    background: #38b98a;
+    border: solid #38b98a 1px;
+}
+
+.table .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    color: #f7f7f7 !important;
+    background: #38b98a;
+    border: solid #38b98a 1px;
+}
+
+table.dataTable thead .sorting {
+    background-image: none !important;
+}

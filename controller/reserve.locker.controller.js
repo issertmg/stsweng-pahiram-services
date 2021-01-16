@@ -81,8 +81,8 @@ exports.reserve_locker = async function (req, res) {
             let lockerid = panel.lockers[lockerIndex]._id;
 
             let titleString = "Locker #" + req.body.lockernumber;
-            let descString = titleString + ", " + paneltype + " Panel #" + panel.number +
-                ", " + panel.building + ", " + panel.level + "/F";
+            let descString = paneltype + " Panel #" + panel.number +
+                ", " + panel.level + "/F " + panel.building;
 
             let reservation = new Reservation({
                 title: titleString,

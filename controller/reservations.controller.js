@@ -5,6 +5,7 @@ const Reservation = require('../model/reservation.model');
 const User = require('../model/user.model');
 const Equipment = require('../model/equipment.model');
 const Locker = require('../model/locker.model');
+const Book = require('../model/book.model');
 const RentalDates = require('../model/rental.dates.model');
 
 const validator = require('validator');
@@ -146,6 +147,8 @@ hbs.registerHelper('status-denied', (status) => { return status == 'Denied'; });
 hbs.registerHelper('status-uncleared', (status) => { return status == 'Uncleared'; });
 hbs.registerHelper('status-returned', (status) => { return status == 'Returned'; });
 hbs.registerHelper('isLocker', (type) => { return type == 'Locker';})
+hbs.registerHelper('isBook', (type) => { return type == 'Book';})
+hbs.registerHelper('isEquipment', (type) => { return type == 'Equipment';})
 hbs.registerHelper('cancellable', (status) => { return status == 'Pending' || status == 'For Pickup' || status == 'To Pay';});
 hbs.registerHelper('dateTimeToday', () => {
     const date = new Date();
@@ -172,7 +175,6 @@ exports.myReservations = async function (req, res) {
                 userID: req.session.idNum,
                 status: ['Denied', 'Returned']
             }).sort({ lastUpdated: -1 }).populate('item');
-
         res.render('my-reservations-page', {
             active: { active_my_reservations: true },
             sidebarData: {
@@ -207,6 +209,7 @@ exports.reservation_details = async function (req, res) {
             .find({ status: 'Pending' })
             .where('dateCreated').gte(dateToday).lt(dateTomorrow)
             .populate('item');
+
         var pendingEarlier = await Reservation
             .find({ status: 'Pending' })
             .where('dateCreated').lt(dateToday)
@@ -243,7 +246,7 @@ exports.reservations_get = async function (req, res) {
         let type = [];
         if (req.query.columns[2].search.value === '' ||
             req.query.columns[2].search.value === 'All')
-            type = ['Locker', 'Equipment'];
+            type = ['Locker', 'Equipment', 'Book'];
         else
             type.push(req.query.columns[2].search.value);
 
@@ -283,6 +286,16 @@ exports.reservations_get = async function (req, res) {
             res.send(datatable);
         }
 
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+exports.reservation_get_one = async function(req, res) {
+    try {
+        let reservation = await Reservation.findById(req.query.id).populate('item');
+        if (reservation)
+            res.send(reservation);
     } catch (error) {
         console.log(error);
     }
@@ -371,8 +384,8 @@ exports.reservation_update = async function (req, res) {
     console.log('update')
     let paymentDateValidityFlag = true;
 
-    if (!validator.isEmpty(req.body.paymentDate) && req.body.onItemType === 'Locker')
-        if (!isValidPaymentDate(new Date(req.body.paymentDate)))
+    if (!validator.isEmpty(req.body.pickupPayDate) && req.body.onItemType === 'Locker')
+        if (!isValidPaymentDate(new Date(req.body.pickupPayDate)))
             paymentDateValidityFlag = false
 
     const errors = validationResult(req);
@@ -459,7 +472,7 @@ exports.reservation_update = async function (req, res) {
                         remarks: req.body.remarks,
                         penalty: req.body.status == 'status-manage-uncleared' ? req.body.penalty : 0,
                         lastUpdated: Date.now(),
-                        pickupPayDate: req.body.paymentDate
+                        pickupPayDate: req.body.pickupPayDate
                     });
             }
         } catch (err) { console.log(err); };
@@ -482,8 +495,8 @@ exports.reservation_delete = async function (req, res) {
         var reservation = await Reservation.findById(req.body.reservationID);
         var user = await User.findOne({ idNum: req.session.idNum });
 
-        if (userIsAdmin(user) || (reservation.userID == req.session.idNum && isCancellable(reservation))) {
-            if (reservationIsDeletable(reservation.status)) {
+        if (userIsAdmin(user) || reservation.userID == req.session.idNum) {
+            if (reservationIsDeletable(reservation.status) || isCancellable(reservation)) {
                 if (reservation.onItemType === 'Equipment' 
                         && (reservation.status === 'On Rent'
                             || reservation.status === 'For Pickup'
@@ -491,6 +504,8 @@ exports.reservation_delete = async function (req, res) {
                     await Equipment.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
                 } else if (reservation.onItemType === 'Locker') {
                     await Locker.findByIdAndUpdate(reservation.item, { status: 'vacant' });
+                } else {
+                    await Book.findByIdAndUpdate(reservation.item, { $inc: { onRent: -1 } });
                 }
                 await Reservation.findByIdAndDelete(reservation._id);
             }

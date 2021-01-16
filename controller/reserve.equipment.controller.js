@@ -48,13 +48,12 @@ exports.reserve_equipment = async function (req, res) {
             let pickupTime = getPickupTime(parseInt(req.body.borrowtime));
             pickupDate.setHours(pickupTime[0],pickupTime[1],0, 0);
 
-            let descString = reason + ", " + "on " + pickupDate.toLocaleString('en-US');
             let reservation = new Reservation({
-                title: equipment.name,
+                title: equipment.name + ", " + equipment.brand,
                 userID: req.session.idNum,
                 item: equipmentid,
                 status: 'Pending',
-                description: descString,
+                description: "for " + pickupDate.toLocaleString('en-US'),
                 onItemType: 'Equipment',
                 pickupPayDate: pickupDate
             });
