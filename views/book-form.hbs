@@ -108,6 +108,11 @@
         <form class="form-horizontal" method="post" action="/reserve/book">
           <input type="hidden" id="bookID" name="bookID">
           <div class="modal-body mx-auto">
+            <div class="col-12 mb-2" id="outOfStockAlert">
+              <div class="alert alert-warning" role="warning">
+                <strong>Note:</strong> This book is out of stock. 
+              </div>
+            </div>
             <div class="d-flex flex-column">
               <div class="d-flex flex-row align-items-center">
                 <div class="col-3 font-weight-bold">Title</div>

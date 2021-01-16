@@ -58,7 +58,12 @@ $('#borrowBookModal').on('show.bs.modal', (event) => {
     $('#authorLabel').text("Updating...");
     $('#edition').text("Updating...");
     $('#stockLabel').text("Updating...");
-    
+    $('#outOfStockAlert').css("display", "none");
+    // default: disabled submit button
+    $('#borrowBookSubmit').prop("disabled", true);
+    $('#borrowBookSubmit').removeClass("btn-primary");
+    $('#borrowBookSubmit').addClass("btn-disabled");
+
     book = $('#booksTable').DataTable().row(event.relatedTarget).data();
     $.get('/reserve/book/get-one',
 		{ _id: book._id },
@@ -68,6 +73,15 @@ $('#borrowBookModal').on('show.bs.modal', (event) => {
             $('#authorLabel').text(data.authors);
             $('#editionLabel').text((data.edition == null) ? "N/A" : data.edition);
             $('#stockLabel').text((data.quantity - data.onRent) + "/" + (data.quantity));
+            
+            // disable button if out of stock and show alert
+            if (data.onRent >= data.quantity) {
+                $('#outOfStockAlert').css("display", "block");
+            } else {
+                $('#borrowBookSubmit').prop("disabled", false);
+                $('#borrowBookSubmit').addClass("btn-primary");
+                $('#borrowBookSubmit').removeClass("btn-disabled");
+            }
 		}
 	);
 });
