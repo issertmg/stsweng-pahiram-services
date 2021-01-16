@@ -291,6 +291,16 @@ exports.reservations_get = async function (req, res) {
     }
 }
 
+exports.reservation_get_one = async function(req, res) {
+    try {
+        let reservation = await Reservation.findById(req.query.id).populate('item');
+        if (reservation)
+            res.send(reservation);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 /**
  * Determines the field to sort and the order
  * @param column - the column number of the DataTable 
