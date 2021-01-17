@@ -30,7 +30,10 @@ $(document).ready(function () {
             },
         ],
         "responsive": true,
-		"dom": "ipt"
+        "dom": "ipt",
+        "language": {
+            "emptyTable": "No books to display"
+        }
     });
 
     $("#titleSearch").on("keyup paste", function(e) {
