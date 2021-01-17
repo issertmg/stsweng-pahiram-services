@@ -126,7 +126,7 @@ async function isLockerRentalPeriod() {
     let isRentalPeriod = false;
     let today = new Date();
     try {
-        let rental_date = await RentalDates.findOne();
+        let rental_date = await RentalDates.findOne({type: 'Locker'});
         if (rental_date) {
             let startDate = new Date(rental_date.startDate)
             let endDate = new Date(rental_date.endDate)
