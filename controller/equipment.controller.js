@@ -44,8 +44,8 @@ exports.createEquipment = async function (req, res) {
                 console.log(err);
             }
         }
-        res.redirect("/manage-equipment/");
     }
+    res.redirect("/manage-equipment/");
 };
 
 /**

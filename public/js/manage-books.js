@@ -74,6 +74,7 @@ $(document).ready(function () {
         .search($(this).val())
         .draw();
   });
+
 });
 
 $(document).ajaxStart(function () {
@@ -168,6 +169,134 @@ $('#deleteBookButton').click(function() {
         }
       });
 });
+
+/**
+ * Checks if the book title, authors, and quantity fields in the Add Book form are empty.
+ * @returns {boolean} - true if the book title, authors, and quantity fields are filled; false otherwise
+ */
+function isFilledTitleAuthorsQuantity(titleString, authorsString, quantityString) {
+  let titleEmpty = validator.isEmpty(titleString);
+  let authorsEmpty = validator.isEmpty(authorsString);
+  let quantityEmpty = validator.isEmpty(quantityString);
+
+  return !titleEmpty && !authorsEmpty && !quantityEmpty;
+}
+
+/**
+ * Checks if the string parameter has at least 1 letter.
+ * @param stringInput - the string input
+ * @returns {boolean} - true if has at least 1 letter, false otherwise
+ */
+function hasAtLeast1Letter (stringInput) {
+  return /[a-zA-Z]/.test(stringInput)
+}
+
+/**
+ * Checks if the book title input is valid.
+ * @returns {boolean} - true if book title has at least 1 letter and is at most 50 characters; false otherwise
+ */
+function isValidBookTitle(stringInput) {
+  return validator.isLength(stringInput, { max: 50}) && hasAtLeast1Letter(stringInput);
+}
+
+/**
+ * Checks if the book authors input is valid.
+ * @returns {boolean} - true if book authors has at least 1 letter and is at most 50 characters; false otherwise
+ */
+function isValidBookAuthors(stringInput) {
+  return validator.isLength(stringInput, { max: 50}) && hasAtLeast1Letter(stringInput);
+}
+
+/**
+ * Checks if the book edition input is valid.
+ * @returns {boolean} - true if book authors has at least 1 letter and is at most 50 characters; false otherwise
+ */
+function isValidBookEdition(stringInput) {
+  if (validator.isEmpty(stringInput))
+    return true
+  else
+    return validator.isLength(stringInput, { max: 50});
+}
+
+/**
+ * Checks if the book quantity input is valid.
+ * @returns {boolean} - true if book authors has at least 1 letter and is at most 50 characters; false otherwise
+ */
+function isValidBookQuantity(quantity) {
+  return validator.isInt(quantity) && (quantity > 0) && (quantity <= 1000);
+}
+
+$("#addTitle").on("keyup change", function() {
+  let inputElement = $(this);
+  if (inputElement.val().length > 50) {
+    inputElement.val(inputElement.val().slice(0, 50));
+  }
+});
+$("#addAuthors").on("keyup change", function() {
+  let inputElement = $(this);
+  if (inputElement.val().length > 50) {
+    inputElement.val(inputElement.val().slice(0, 50));
+  }
+});
+$("#addEdition").on("keyup change", function() {
+  let inputElement = $(this);
+  if (inputElement.val().length > 50) {
+    inputElement.val(inputElement.val().slice(0, 50));
+  }
+});
+
+$("#addQuantity").on("input", function() {
+  let inputElement = $(this);
+  if (inputElement.val() <= 0) {
+    inputElement.val("");
+  }
+  else if (inputElement.val() > 1000) {
+    inputElement.val("1000");
+  }
+});
+
+$("#addBookSubmitButton").click(function() {
+  $(".alert").hide()
+  let title = validator.trim($("#addTitle").val());
+  let authors = validator.trim($("#addAuthors").val());
+  let edition = validator.trim($("#addEdition").val());
+  let quantity = validator.trim($("#addQuantity").val());
+
+  if (!isFilledTitleAuthorsQuantity(title, authors, quantity)) {
+    $("#addBlankAlert").show();
+  }
+  else if (!isValidBookTitle(title)){
+    $("#addTitleAlert").show();
+  }
+  else if (!isValidBookAuthors(authors)) {
+    $("#addAuthorsAlert").show();
+  }
+  else if (!isValidBookEdition(edition)) {
+    $("#addEditionAlert").show();
+  }
+  else if (!isValidBookQuantity(quantity)) {
+    $("#addQuantityAlert").show();
+  }
+  else {
+    $.get('/manage-books/check',
+        {
+          title: title,
+          authors: authors,
+          edition: edition
+        },
+        function (data, status) {
+          if (data.count === 0) {
+            $('#addBookSubmitButton').off("click");
+            $('#addBookForm').submit();
+          }
+          else {
+            $('#addBookDuplicateAlert').show();
+          }
+        }
+    );
+  }
+});
+
 
 // SUCCEEDING CODE ARE NOT USED BUT RETAINED FOR REUSING
 
