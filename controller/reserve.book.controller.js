@@ -56,10 +56,16 @@ exports.books_get = async function (req, res) {
                 recordsFiltered: count,
                 data: data,
             }
+            console.log(datatable);
             res.send(datatable);
         }
     } catch (err) {
-        console.log(err);
+        console.log('An error occurred.');
+        res.send({
+            recordsTotal: 0,
+            recordsFiltered: 0,
+            data: []
+        });
     }
 }
 
