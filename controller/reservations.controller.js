@@ -115,7 +115,7 @@ cron.schedule('0 59 23 * * SUN,MON,TUE,WED,THU,FRI,SAT *', async function () {
     let today = new Date();
 
     try {
-        let rental_date = await RentalDates.findOne();
+        let rental_date = await RentalDates.findOne({type: 'Locker'});
         if (rental_date) {
             let return_date = new Date(rental_date.returnDate);
             if (today.getMonth() === return_date.getMonth() &&
@@ -130,6 +130,32 @@ cron.schedule('0 59 23 * * SUN,MON,TUE,WED,THU,FRI,SAT *', async function () {
                     {status: 'occupied'},
                     {status: 'uncleared'}
                 )
+            }
+        }
+    } catch (err) {
+        console.log(err)
+    }
+});
+
+/**
+ * Marks all unreturned books as uncleared, and adds penalty charges every return date.
+ * @returns {Promise<void>} - nothing
+ */
+cron.schedule('0 59 23 * * SUN,MON,TUE,WED,THU,FRI,SAT *', async function () {
+    let today = new Date();
+
+    try {
+        let rental_date = await RentalDates.findOne({type: 'Book'});
+        if (rental_date) {
+            let return_date = new Date(rental_date.returnDate);
+            if (today.getMonth() === return_date.getMonth() &&
+                today.getDate() === return_date.getDate() &&
+                today.getFullYear() === return_date.getFullYear()) {
+
+                await Reservation.updateMany(
+                    {status: 'On Rent', onItemType: 'Book'},
+                    {status: 'Uncleared', penalty: 200}
+                );
             }
         }
     } catch (err) {
