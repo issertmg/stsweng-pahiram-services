@@ -3,15 +3,13 @@ const Reservation = require('../model/reservation.model');
 
 exports.book = async function (req, res) {
     try {
-        const activeReservation = await hasActiveBookReservation(req.session.idNum);
         res.render('book-form', {
             active: { active_index: true },
             sidebarData: {
                 dp: req.session.passport.user.profile.photos[0].value,
                 name: req.session.passport.user.profile.displayName,
                 type: req.session.type
-            },
-            status: activeReservation
+            }
         });
     } catch (err) {
         console.log(err);
@@ -58,10 +56,16 @@ exports.books_get = async function (req, res) {
                 recordsFiltered: count,
                 data: data,
             }
+            console.log(datatable);
             res.send(datatable);
         }
     } catch (err) {
-        console.log(err);
+        console.log('An error occurred.');
+        res.send({
+            recordsTotal: 0,
+            recordsFiltered: 0,
+            data: []
+        });
     }
 }
 
@@ -73,6 +77,15 @@ exports.book_get = async function (req, res) {
 
         if (book)
             res.send(book);
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+exports.user_has_active_book_reservation = async function (req, res) {
+    try {
+        const activeReservation = await hasActiveBookReservation(req.session.idNum);
+        res.send(activeReservation);
     } catch (err) {
         console.log(err);
     }

@@ -1,3 +1,5 @@
+let hasActiveReservation = false;
+
 $(document).ready(function () {
     $("#booksTable").DataTable({
         processing: true,
@@ -28,7 +30,10 @@ $(document).ready(function () {
             },
         ],
         "responsive": true,
-		"dom": "ipt"
+        "dom": "ipt",
+        "language": {
+            "emptyTable": "No books to display"
+        }
     });
 
     $("#titleSearch").on("keyup paste", function(e) {
@@ -50,8 +55,18 @@ $(document).ready(function () {
             .column(1)
 			.search($('#authorSearch').val())
 			.draw();
-    })
+    });
 });
+
+$('#activeReservationAlert').css('display', 'none');
+$.get('/reserve/book/active-reservation',
+    function (data) {
+        hasActiveReservation = data;
+        if (hasActiveReservation)
+            $('#activeReservationAlert').css('display', 'block');
+
+    }
+);
 
 $('#borrowBookModal').on('show.bs.modal', (event) => {
     // Default values
@@ -76,10 +91,10 @@ $('#borrowBookModal').on('show.bs.modal', (event) => {
             $('#editionLabel').text((data.edition == null) ? "N/A" : data.edition);
             $('#stockLabel').text((data.quantity - data.onRent) + "/" + (data.quantity));
             
-            // disable button if out of stock and show alert
-            if (data.onRent >= data.quantity) {
+            if (data.onRent >= data.quantity) {         // out of stock
                 $('#outOfStockAlert').css("display", "block");
-            } else {
+            } else if (!hasActiveReservation) {
+                // enable place reservation button
                 $('#borrowBookSubmit').prop("disabled", false);
                 $('#borrowBookSubmit').addClass("btn-primary");
                 $('#borrowBookSubmit').removeClass("btn-disabled");
