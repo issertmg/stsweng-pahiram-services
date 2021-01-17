@@ -117,28 +117,46 @@
                 </div>
                 <form class="form-horizontal" method="post" action="/manage-books/create" id="addBookForm">
                     <div class="modal-body col-lg-10 mx-auto">
+                        <div class="alert alert-warning" role="alert" id="addBlankAlert">
+                            Book title, authors, and amount on stock should not be empty.
+                        </div>
+                        <div class="alert alert-warning" role="alert" id="addTitleAlert">
+                            Book title should contain at least 1 letter.
+                        </div>
+                        <div class="alert alert-warning" role="alert" id="addAuthorsAlert">
+                            Authors field should contain at least 1 letter.
+                        </div>
+                        <div class="alert alert-warning" role="alert" id="addEditionAlert">
+                            Book edition should contain 50 characters at max.
+                        </div>
+                        <div class="alert alert-warning" role="alert" id="addQuantityAlert">
+                            Amount on stock should be a number.
+                        </div>
+                        <div class="alert alert-warning" role="alert" id="addBookDuplicateAlert">
+                            A book with the same title, author, and edition already exists.
+                        </div>
                         <div class="d-flex flex-column">
                             <div class="form-group form-inline input-group">
                                 <label for="editTitle" class="col-lg-4 justify-content-start pl-2">Title</label>
-                                <input type="text" class="form-control col-lg-8" name="title" id="addTitle" placeholder="Enter book title" readonly>
+                                <input type="text" class="form-control col-lg-8" name="title" id="addTitle" placeholder="Enter book title">
                             </div>
                             <div class="form-group form-inline input-group">
                                 <label for="lastName" class="col-lg-4 justify-content-start pl-2">Author/s</label>
-                                <input type="text" class="form-control col-lg-8" name="authors" id="addAuthors" placeholder="Enter name of author/s" readonly>
+                                <input type="text" class="form-control col-lg-8" name="authors" id="addAuthors" placeholder="Enter name of author/s">
                             </div>
                             <div class="form-group form-inline input-group">
                                 <label for="idNum" class="col-lg-4 justify-content-start pl-2">Edition (optional)</label>
-                                <input type="text" class="form-control col-lg-8" name="edition" id="addEdition" placeholder="Enter book edition" required>
+                                <input type="text" class="form-control col-lg-8" name="edition" id="addEdition" placeholder="Enter book edition">
                             </div>
                             <div class="form-group form-inline input-group">
                                 <label for="add-equipment-ct" class="col-lg-4 justify-content-start pl-2">Amount on stock</label>
-                                <input id="addQuantity" type="number" class="form-control col-lg-8" placeholder="Enter number of stocks" name="count" min="1" max="1000" required>
+                                <input id="addQuantity" type="number" class="form-control col-lg-8" placeholder="Enter number of stocks" name="quantity" min="1" max="1000">
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
-                        <input type="button" class="btn btn-primary" id="approveStatusSubmit" value="Add">
+                        <input type="button" class="btn btn-primary" id="addBookSubmitButton" value="Add">
                     </div>
                 </form>
             </div>

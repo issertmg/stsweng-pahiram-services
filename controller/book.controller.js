@@ -87,3 +87,63 @@ exports.book_delete = async function (req, res) {
     res.redirect("/manage-books/");
 };
 
+/**
+ * AJAX function for checking if a book already exists
+ * @param req - the HTTP request object
+ * @param res - the HTTP response object
+ * @returns {Promise<void>} - nothing
+ */
+exports.check_get = async function (req, res) {
+    try {
+        const bookCount = await Book.find({
+            _id: {$ne: req.query.ID},
+            title: req.query.title,
+            authors: req.query.authors,
+            edition: req.query.edition
+        }).countDocuments();
+        res.send({count: bookCount});
+    }
+    catch (err) {
+        console.log(err);
+    }
+};
+
+exports.book_create = async function (req, res) {
+    const errors = validationResult(req);
+
+    if (errors.isEmpty()) {
+
+        const isNew = await isNewBook(req.body.title, req.body.authors, req.body.edition);
+
+        if (isNew) {
+            try {
+                await Book.create({
+                    title: req.body.title,
+                    authors: req.body.authors,
+                    edition: req.body.edition,
+                    quantity: req.body.quantity
+                })
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    }
+    else
+        console.log(errors)
+    res.redirect("/manage-books/");
+};
+
+async function isNewBook(title, authors, edition) {
+    let bookCount;
+    try {
+        bookCount = await Book.find({
+            title: title,
+            authors: authors,
+            edition: edition
+        }).countDocuments();
+    }
+    catch (err) {
+        console.log(err);
+    }
+    return bookCount === 0;
+}
