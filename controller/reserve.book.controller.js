@@ -1,15 +1,18 @@
 const Book = require('../model/book.model');
 const Reservation = require('../model/reservation.model');
+const RentalDates = require('../model/rental.dates.model');
 
 exports.book = async function (req, res) {
     try {
+        let rental_period = await isBookRentalPeriod();
         res.render('book-form', {
             active: { active_index: true },
             sidebarData: {
                 dp: req.session.passport.user.profile.photos[0].value,
                 name: req.session.passport.user.profile.displayName,
                 type: req.session.type
-            }
+            },
+            rental_period: rental_period
         });
     } catch (err) {
         console.log(err);
@@ -94,7 +97,9 @@ exports.user_has_active_book_reservation = async function (req, res) {
 exports.reserve_book = async function (req, res) {
     try {
         const activeReservation = await hasActiveBookReservation(req.session.idNum);
-        if (!activeReservation) {
+        const isRentalPeriod = await isBookRentalPeriod();
+
+        if (!activeReservation && isRentalPeriod) {
             let book = await Book.findById(req.body.bookID);
             if (book && (book.onRent < book.quantity)) {
                 let reservation = new Reservation({
@@ -143,4 +148,21 @@ function getSortValue(column, direction) {
         case '1':
             return {'authors': dir};
     }
+}
+
+async function isBookRentalPeriod() {
+    let isRentalPeriod = false;
+    let today = new Date();
+    try {
+        let rental_date = await RentalDates.findOne({type: 'Book'});
+        if (rental_date) {
+            let startDate = new Date(rental_date.startDate)
+            let endDate = new Date(rental_date.endDate)
+            if ((today >= startDate) && (today < endDate))
+                isRentalPeriod = true;
+        }
+    } catch (err) {
+        console.log(err);
+    }
+    return isRentalPeriod;
 }

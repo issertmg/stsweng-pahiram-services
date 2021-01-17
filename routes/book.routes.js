@@ -18,6 +18,9 @@ router.get('/get-books', UserAuth.userIsAdmin, bookController.book_get);
 router.get('/onrent', UserAuth.userIsAdmin, bookController.onrent_get);
 router.post('/delete', UserAuth.userIsAdmin, bookController.book_delete);
 
+//setting rental dates
+router.post('/set-rental-dates', UserAuth.userIsAdmin, bookController.set_rental_dates);
+
 // AJAX get request
 router.get('/check', UserAuth.userIsAdmin, bookController.check_get);
 

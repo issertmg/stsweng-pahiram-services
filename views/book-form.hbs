@@ -36,6 +36,14 @@
           <div class="row px-0 col-lg-10 mx-auto">
             <h1 class="col-12 mb-5">Borrow book</h1>
 
+              {{#unless rental_period}}
+                  <div class="col-12 mb-1" id="rentalDatesAlert">
+                      <div class="alert alert-info col-12" role="alert">
+                          <strong>Book Rental Closed:</strong> Please wait for further announcements regarding reopening of book rental.
+                      </div>
+                  </div>
+              {{/unless}}
+
             <div class="col-12 mb-4" id="activeReservationAlert">
               <div class="alert alert-danger" role="alert">
                 <strong>Note:</strong> You already have an active book reservation. Form submission button is <i class="font-italic">disabled</i>. 
