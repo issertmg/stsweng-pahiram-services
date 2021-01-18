@@ -118,16 +118,19 @@ exports.book_create = async function (req, res) {
     const errors = validationResult(req);
 
     if (errors.isEmpty()) {
-
-        const isNew = await isNewBook(req.body.title, req.body.authors, req.body.edition);
+        const title = req.body.title.trim();
+        const authors = req.body.authors.trim();
+        const edition = req.body.edition.trim();
+        const quantity = req.body.quantity;
+        const isNew = await isNewBook(title, authors, edition);
 
         if (isNew) {
             try {
                 await Book.create({
-                    title: req.body.title,
-                    authors: req.body.authors,
-                    edition: req.body.edition,
-                    quantity: req.body.quantity
+                    title: title,
+                    authors: authors,
+                    edition: edition,
+                    quantity: quantity
                 })
             } catch (err) {
                 console.log(err);
