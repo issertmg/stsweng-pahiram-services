@@ -17,13 +17,13 @@ $(document).ready(function () {
             {
                 "data": "title",
                 "render": function (data, type, row) {
-                    return data.length > 20 ? data.substr(0, 20) + '...' : data;
+                    return limitCharLength(data, 20);
                 }
             },
             {
                 "data": "authors",
                 "render": function (data, type, row) {
-                    return data.length > 20 ? data.substr(0, 20) + '...' : data;
+                    return limitCharLength(data, 20);
                 }
             },
             {
@@ -31,7 +31,7 @@ $(document).ready(function () {
                     return (data.edition === null) ? "N/A" : data.edition
                 },
                 "render": function (data, type, row) {
-                    return data.length > 20 ? data.substr(0, 20) + '...' : data;
+                    return limitCharLength(data, 20);
                 },
                 "orderable": false
             },
@@ -128,3 +128,7 @@ $(document).ajaxComplete(function () {
     $('.page-link').css('pointer-events', 'auto');
     $('.page-link').css('filter', 'opacity(1)');
 });
+
+function limitCharLength(data, maxLength) {
+    return data.length > maxLength ? data.substr(0, maxLength) + '...' : data;
+}
