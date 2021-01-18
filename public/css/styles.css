@@ -1326,6 +1326,10 @@ select.custom-select.form-control {
     margin-left: -1.25rem !important;
 }
 
+.info-label-text > div {
+    overflow: hidden;
+}
+
 /* 
 * Datatables
 */
