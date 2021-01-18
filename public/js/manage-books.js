@@ -28,35 +28,13 @@ $(document).ready(function () {
                     return (data.quantity - data.onRent) + ' / ' + data.quantity;
                 }
             },
-            {
-                "data": function (data, type, row, meta) {
-                    return `<a class="table-link mr-2" data-toggle="modal" 
-                   data-title="`+ data.title +
-                        `" data-authors="` + data.authors +
-                        `" data-edition="` + data.edition +
-                        `" data-onrent="` + data.onRent +
-                        `" data-quantity="` + data.quantity +
-                        `" data-id="` + data._id +
-                        `" href="#editBookModal"><div class="icon" id="edit"></div>
-                             </a>` +
-                        `<a class="table-link mr-2" data-toggle="modal" 
-                   data-title="`+ data.title +
-                        `" data-authors="` + data.authors +
-                        `" data-edition="` + data.edition +
-                        `" data-onrent="` + data.onRent +
-                        `" data-quantity="` + data.quantity +
-                        `" data-id="` + data._id +
-                        `" href="#deleteBookModal"><div class="icon" id="delete"></div>
-                             </a>`;
-                },
-                "className": "d-flex align-items-center justify-content-end"
-            }
+            { "data": "_id", "visible": false }
         ],
         "order": [[0, "asc"]],
         "responsive": true,
         "dom": "ipt",
         columnDefs: [
-            { targets: [0, 1, 2, 3, 4], bSortable: false }
+            { targets: [0, 1, 2, 3], bSortable: false }
         ]
     });
 
@@ -91,17 +69,8 @@ $(document).ajaxComplete(function () {
 $('#deleteBookModal').on('show.bs.modal', (event) => {
     $('.alert').hide();
 
-    let btn = $(event.relatedTarget);
-    let book = {
-        id: btn.data('id'),
-        title: btn.data('title'),
-        authors: btn.data('authors'),
-        edition: btn.data('edition'),
-        onRent: btn.data('onrent'),
-        quantity: btn.data('quantity')
-    }
     $('#deleteBookModalLabel').text('Delete Book');
-    $('#delHiddenBookID').val(book.id);
+    $('#delHiddenBookID').val($('#editId').val());
 
     $('#deleteHeader').show();
     $('#deleteBookButton').show();
@@ -125,21 +94,22 @@ $('#addBookModal').on('show.bs.modal', (event) => {
 $('#editBookModal').on('show.bs.modal', (event) => {
     $('.alert').hide();
 
-    let btn = $(event.relatedTarget);
-    let book = {
-        id: btn.data('id'),
-        title: btn.data('title'),
-        authors: btn.data('authors'),
-        edition: btn.data('edition'),
-        onRent: btn.data('onrent'),
-        quantity: btn.data('quantity')
-    }
+    let book = $('#booksTable').DataTable().row(event.relatedTarget).data();
+
+    // let book = {
+    //     id: btn.data('id'),
+    //     title: btn.data('title'),
+    //     authors: btn.data('authors'),
+    //     edition: btn.data('edition'),
+    //     onRent: btn.data('onrent'),
+    //     quantity: btn.data('quantity')
+    // }
 
     $('#editTitle').val(book.title);
     $('#editAuthors').val(book.authors);
     $('#editEdition').val(book.edition);
     $('#editQuantity').val(book.quantity);
-    $('#editId').val(book.id);
+    $('#editId').val(book._id);
     $('#editBookModalLabel').text('Edit Book');
 });
 
