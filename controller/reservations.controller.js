@@ -314,6 +314,11 @@ exports.reservations_get = async function (req, res) {
 
     } catch (error) {
         console.log(error);
+        res.send({
+            recordsTotal: 0,
+            recordsFiltered: 0,
+            data: []
+        });
     }
 }
 
