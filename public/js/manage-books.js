@@ -297,124 +297,127 @@ $("#addBookSubmitButton").click(function() {
   }
 });
 
+$('#setRentalDatesModal').on('show.bs.modal', function (event) {
+  $('.alert').hide();
+  let startDateData = $(event.relatedTarget).data('startdate');
+  let endDateData = $(event.relatedTarget).data('enddate');
+  let returnDateData = $(event.relatedTarget).data('returndate');
 
-// SUCCEEDING CODE ARE NOT USED BUT RETAINED FOR REUSING
+  let startDate = typeof startDateData === 'undefined' ? new Date() : new Date(startDateData);
+  let startDateString = startDate.getFullYear() + '-'
+      + ((startDate.getMonth() <= 8) ? '0' : '') + (startDate.getMonth() + 1) + '-'
+      + ((startDate.getDate() <= 9) ? '0' : '') + startDate.getDate();
 
-/**
- * Validates the Edit Profile form before submitting.
- * @returns <void> - nothing
- */
-$('#approveStatusSubmit').click(function() {
-  hideAllAlert();
-  if (!isFilledEditModal()) {
-    $("#emptyAlert").show();
+  let endDate = typeof endDateData === 'undefined' ? new Date() : new Date(endDateData);
+  let endDateString = endDate.getFullYear() + '-'
+      + ((endDate.getMonth() <= 8) ? '0' : '') + (endDate.getMonth() + 1) + '-'
+      + ((endDate.getDate() <= 9) ? '0' : '') + endDate.getDate();
+
+  let returnDate = typeof returnDateData === 'undefined' ? new Date() : new Date(returnDateData);
+  let returnDateString = returnDate.getFullYear() + '-'
+      + ((returnDate.getMonth() <= 8) ? '0' : '') + (returnDate.getMonth() + 1) + '-'
+      + ((returnDate.getDate() <= 9) ? '0' : '') + returnDate.getDate();
+
+  $("#startDate").val(startDateString);
+  $("#endDate").val(endDateString);
+  $("#returnDate").val(returnDateString);
+
+  let startTimeString = startDate.toTimeString();
+  startTimeString = startTimeString.split(' ')[0].slice(0, 5);
+  let endTimeString = endDate.toTimeString();
+  endTimeString = endTimeString.split(' ')[0].slice(0, 5);
+  $("#startTime").val(startTimeString);
+  $("#endTime").val(endTimeString);
+});
+
+$('#setRentalDatesButton').click(function() {
+  $('.alert').hide();
+  if (!isFilledRentalDates) {
+    $("#emptyRentalDateAlert").show();
   }
-  else if (!isValidIDNumber()){
-    $("#idnumAlert").show();
+  else if (!isValidStartDate())  {
+    $("#startDateAlert").show();
   }
-  else if (!isValidPhoneNumber()) {
-    $("#mobileAlert").show();
+  else if (!isValidEndDate()) {
+    $("#endDateAlert").show();
   }
-  else if (!isValidDegreeProgram()) {
-    $("#degreeAlert").show();
+  else if (!isValidReturnDate()) {
+    $("#returnDateAlert").show();
   }
   else {
-    $.get('/profile/check-for-duplicates',
-            {userid: $("#id").val(), mobile: $("#mobile").val(), idnumber: $("#idNum").val()},
-            function(data, status) {
-              if (data.duplicateMobile) {
-                $('#dupeMobileAlert').show();
-              }
-              if (data.duplicateID) {
-                $('#dupeIdnumAlert').show();
-              }
-              if (!data.duplicateMobile && !data.duplicateID){
-                $('#approveStatusSubmit').off("click");
-                $('#editProfileForm').submit();
-              }
-            }
-    );
+    $('#setRentalDatesButton').off("click");
+    $('#setRentalDatesForm').submit();
   }
 });
 
-/**
- * Checks if the id number, college, degree program, and mobile fields in the Edit Profile form are empty.
- * @returns {boolean} - true if id number, college, degree program, and mobile fields are filled; false otherwise
- */
-function isFilledEditModal() {
-  let idNum = validator.trim($('#idNum').val());
-  let college = validator.trim($('#college').val());
-  let degProg = validator.trim($('#degProg').val());
-  let mobile = validator.trim($('#mobile').val());
+function isFilledRentalDates() {
+  let startDate = validator.trim($("#startDate").val());
+  let endDate =  validator.trim($("#endDate").val());
+  let returnDate =  validator.trim($("#returnDate").val());
+  let startTime =  validator.trim($("#startTime").val());
+  let endTime =  validator.trim($("#endTime").val());
 
-  let idNumEmpty = validator.isEmpty(idNum);
-  let collegeEmpty = validator.isEmpty(college);
-  let degProgEmpty = validator.isEmpty(degProg);
-  let mobileEmpty = validator.isEmpty(mobile);
-
-  return !idNumEmpty && !collegeEmpty && !degProgEmpty && !mobileEmpty;
+  return !validator.isEmpty(startDate) && !validator.isEmpty(endDate) &&
+      !validator.isEmpty(returnDate) && !validator.isEmpty(startTime) && !validator.isEmpty(endTime);
 }
 
-/**
- * Checks if the id number field in the Edit Profile form is valid.
- * @returns {boolean} - true if id number is an integer and is 8 at length; false otherwise
- */
-function isValidIDNumber() {
-  let idNum = validator.trim($('#idNum').val());
-  return validator.isNumeric(idNum, {no_symbols: true}) && validator.isLength(idNum,{min: 8, max: 8});
+function isValidStartDate () {
+  let startDate = $("#startDate").val();
+  let startDateObject = new Date(startDate);
+  let currentDate = new Date();
+
+  let startTimeString = $("#startTime").val();
+  let startTimeHour = startTimeString.split(':')[0];
+  let startTimeMinute = startTimeString.split(':')[1];
+  startDateObject.setHours(startTimeHour, startTimeMinute, 0);
+
+
+  return startDateObject >= currentDate;
 }
 
-/**
- * Checks if the mobile number field in the Edit Profile form is valid.
- * @returns {boolean} - true if mobile number is an integer and is 10 at length; false otherwise
- */
-function isValidPhoneNumber() {
-  let mobile = validator.trim($('#mobile').val());
-  return validator.isNumeric(mobile, {no_symbols: true}) && validator.isLength(mobile,{min: 10, max: 10});
+function isValidEndDate () {
+  let startDate = $("#startDate").val();
+  let endDate = $("#endDate").val();
+  let startDateObject = new Date(startDate);
+  let endDateObject = new Date(endDate);
+
+  let startTimeString = $("#startTime").val();
+
+  let startTimeHour = startTimeString.split(':')[0];
+  let startTimeMinute = startTimeString.split(':')[1];
+  startDateObject.setHours(startTimeHour, startTimeMinute, 0);
+  startDateObject.setMinutes(startDateObject.getMinutes() + 1);
+
+  let endTimeString = $("#endTime").val();
+  let endTimeHour = endTimeString.split(':')[0];
+  let endTimeMinute = endTimeString.split(':')[1];
+  endDateObject.setHours(endTimeHour, endTimeMinute, 0);
+
+  return endDateObject >= startDateObject;
 }
 
-/**
- * Checks if the degree program field in the Edit Profile form is valid.
- * @returns {boolean} - true if degree program only contains letters, -(dash), and/or whitespaces; false otherwise
- */
-function isValidDegreeProgram() {
-  let regex = /[a-z\-\s]*/i;
-  let degProg = validator.trim($('#degProg').val());
-  return degProg.match(regex)[0] === degProg;
+function isValidReturnDate() {
+  let endDate = $("#endDate").val();
+  let returnDate = $("#returnDate").val();
+  let endDateObject = new Date(endDate);
+  let returnDateObject = new Date(returnDate);
+
+  return returnDateObject > endDateObject;
 }
 
-/**
- * Hides all alerts in Edit Profile form
- * @returns {void} - nothing
- */
-function hideAllAlert() {
-  $("#emptyAlert").hide();
-  $("#idnumAlert").hide();
-  $("#mobileAlert").hide();
-  $("#degreeAlert").hide();
-  $("#dupeMobileAlert").hide();
-  $("#dupeIdnumAlert").hide();
+function limitDatePicker() {
+  let dtToday = new Date();
+
+  let month = dtToday.getMonth() + 1;
+  let day = dtToday.getDate();
+  let year = dtToday.getFullYear();
+  if(month < 10)
+    month = '0' + month.toString();
+  if(day < 10)
+    day = '0' + day.toString();
+
+  let minDate = year + '-' + month + '-' + day;
+  $('#startDate').attr('min', minDate);
+  $('#endDate').attr('min', minDate);
+  $('#returnDate').attr('min', minDate);
 }
-
-/**
- * Limits the length of input in degree program field in Edit Profile form to 15 characters.
- * @returns {void} - nothing
- */
-$("#degProg").on("keyup change", function() {
-  let inputElement = $(this);
-  if (inputElement.val().length > 15) {
-    inputElement.val(inputElement.val().slice(0, 15));
-  }
-});
-
-/**
- * Limits the length of input in mobile number field in Edit Profile form to 10 characters.
- * @returns {void} - nothing
- */
-$("#mobile").on("keyup change", function() {
-  let inputElement = $(this);
-  if (inputElement.val().length > 10) {
-    inputElement.val(inputElement.val().slice(0, 10));
-  }
-});
-

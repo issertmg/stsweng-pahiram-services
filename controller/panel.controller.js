@@ -74,7 +74,7 @@ exports.panel_details = async function (req, res) {
             let panel = await Panel.find({building: req.query.bldg, level: req.query.flr}).populate('lockers');
             let panel_floor = await Panel.find({building: req.query.bldg}).distinct('level').populate('lockers');
             let panel_building = await Panel.find().distinct('building').populate('lockers');
-            let rentalDatesConfig = await RentalDates.findOne();
+            let rentalDatesConfig = await RentalDates.findOne({type: 'Locker'});
 
             if (panel.length) {
                 res.render('manage-lockers-page', {
@@ -108,7 +108,7 @@ exports.panel_details = async function (req, res) {
     } else {
         try {
             let panel_building = await Panel.find().distinct('building').populate();
-            let rentalDatesConfig = await RentalDates.findOne();
+            let rentalDatesConfig = await RentalDates.findOne({type: 'Locker'});
             if (panel_building[0] != null) {
                 try {
                     let panel_floor = await Panel.find({building: panel_building[0]}).distinct('level');
@@ -145,9 +145,9 @@ exports.set_rental_dates = async function (req, res) {
 
         if (isValidRentalDates(startDate, endDate, returnDate)){
 
-            let rentalDateConfig = await RentalDates.findOne();
+            let rentalDateConfig = await RentalDates.findOne({type: 'Locker'});
             if (rentalDateConfig) {
-                await RentalDates.findOneAndUpdate({}, {
+                await RentalDates.findOneAndUpdate({type: 'Locker'}, {
                     startDate: startDate,
                     endDate: endDate,
                     returnDate: returnDate
@@ -157,7 +157,8 @@ exports.set_rental_dates = async function (req, res) {
                 let newRentalDateConfig = new RentalDates({
                     startDate: startDate,
                     endDate: endDate,
-                    returnDate: returnDate
+                    returnDate: returnDate,
+                    type: 'Locker'
                 });
                 await newRentalDateConfig.save();
             }

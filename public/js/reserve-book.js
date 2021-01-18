@@ -80,6 +80,7 @@ $('#borrowBookModal').on('show.bs.modal', (event) => {
     $('#borrowBookSubmit').prop("disabled", true);
     $('#borrowBookSubmit').removeClass("btn-primary");
     $('#borrowBookSubmit').addClass("btn-disabled");
+    let isRentalSeason = !($('#rentalDatesAlert').length);
 
     book = $('#booksTable').DataTable().row(event.relatedTarget).data();
     $.get('/reserve/book/get-one',
@@ -93,7 +94,7 @@ $('#borrowBookModal').on('show.bs.modal', (event) => {
             
             if (data.onRent >= data.quantity) {         // out of stock
                 $('#outOfStockAlert').css("display", "block");
-            } else if (!hasActiveReservation) {
+            } else if (!hasActiveReservation && isRentalSeason) {
                 // enable place reservation button
                 $('#borrowBookSubmit').prop("disabled", false);
                 $('#borrowBookSubmit').addClass("btn-primary");
