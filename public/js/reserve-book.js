@@ -9,16 +9,29 @@ $(document).ready(function () {
             dataSrc: 'data'
         },
         'createdRow': function (row, data, dataIndex) {
-			$(row).attr('data-toggle', 'modal');
-			$(row).attr('data-target', '#borrowBookModal');
-			$(row).css('cursor', 'pointer');
-		},
+            $(row).attr('data-toggle', 'modal');
+            $(row).attr('data-target', '#borrowBookModal');
+            $(row).css('cursor', 'pointer');
+        },
         columns: [
-            { "data": "title" },
-            { "data": "authors" },
+            {
+                "data": "title",
+                "render": function (data, type, row) {
+                    return limitCharLength(data, 20);
+                }
+            },
+            {
+                "data": "authors",
+                "render": function (data, type, row) {
+                    return limitCharLength(data, 20);
+                }
+            },
             {
                 "data": function (data) {
                     return (data.edition === null) ? "N/A" : data.edition
+                },
+                "render": function (data, type, row) {
+                    return limitCharLength(data, 20);
                 },
                 "orderable": false
             },
@@ -36,25 +49,25 @@ $(document).ready(function () {
         }
     });
 
-    $("#titleSearch").on("keyup paste", function(e) {
+    $("#titleSearch").on("keyup paste", function (e) {
         let str = $(this).val();
         $(this).val(str.substring(0, 50));
         if (e.code === "Enter")
             $('#searchBtn').trigger("click");
     });
-    $("#authorSearch").on("keyup paste", function(e) {
+    $("#authorSearch").on("keyup paste", function (e) {
         let str = $(this).val();
         $(this).val(str.substring(0, 50));
         if (e.code === "Enter")
             $('#searchBtn').trigger("click");
     });
-    $("#searchBtn").on("click", function() {
+    $("#searchBtn").on("click", function () {
         $('#booksTable').DataTable()
             .column(0)
             .search($('#titleSearch').val())
             .column(1)
-			.search($('#authorSearch').val())
-			.draw();
+            .search($('#authorSearch').val())
+            .draw();
     });
 });
 
@@ -84,14 +97,14 @@ $('#borrowBookModal').on('show.bs.modal', (event) => {
 
     book = $('#booksTable').DataTable().row(event.relatedTarget).data();
     $.get('/reserve/book/get-one',
-		{ _id: book._id },
-		function (data) {
+        { _id: book._id },
+        function (data) {
             $('#bookID').val(data._id);
             $('#titleLabel').text(data.title);
             $('#authorLabel').text(data.authors);
             $('#editionLabel').text((data.edition == null) ? "N/A" : data.edition);
             $('#stockLabel').text((data.quantity - data.onRent) + "/" + (data.quantity));
-            
+
             if (data.onRent >= data.quantity) {         // out of stock
                 $('#outOfStockAlert').css("display", "block");
             } else if (!hasActiveReservation && isRentalSeason) {
@@ -100,18 +113,22 @@ $('#borrowBookModal').on('show.bs.modal', (event) => {
                 $('#borrowBookSubmit').addClass("btn-primary");
                 $('#borrowBookSubmit').removeClass("btn-disabled");
             }
-		}
-	);
+        }
+    );
 });
 
 $(document).ajaxStart(function () {
     $('table').css('filter', 'opacity(0.3)');
     $('.page-link').css('pointer-events', 'none');
     $('.page-link').css('filter', 'opacity(0.3)');
-  });
-  
-  $(document).ajaxComplete(function () {
+});
+
+$(document).ajaxComplete(function () {
     $('table').css('filter', 'opacity(1)');
     $('.page-link').css('pointer-events', 'auto');
     $('.page-link').css('filter', 'opacity(1)');
-  });
+});
+
+function limitCharLength(data, maxLength) {
+    return data.length > maxLength ? data.substr(0, maxLength) + '...' : data;
+}

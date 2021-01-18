@@ -59,7 +59,6 @@ exports.books_get = async function (req, res) {
                 recordsFiltered: count,
                 data: data,
             }
-            console.log(datatable);
             res.send(datatable);
         }
     } catch (err) {
