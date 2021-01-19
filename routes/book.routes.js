@@ -24,5 +24,6 @@ router.post('/set-rental-dates', UserAuth.userIsAdmin, bookController.set_rental
 
 // AJAX get request
 router.get('/check', UserAuth.userIsAdmin, bookController.check_get);
+router.get('/get-one-book', UserAuth.userIsAdmin, bookController.book_get_one);
 
 module.exports = router;

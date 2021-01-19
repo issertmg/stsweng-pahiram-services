@@ -11,10 +11,10 @@ $(document).ready(function () {
             dataSrc: 'data'
         },
         'createdRow': function (row, data, dataIndex) {
-			$(row).attr('data-toggle', 'modal');
-			$(row).attr('data-target', '#editBookModal');
-			$(row).css('cursor', 'pointer');
-		},
+            $(row).attr('data-toggle', 'modal');
+            $(row).attr('data-target', '#editBookModal');
+            $(row).css('cursor', 'pointer');
+        },
         columns: [
             { "data": "title" },
             { "data": "authors" },
@@ -92,18 +92,8 @@ $('#addBookModal').on('show.bs.modal', (event) => {
  * @returns <void> - nothing
  */
 $('#editBookModal').on('show.bs.modal', (event) => {
-    $('.alert').hide();
-
+    $("#editAlert").hide();
     let book = $('#booksTable').DataTable().row(event.relatedTarget).data();
-
-    // let book = {
-    //     id: btn.data('id'),
-    //     title: btn.data('title'),
-    //     authors: btn.data('authors'),
-    //     edition: btn.data('edition'),
-    //     onRent: btn.data('onrent'),
-    //     quantity: btn.data('quantity')
-    // }
 
     $('#editTitle').val(book.title);
     $('#editAuthors').val(book.authors);
@@ -221,7 +211,7 @@ $("#addQuantity").on("input", function () {
 });
 
 $("#addBookSubmitButton").click(function () {
-    $(".alert").hide()
+    $(".alert").hide();
     let title = validator.trim($("#addTitle").val());
     let authors = validator.trim($("#addAuthors").val());
     let edition = validator.trim($("#addEdition").val());
@@ -263,7 +253,50 @@ $("#addBookSubmitButton").click(function () {
 });
 
 $('#updateBookSubmit').on('click', function (event) {
-    $('#editBookForm').trigger('submit');
+    let title = validator.trim($("#editTitle").val());
+    let authors = validator.trim($("#editAuthors").val());
+    let edition = validator.trim($("#editEdition").val());
+    let quantity = validator.trim($("#editQuantity").val());
+
+    if (!isFilledTitleAuthorsQuantity(title, authors, quantity))
+        $("#editAlert").html("Title, authors, and quantity fields cannot be empty.").show();
+    else if (!isValidBookTitle(title))
+        $("#editAlert").html("Invalid book title. Field should contain at least 1 letter.").show();
+    else if (!isValidBookAuthors(authors))
+        $("#editAlert").html("Invalid authors. Field should contain at least 1 letter.").show();
+    else if (!isValidBookEdition(edition))
+        $("#editAlert").html("Invalid edition. Field should contain a maximum of 50 characters.").show();
+    else if (!isValidBookQuantity(quantity))
+        $("#editAlert").html("Invalid quantity. Field should be a number.").show();
+    else {
+        $.get('/manage-books/check',
+            {
+                title: title,
+                authors: authors,
+                edition: edition
+            },
+            function (data, status) {
+                console.log(data.count)
+                if (data.count > 1)
+                    $("#editAlert").html("A book with the same title, author, and edition already exists.").show();
+                else {
+                    $.get('/manage-books/get-one-book',
+                        {id: $('#editId').val()},
+                        function (data, status) {
+                            console.log(data)
+                            if (quantity < data.onRent)
+                                $("#editAlert").html("Amount on stock is less than the number of books currently being rented.").show();
+                            else {
+                                console.log('valid')
+                                $("#updateBookSubmit").off("click");
+                                $('#editBookForm').trigger("submit");
+                            }
+                        }
+                    );
+                }
+            }
+        );
+    }
 });
 
 $('#setRentalDatesModal').on('show.bs.modal', function (event) {

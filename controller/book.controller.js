@@ -62,6 +62,16 @@ exports.book_get = async function (req, res) {
     }
 }
 
+exports.book_get_one = async function (req, res) {
+    try {
+        let book = await Book.findById(req.query.id);
+        if (book)
+            res.send(book);
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 /**
  * AJAX function for retrieving an book.
  * @param req - the HTTP request object
@@ -142,15 +152,14 @@ exports.book_create = async function (req, res) {
 exports.book_update = async function (req, res) {
     const errors = validationResult(req);
 
-    console.log('body');
-    console.log(req.body);
-
     if (errors.isEmpty()) {
         try {
+            const edition = (req.body.edition === '') ? null : req.body.edition;
+
             await Book.findByIdAndUpdate(req.body.id, {
                 title: req.body.title,
                 authors: req.body.authors,
-                edition: req.body.edition,
+                edition: edition,
                 count: req.body.count,
             });
         } catch (err) {
