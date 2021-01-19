@@ -131,6 +131,11 @@ exports.people_get = async function (req, res) {
         }
     } catch (err) {
         console.log(err);
+        res.send({
+            recordsTotal: 0,
+            recordsFiltered: 0,
+            data: []
+        });
     }
 }
 

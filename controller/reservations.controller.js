@@ -314,6 +314,11 @@ exports.reservations_get = async function (req, res) {
 
     } catch (error) {
         console.log(error);
+        res.send({
+            recordsTotal: 0,
+            recordsFiltered: 0,
+            data: []
+        });
     }
 }
 
@@ -410,7 +415,7 @@ exports.reservation_update = async function (req, res) {
     console.log('update')
     let paymentDateValidityFlag = true;
 
-    if (!validator.isEmpty(req.body.pickupPayDate) && req.body.onItemType === 'Locker')
+    if (!validator.isEmpty(req.body.pickupPayDate) && (req.body.onItemType === 'Locker' || req.body.onItemType === 'Book'))
         if (!isValidPaymentDate(new Date(req.body.pickupPayDate)))
             paymentDateValidityFlag = false
 
