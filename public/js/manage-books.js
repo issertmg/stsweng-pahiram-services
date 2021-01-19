@@ -217,21 +217,16 @@ $("#addBookSubmitButton").click(function () {
     let edition = validator.trim($("#addEdition").val());
     let quantity = validator.trim($("#addQuantity").val());
 
-    if (!isFilledTitleAuthorsQuantity(title, authors, quantity)) {
-        $("#addBlankAlert").show();
-    }
-    else if (!isValidBookTitle(title)) {
-        $("#addTitleAlert").show();
-    }
-    else if (!isValidBookAuthors(authors)) {
-        $("#addAuthorsAlert").show();
-    }
-    else if (!isValidBookEdition(edition)) {
-        $("#addEditionAlert").show();
-    }
-    else if (!isValidBookQuantity(quantity)) {
-        $("#addQuantityAlert").show();
-    }
+    if (!isFilledTitleAuthorsQuantity(title, authors, quantity))
+        $("#addAlert").html("Title, authors, and quantity fields cannot be empty.").show();
+    else if (!isValidBookTitle(title))
+        $("#addAlert").html("Invalid book title. Field should contain at least 1 letter.").show();
+    else if (!isValidBookAuthors(authors))
+        $("#addAlert").html("Invalid authors. Field should contain at least 1 letter.").show();
+    else if (!isValidBookEdition(edition))
+        $("#addAlert").html("Invalid edition. Field should contain a maximum of 50 characters.").show();
+    else if (!isValidBookQuantity(quantity))
+        $("#addAlert").html("Invalid quantity. Field should be a number between 0 and 1000.").show();
     else {
         $.get('/manage-books/check',
             {
@@ -240,12 +235,12 @@ $("#addBookSubmitButton").click(function () {
                 edition: edition
             },
             function (data, status) {
-                if (data.count === 0) {
+                if (data.count > 0) {
+                    $("#addAlert").html("A book with the same title, author, and edition already exists.").show();
+                } else {
+                    $(".alert").hide();
                     $('#addBookSubmitButton').off("click");
-                    $('#addBookForm').submit();
-                }
-                else {
-                    $('#addBookDuplicateAlert').show();
+                    $('#addBookForm').trigger("submit");
                 }
             }
         );
