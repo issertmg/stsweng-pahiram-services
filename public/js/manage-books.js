@@ -257,6 +257,7 @@ $('#updateBookSubmit').on('click', function (event) {
     let authors = validator.trim($("#editAuthors").val());
     let edition = validator.trim($("#editEdition").val());
     let quantity = validator.trim($("#editQuantity").val());
+    let id = validator.trim($("#editId").val());
 
     if (!isFilledTitleAuthorsQuantity(title, authors, quantity))
         $("#editAlert").html("Title, authors, and quantity fields cannot be empty.").show();
@@ -267,17 +268,18 @@ $('#updateBookSubmit').on('click', function (event) {
     else if (!isValidBookEdition(edition))
         $("#editAlert").html("Invalid edition. Field should contain a maximum of 50 characters.").show();
     else if (!isValidBookQuantity(quantity))
-        $("#editAlert").html("Invalid quantity. Field should be a number.").show();
+        $("#editAlert").html("Invalid quantity. Field should be a number between 0 and 1000.").show();
     else {
         $.get('/manage-books/check',
             {
+                id: id,
                 title: title,
                 authors: authors,
                 edition: edition
             },
             function (data, status) {
                 console.log(data.count)
-                if (data.count > 1)
+                if (data.count > 0)
                     $("#editAlert").html("A book with the same title, author, and edition already exists.").show();
                 else {
                     $.get('/manage-books/get-one-book',
@@ -287,9 +289,9 @@ $('#updateBookSubmit').on('click', function (event) {
                             if (quantity < data.onRent)
                                 $("#editAlert").html("Amount on stock is less than the number of books currently being rented.").show();
                             else {
-                                console.log('valid')
+                                $(".alert").hide();
                                 $("#updateBookSubmit").off("click");
-                                $('#editBookForm').trigger("submit");
+                                $("#editBookForm").trigger("submit");
                             }
                         }
                     );

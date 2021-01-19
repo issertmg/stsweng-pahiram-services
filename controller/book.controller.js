@@ -112,10 +112,19 @@ exports.book_delete = async function (req, res) {
 exports.check_get = async function (req, res) {
     try {
         const bookCount = await Book.find({
-            _id: {$ne: req.query.ID},
-            title: req.query.title,
-            authors: req.query.authors,
-            edition: req.query.edition
+            _id: {$ne: req.query.id},
+            title: {
+                $regex: req.query.title,
+                $options: 'i'
+            },
+            authors: {
+                $regex: req.query.authors,
+                $options: 'i'
+            },
+            edition: {
+                $regex: req.query.edition,
+                $options: 'i'
+            }
         }).countDocuments();
         res.send({count: bookCount});
     }
@@ -152,6 +161,8 @@ exports.book_create = async function (req, res) {
 exports.book_update = async function (req, res) {
     const errors = validationResult(req);
 
+    console.log(errors);
+
     if (errors.isEmpty()) {
         try {
             const edition = (req.body.edition === '') ? null : req.body.edition;
@@ -160,7 +171,7 @@ exports.book_update = async function (req, res) {
                 title: req.body.title,
                 authors: req.body.authors,
                 edition: edition,
-                count: req.body.count,
+                quantity: req.body.quantity,
             });
         } catch (err) {
             console.log(err);
