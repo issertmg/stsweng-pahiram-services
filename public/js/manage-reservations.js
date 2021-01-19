@@ -31,7 +31,12 @@ $(document).ready(function () {
 					return data.length > 50 ? data.substr(0, 50) + '...' : data;
 				} 
 			},
-			{ "data": "status" },
+			{ 
+				"data": function (data, type, row) {
+					const statClass = getStatusClass(data.status);
+					return `<div class="d-flex justify-content-center badge badge-pill ${statClass}"> ${data.status} </div>`
+				} 
+			},
 			{ "data": "remarks", "visible": false },
 			{ "data": "_id", "visible": false },
 			{ "data": "penalty", "visible": false },
@@ -361,6 +366,24 @@ function isValidSetStatus(currentStatus, nextStatus) {
 function hideAllAlert() {
 	$('#penaltyAlert').hide();
 	$('#inspectAlert').hide();
+}
+
+function getStatusClass(status) {
+	switch (status) {
+		case 'On Rent':
+			return 'status-on-rent';
+		case 'Pending':
+			return 'status-pending';
+		case 'Denied':
+			return 'status-denied';
+		case 'Uncleared':
+			return 'status-uncleared';
+		case 'Returned':
+			return 'status-returned';
+		case 'To Pay':
+		case 'For Pickup':
+			return 'status-pickup-pay';
+	}
 }
 
 exports.isValidSetStatus = isValidSetStatus;

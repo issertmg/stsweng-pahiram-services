@@ -10,37 +10,17 @@ $(document).ready(function () {
             url: '/manage-books/get-books',
             dataSrc: 'data'
         },
-        // 'createdRow': function (row, data, dataIndex) {
-        //   $(row).attr('data-toggle', 'modal');
-        //   $(row).attr('data-target', '#editProfileModal');
-        //   $(row).attr('data-id', data._id);
-        //   $(row).attr('data-fname', data.firstName);
-        //   $(row).attr('data-lname', data.lastName);
-        //   $(row).attr('data-idnum', data.idNum);
-        //   $(row).attr('data-college', data.college);
-        //   $(row).attr('data-degprog', data.degreeProg);
-        //   $(row).attr('data-mobile', data.contactNum);
-        //   $(row).css('cursor', 'pointer');
-        // },
+        'createdRow': function (row, data, dataIndex) {
+            $(row).attr('data-toggle', 'modal');
+            $(row).attr('data-target', '#editBookModal');
+            $(row).css('cursor', 'pointer');
+        },
         columns: [
-            {
-                "data": "title",
-                "render": function (data, type, row) {
-                    return limitCharLength(data, 20);
-                }
-            },
-            {
-                "data": "authors",
-                "render": function (data, type, row) {
-                    return limitCharLength(data, 20);
-                }
-            },
+            { "data": "title" },
+            { "data": "authors" },
             {
                 "data": function (data) {
                     return (data.edition === null) ? "N/A" : data.edition
-                },
-                "render": function (data, type, row) {
-                    return limitCharLength(data, 20);
                 }
             },
             {
@@ -48,35 +28,13 @@ $(document).ready(function () {
                     return (data.quantity - data.onRent) + ' / ' + data.quantity;
                 }
             },
-            {
-                "data": function (data, type, row, meta) {
-                    return `<a class="table-link mr-2" data-toggle="modal" 
-                   data-title="`+ data.title +
-                        `" data-authors="` + data.authors +
-                        `" data-edition="` + data.edition +
-                        `" data-onrent="` + data.onRent +
-                        `" data-quantity="` + data.quantity +
-                        `" data-id="` + data._id +
-                        `" href="#editBookModal"><div class="icon" id="edit"></div>
-                             </a>` +
-                        `<a class="table-link mr-2" data-toggle="modal" 
-                   data-title="`+ data.title +
-                        `" data-authors="` + data.authors +
-                        `" data-edition="` + data.edition +
-                        `" data-onrent="` + data.onRent +
-                        `" data-quantity="` + data.quantity +
-                        `" data-id="` + data._id +
-                        `" href="#deleteBookModal"><div class="icon" id="delete"></div>
-                             </a>`;
-                },
-                "className": "d-flex align-items-center justify-content-end"
-            }
+            { "data": "_id", "visible": false }
         ],
         "order": [[0, "asc"]],
         "responsive": true,
         "dom": "ipt",
         columnDefs: [
-            { targets: [0, 1, 2, 3, 4], bSortable: false }
+            { targets: [0, 1, 2, 3], bSortable: false }
         ]
     });
 
@@ -111,17 +69,8 @@ $(document).ajaxComplete(function () {
 $('#deleteBookModal').on('show.bs.modal', (event) => {
     $('.alert').hide();
 
-    let btn = $(event.relatedTarget);
-    let book = {
-        id: btn.data('id'),
-        title: btn.data('title'),
-        authors: btn.data('authors'),
-        edition: btn.data('edition'),
-        onRent: btn.data('onrent'),
-        quantity: btn.data('quantity')
-    }
     $('#deleteBookModalLabel').text('Delete Book');
-    $('#delHiddenBookID').val(book.id);
+    $('#delHiddenBookID').val($('#editId').val());
 
     $('#deleteHeader').show();
     $('#deleteBookButton').show();
@@ -143,23 +92,14 @@ $('#addBookModal').on('show.bs.modal', (event) => {
  * @returns <void> - nothing
  */
 $('#editBookModal').on('show.bs.modal', (event) => {
-    $('.alert').hide();
-
-    let btn = $(event.relatedTarget);
-    let book = {
-        id: btn.data('id'),
-        title: btn.data('title'),
-        authors: btn.data('authors'),
-        edition: btn.data('edition'),
-        onRent: btn.data('onrent'),
-        quantity: btn.data('quantity')
-    }
+    $("#editAlert").hide();
+    let book = $('#booksTable').DataTable().row(event.relatedTarget).data();
 
     $('#editTitle').val(book.title);
     $('#editAuthors').val(book.authors);
     $('#editEdition').val(book.edition);
     $('#editQuantity').val(book.quantity);
-    $('#editId').val(book.id);
+    $('#editId').val(book._id);
     $('#editBookModalLabel').text('Edit Book');
 });
 
@@ -271,27 +211,22 @@ $("#addQuantity").on("input", function () {
 });
 
 $("#addBookSubmitButton").click(function () {
-    $(".alert").hide()
+    $(".alert").hide();
     let title = validator.trim($("#addTitle").val());
     let authors = validator.trim($("#addAuthors").val());
     let edition = validator.trim($("#addEdition").val());
     let quantity = validator.trim($("#addQuantity").val());
 
-    if (!isFilledTitleAuthorsQuantity(title, authors, quantity)) {
-        $("#addBlankAlert").show();
-    }
-    else if (!isValidBookTitle(title)) {
-        $("#addTitleAlert").show();
-    }
-    else if (!isValidBookAuthors(authors)) {
-        $("#addAuthorsAlert").show();
-    }
-    else if (!isValidBookEdition(edition)) {
-        $("#addEditionAlert").show();
-    }
-    else if (!isValidBookQuantity(quantity)) {
-        $("#addQuantityAlert").show();
-    }
+    if (!isFilledTitleAuthorsQuantity(title, authors, quantity))
+        $("#addAlert").html("Title, authors, and quantity fields cannot be empty.").show();
+    else if (!isValidBookTitle(title))
+        $("#addAlert").html("Invalid book title. Field should contain at least 1 letter.").show();
+    else if (!isValidBookAuthors(authors))
+        $("#addAlert").html("Invalid authors. Field should contain at least 1 letter.").show();
+    else if (!isValidBookEdition(edition))
+        $("#addAlert").html("Invalid edition. Field should contain a maximum of 50 characters.").show();
+    else if (!isValidBookQuantity(quantity))
+        $("#addAlert").html("Invalid quantity. Field should be a number between 0 and 1000.").show();
     else {
         $.get('/manage-books/check',
             {
@@ -300,12 +235,61 @@ $("#addBookSubmitButton").click(function () {
                 edition: edition
             },
             function (data, status) {
-                if (data.count === 0) {
+                if (data.count > 0) {
+                    $("#addAlert").html("A book with the same title, author, and edition already exists.").show();
+                } else {
+                    $(".alert").hide();
                     $('#addBookSubmitButton').off("click");
-                    $('#addBookForm').submit();
+                    $('#addBookForm').trigger("submit");
                 }
+            }
+        );
+    }
+});
+
+$('#updateBookSubmit').on('click', function (event) {
+    let title = validator.trim($("#editTitle").val());
+    let authors = validator.trim($("#editAuthors").val());
+    let edition = validator.trim($("#editEdition").val());
+    let quantity = validator.trim($("#editQuantity").val());
+    let id = validator.trim($("#editId").val());
+
+    if (!isFilledTitleAuthorsQuantity(title, authors, quantity))
+        $("#editAlert").html("Title, authors, and quantity fields cannot be empty.").show();
+    else if (!isValidBookTitle(title))
+        $("#editAlert").html("Invalid book title. Field should contain at least 1 letter.").show();
+    else if (!isValidBookAuthors(authors))
+        $("#editAlert").html("Invalid authors. Field should contain at least 1 letter.").show();
+    else if (!isValidBookEdition(edition))
+        $("#editAlert").html("Invalid edition. Field should contain a maximum of 50 characters.").show();
+    else if (!isValidBookQuantity(quantity))
+        $("#editAlert").html("Invalid quantity. Field should be a number between 0 and 1000.").show();
+    else {
+        $.get('/manage-books/check',
+            {
+                id: id,
+                title: title,
+                authors: authors,
+                edition: edition
+            },
+            function (data, status) {
+                console.log(data.count)
+                if (data.count > 0)
+                    $("#editAlert").html("A book with the same title, author, and edition already exists.").show();
                 else {
-                    $('#addBookDuplicateAlert').show();
+                    $.get('/manage-books/get-one-book',
+                        {id: $('#editId').val()},
+                        function (data, status) {
+                            console.log(data)
+                            if (quantity < data.onRent)
+                                $("#editAlert").html("Amount on stock is less than the number of books currently being rented.").show();
+                            else {
+                                $(".alert").hide();
+                                $("#updateBookSubmit").off("click");
+                                $("#editBookForm").trigger("submit");
+                            }
+                        }
+                    );
                 }
             }
         );
@@ -435,8 +419,4 @@ function limitDatePicker() {
     $('#startDate').attr('min', minDate);
     $('#endDate').attr('min', minDate);
     $('#returnDate').attr('min', minDate);
-}
-
-function limitCharLength(data, maxLength) {
-    return data.length > maxLength ? data.substr(0, maxLength) + '...' : data;
 }

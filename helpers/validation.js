@@ -1,7 +1,6 @@
 const { check } = require('express-validator');
 
 const validation = {
-
     addPanelValidation: function () {
         return [
             check('type', 'Type should not be empty.').notEmpty().isIn(['big', 'small']),
@@ -105,14 +104,14 @@ const validation = {
         ];
     },
 
-    addBookValidation: function () {
+    bookValidation: function () {
         return [
             check('title', 'Book title should not be empty.').notEmpty().isLength({max: 50}),
             check('authors', 'Authors should not be empty.').notEmpty().isLength({max: 50}),
             check('quantity', 'Quantity should be an integer.').notEmpty().isInt({min: 1, max: 1000}),
             check('edition', 'Book edition should contain 50 characters at max.').trim().isLength({min: 0, max: 50})
         ];
-    }
+    },
 }
 
 module.exports = validation;
