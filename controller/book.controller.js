@@ -139,6 +139,29 @@ exports.book_create = async function (req, res) {
     res.redirect("/manage-books/");
 };
 
+exports.book_update = async function (req, res) {
+    const errors = validationResult(req);
+
+    console.log('body');
+    console.log(req.body);
+
+    if (errors.isEmpty()) {
+        try {
+            await Book.findByIdAndUpdate(req.body.id, {
+                title: req.body.title,
+                authors: req.body.authors,
+                edition: req.body.edition,
+                count: req.body.count,
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    else
+        console.log(errors)
+    res.redirect("/manage-books/");
+}
+
 async function isNewBook(title, authors, edition) {
     let bookCount;
     try {

@@ -189,17 +189,17 @@
                 <div class="form-group form-inline input-group">
                   <label for="editTitle" class="col-lg-4 justify-content-start pl-2">Title</label>
                   <input type="text" class="form-control col-lg-8" name="title" id="editTitle"
-                    placeholder="Enter book title" readonly>
+                    placeholder="Enter book title" required>
                 </div>
                 <div class="form-group form-inline input-group">
                   <label for="lastName" class="col-lg-4 justify-content-start pl-2">Author/s</label>
                   <input type="text" class="form-control col-lg-8" name="authors" id="editAuthors"
-                    placeholder="Enter name of author/s" readonly>
+                    placeholder="Enter name of author/s" required>
                 </div>
                 <div class="form-group form-inline input-group">
                   <label for="idNum" class="col-lg-4 justify-content-start pl-2">Edition (optional)</label>
                   <input type="text" class="form-control col-lg-8" name="edition" id="editEdition"
-                    placeholder="Enter book edition" required>
+                    placeholder="Enter book edition">
                 </div>
                 <div class="form-group form-inline input-group">
                   <label for="add-equipment-ct" class="col-lg-4 justify-content-start pl-2">Amount on stock</label>
@@ -209,9 +209,9 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-danger mr-auto" data-toggle="modal" data-target="#deleteBookModal" data-dismiss="modal">Delete</button>
+              <button type="button" class="btn btn-warning mr-auto" data-toggle="modal" data-target="#deleteBookModal" data-dismiss="modal">Delete</button>
               <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
-              <input type="button" class="btn btn-primary" id="approveStatusSubmit" value="Update">
+              <input type="button" class="btn btn-primary" id="updateBookSubmit" value="Update">
             </div>
           </form>
         </div>

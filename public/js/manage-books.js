@@ -262,6 +262,10 @@ $("#addBookSubmitButton").click(function () {
     }
 });
 
+$('#updateBookSubmit').on('click', function (event) {
+    $('#editBookForm').trigger('submit');
+});
+
 $('#setRentalDatesModal').on('show.bs.modal', function (event) {
     $('.alert').hide();
     let startDateData = $(event.relatedTarget).data('startdate');
