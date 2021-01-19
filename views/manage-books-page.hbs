@@ -220,75 +220,53 @@
       </div>
     </div>
 
-    <div class="modal fade" id="setRentalDatesModal" tabindex="-1" role="dialog" aria-labelledby="setRentalDatesModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="setRentalDatesModal">Set Book Rental Dates</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body col-lg-10 mx-auto">
-                    <div class="alert alert-warning" role="alert" id="emptyRentalDateAlert">
-                        Please fill up all input fields.
-                    </div>
-                    <div class="alert alert-warning" role="alert" id="startDateAlert">
-                        The start date set must be greater or equal to the current date.
-                    </div>
-                    <div class="alert alert-warning" role="alert" id="endDateAlert">
-                        The end date set must be greater than the start date.
-                    </div>
-                    <div class="alert alert-warning" role="alert" id="returnDateAlert">
-                        Return date must be greater than the end rental date.
-                    </div>
-                    <form id="setRentalDatesForm" method="POST" action="/manage-books/set-rental-dates">
-                        <div class="form-group form-inline input-group">
-                            <label for="startDate" class="col-lg-3 justify-content-start pl-2">Start date</label>
-                            <input type="date" class="form-control col-lg-5" name="startDate" id="startDate">
-                            <input type="time" class="form-control col-lg-4" name="startTime" id="startTime">
-                        </div>
-                        <div class="form-group form-inline input-group">
-                            <label for="endDate" class="col-lg-3 justify-content-start pl-2">End date</label>
-                            <input type="date" class="form-control col-lg-5" name="endDate" id="endDate">
-                            <input type="time" class="form-control col-lg-4" name="endTime" id="endTime">
-                        </div>
-                        <div class="form-group form-inline input-group">
-                            <label for="returnDate" class="col-lg-3 justify-content-start pl-2">Return date</label>
-                            <input type="date" class="form-control col-lg-9" name="returnDate" id="returnDate">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="setRentalDatesButton">Confirm</button>
-                </div>
-            </div>
-            <form id="setRentalDatesForm" method="POST" action="/manage-books/set-rental-dates">
-              <div class="form-group form-inline input-group">
-                <label for="startDate" class="col-lg-3 justify-content-start pl-2">Start date</label>
-                <input type="date" class="form-control col-lg-5" name="startDate" id="startDate">
-                <input type="time" class="form-control col-lg-4" name="startTime" id="startTime">
+      <div class="modal fade" id="setRentalDatesModal" tabindex="-1" role="dialog" aria-labelledby="setRentalDatesModalLabel"
+           aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title" id="setRentalDatesModal">Set Book Rental Dates</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+                  <div class="modal-body col-lg-10 mx-auto">
+                      <div class="alert alert-warning" role="alert" id="emptyRentalDateAlert">
+                          Please fill up all input fields.
+                      </div>
+                      <div class="alert alert-warning" role="alert" id="startDateAlert">
+                          The start date set must be greater or equal to the current date.
+                      </div>
+                      <div class="alert alert-warning" role="alert" id="endDateAlert">
+                          The end date set must be greater than the start date.
+                      </div>
+                      <div class="alert alert-warning" role="alert" id="returnDateAlert">
+                          Return date must be greater than the end rental date.
+                      </div>
+                      <form id="setRentalDatesForm" method="POST" action="/manage-books/set-rental-dates">
+                          <div class="form-group form-inline input-group">
+                              <label for="startDate" class="col-lg-3 justify-content-start pl-2">Start date</label>
+                              <input type="date" class="form-control col-lg-5" name="startDate" id="startDate">
+                              <input type="time" class="form-control col-lg-4" name="startTime" id="startTime">
+                          </div>
+                          <div class="form-group form-inline input-group">
+                              <label for="endDate" class="col-lg-3 justify-content-start pl-2">End date</label>
+                              <input type="date" class="form-control col-lg-5" name="endDate" id="endDate">
+                              <input type="time" class="form-control col-lg-4" name="endTime" id="endTime">
+                          </div>
+                          <div class="form-group form-inline input-group">
+                              <label for="returnDate" class="col-lg-3 justify-content-start pl-2">Return date</label>
+                              <input type="date" class="form-control col-lg-9" name="returnDate" id="returnDate">
+                          </div>
+                      </form>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary" id="setRentalDatesButton">Confirm</button>
+                  </div>
               </div>
-              <div class="form-group form-inline input-group">
-                <label for="endDate" class="col-lg-3 justify-content-start pl-2">End date</label>
-                <input type="date" class="form-control col-lg-5" name="endDate" id="endDate">
-                <input type="time" class="form-control col-lg-4" name="endTime" id="endTime">
-              </div>
-              <div class="form-group form-inline input-group">
-                <label for="returnDate" class="col-lg-3 justify-content-start pl-2">Return date</label>
-                <input type="date" class="form-control col-lg-9" name="returnDate" id="returnDate">
-              </div>
-            </form>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" id="setRentalDatesButton">Confirm</button>
-          </div>
-        </div>
       </div>
-    </div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"
