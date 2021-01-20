@@ -22,6 +22,11 @@ $(document).ready(function () {
         //   $(row).attr('data-mobile', data.contactNum);
         //   $(row).css('cursor', 'pointer');
         // },
+        'createdRow': function (row, data, dataIndex) {
+            $(row).attr('data-toggle', 'modal');
+            $(row).attr('data-target', '#editProfileModal');
+            $(row).css('cursor', 'pointer');
+        },
         columns: [
             {
                 "data": "dpURL",
@@ -36,7 +41,6 @@ $(document).ready(function () {
                 }
             },
             //   { "data": "email" },
-            //   { "data": "degreeProg" },
             { "data": "college" },
             // { "data": "type" },
             {
@@ -47,43 +51,24 @@ $(document).ready(function () {
                 }
             },
             { "data": "contactNum" },
-            {
-                "data": function (data, type, row, meta) {
-                    if (data.type === "studentRep") {
-                        return `<a class="table-link btn btn-warning mr-4" 
-                               data-toggle="modal" data-id="`+ data._id +
-                            `" href="#demoteModal">Demote
-                             </a>` +
-                            `<a class="table-link mr-2" data-toggle="modal" 
-                               data-fname="`+ data.firstName +
-                            `" data-lname="` + data.lastName +
-                            `" data-idnum="` + data.idNum +
-                            `" data-college="` + data.college +
-                            `" data-degprog="` + data.degreeProg +
-                            `" data-mobile="` + data.contactNum +
-                            `" data-id="` + data._id +
-                            `" href="#editProfileModal"><div class="icon" id="edit"></div>
-                             </a>`;
-                    }
-                    else {
-                        return `<a class="table-link btn btn-secondary mr-4" 
-                               data-toggle="modal" data-id="`+ data._id +
-                            `" href="#promoteModal">Promote
-                            </a>` +
-                            `<a class="table-link mr-2" data-toggle="modal" 
-                                     data-fname="`+ data.firstName +
-                            `" data-lname="` + data.lastName +
-                            `" data-idnum="` + data.idNum +
-                            `" data-college="` + data.college +
-                            `" data-degprog="` + data.degreeProg +
-                            `" data-mobile="` + data.contactNum +
-                            `" data-id="` + data._id +
-                            `" href="#editProfileModal"><div class="icon" id="edit"></div>
-                            </a>`;
-                    }
-                },
-                "className": "d-flex align-items-center justify-content-end"
-            }
+            // {
+            //     "data": function (data, type, row, meta) {
+            //         if (data.type === "studentRep") {
+            //             return `<a class="table-link btn btn-warning mr-4" 
+            //                    data-toggle="modal" data-id="`+ data._id +
+            //                 `" href="#demoteModal">Demote
+            //                  </a>`
+            //         }
+            //         else {
+            //             return `<a class="table-link btn btn-secondary mr-4" 
+            //                    data-toggle="modal" data-id="`+ data._id +
+            //                 `" href="#promoteModal">Promote
+            //                 </a>`
+            //         }
+            //     },
+            //     "className": "d-flex align-items-center justify-content-end"
+            // },
+              { "data": "degreeProg", "visible": false },
         ],
         "order": [[2, "asc"]],
         "responsive": true,
@@ -122,16 +107,7 @@ $(document).ajaxComplete(function () {
  */
 $('#editProfileModal').on('show.bs.modal', (event) => {
     hideAllAlert();
-    var btn = $(event.relatedTarget);
-    var person = {
-        id: btn.data('id'),
-        firstName: btn.data('fname'),
-        lastName: btn.data('lname'),
-        idNum: btn.data('idnum'),
-        college: btn.data('college'),
-        degProg: btn.data('degprog'),
-        contactNum: btn.data('mobile')
-    }
+    let person = $('#peopleTable').DataTable().row(event.relatedTarget).data();
 
     $('#editProfileModalLabel').text('Edit Profile: ' + person.firstName + ' ' + person.lastName);
     $('#firstName').val(person.firstName);
@@ -139,9 +115,25 @@ $('#editProfileModal').on('show.bs.modal', (event) => {
     $('#idNum').val(person.idNum);
     $('#college').val(person.college);
     $('#college').change();
-    $('#degProg').val(person.degProg);
+    $('#degProg').val(person.degreeProg);
     $('#mobile').val(person.contactNum);
-    $('#id').val(person.id);
+    $('#id').val(person._id);
+
+    $("#promoteDemoteBtn").attr("data-id", person._id);
+
+    if (person.type === 'studentRep') {
+        $("#promoteDemoteBtn").html("Demote");
+        $("#promoteDemoteBtn").attr("data-target", "#demoteModal");
+        $("#promoteDemoteBtn").addClass("btn-warning");
+        $("#promoteDemoteBtn").removeClass("btn-primary");
+    } else {
+        $("#promoteDemoteBtn").html("Promote");
+        $("#promoteDemoteBtn").attr("data-target", "#promoteModal");
+        $("#promoteDemoteBtn").addClass("btn-primary");
+        $("#promoteDemoteBtn").removeClass("btn-warning");
+    }
+
+
 });
 
 /**
