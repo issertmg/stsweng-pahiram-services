@@ -38,40 +38,43 @@
           <div class="row px-0 col-lg-10 mx-auto">
             <h1 class="col-12 mb-5">Manage books</h1>
 
-            <div class="col-12 row px-0 mx-auto mb-4 d-flex justify-content-between">
-              <div class="col-md-4 input-group mb-2 px-0">
-                <div class="form-group form-inline my-auto flex-fill">
-                  <input type="search" id="searchBox" class="form-control" placeholder="Book title">
+            <div class="col-12">
+                <div class="row px-0 mx-auto mb-4 d-flex justify-content-between">
+                <div class="col-md-4 input-group mb-2 px-0">
+                    <div class="form-group form-inline my-auto flex-fill">
+                    <input type="search" id="searchBox" class="form-control" placeholder="Book title">
+                    </div>
                 </div>
-              </div>
-              <a id="setRentalDate" data-toggle="modal" href="#setRentalDatesModal"
-                class="btn btn-secondary mb-auto d-flex align-items-center ml-auto mr-4 pl-3" {{#if rentalDatesConfig}}
-                data-startdate="{{rentalDatesConfig.startDate}}" data-enddate="{{rentalDatesConfig.endDate}}"
-                data-returndate="{{rentalDatesConfig.returnDate}}" {{/if}}>
-                <div class="icon mr-2 white" id="edit"></div> Edit rental dates
-              </a>
-              <a id="addBook" data-toggle="modal" href="#addBookModal"
-                class="btn btn-primary mb-auto d-flex align-items-center pl-3">
-                <div class="icon mr-2 white" id="add"></div> Add book
-              </a>
+                <a id="setRentalDate" data-toggle="modal" href="#setRentalDatesModal"
+                    class="btn btn-secondary mb-auto d-flex align-items-center ml-auto mr-4 pl-3" {{#if rentalDatesConfig}}
+                    data-startdate="{{rentalDatesConfig.startDate}}" data-enddate="{{rentalDatesConfig.endDate}}"
+                    data-returndate="{{rentalDatesConfig.returnDate}}" {{/if}}>
+                    <div class="icon mr-2 white" id="edit"></div> Edit rental dates
+                </a>
+                <a id="addBook" data-toggle="modal" href="#addBookModal"
+                    class="btn btn-primary mb-auto d-flex align-items-center pl-3">
+                    <div class="icon mr-2 white" id="add"></div> Add book
+                </a>
+                </div>
+                <div class="card no-hover p-4">
+                <div class="table table-responsive">
+                    <table class="table table-hover" id="booksTable">
+                    <thead class="">
+                        <tr class="active head">
+                        <th>Title</th>
+                        <th>Author/s</th>
+                        <th>Edition</th>
+                        <th>Number in Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                    </table>
+                </div>
+                </div>
             </div>
 
-            <div class="card no-hover col-12 p-4">
-              <div class="table table-responsive">
-                <table class="table table-hover" id="booksTable">
-                  <thead class="">
-                    <tr class="active head">
-                      <th>Title</th>
-                      <th>Author/s</th>
-                      <th>Edition</th>
-                      <th>Number in Stock</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+
 
           </div>
 
