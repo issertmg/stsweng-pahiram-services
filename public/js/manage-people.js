@@ -34,8 +34,8 @@ $(document).ready(function () {
                   return data.lastName +', ' + data.firstName;
                 }
       },
-      { "data": "email" },
-      { "data": "degreeProg" },
+    //   { "data": "email" },
+    //   { "data": "degreeProg" },
       { "data": "college" },
       { "data": "type" },
       { "data": "contactNum" },
