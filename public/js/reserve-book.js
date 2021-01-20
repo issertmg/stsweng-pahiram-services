@@ -37,7 +37,11 @@ $(document).ready(function () {
             },
             {
                 "data": function (data) {
-                    return (data.quantity - data.onRent) + ' / ' + data.quantity;
+                    const stock = (data.quantity - data.onRent) + ' / ' + data.quantity;
+                    if (data.onRent >= data.quantity)
+                        return `<span class="error-label">${stock}</span>`;
+                    else
+                        return stock;
                 },
                 "orderable": false
             },

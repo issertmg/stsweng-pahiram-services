@@ -38,7 +38,11 @@ $(document).ready(function () {
             },
             {
                 "data": function (data) {
-                    return (data.quantity - data.onRent) + ' / ' + data.quantity;
+                    const stock = (data.quantity - data.onRent) + ' / ' + data.quantity;
+                    if (data.onRent >= data.quantity)
+                        return `<span class="error-label">${stock}</span>`;
+                    else
+                        return stock;
                 }
             },
             { "data": "_id", "visible": false }
@@ -46,9 +50,9 @@ $(document).ready(function () {
         "order": [[0, "asc"]],
         "responsive": true,
         "dom": "ipt",
-        columnDefs: [
-            { targets: [0, 1, 2, 3], bSortable: false }
-        ]
+        "language": {
+            "emptyTable": "No books to display"
+        }
     });
 
     $("#searchBox").on("keyup paste change", function () {
@@ -194,26 +198,26 @@ function isValidBookQuantity(quantity) {
     return validator.isInt(quantity) && (quantity > 0) && (quantity <= 1000);
 }
 
-$("#addTitle").on("keyup change", function () {
+$("#addTitle, #editTitle").on("keyup change", function () {
     let inputElement = $(this);
     if (inputElement.val().length > 50) {
         inputElement.val(inputElement.val().slice(0, 50));
     }
 });
-$("#addAuthors").on("keyup change", function () {
+$("#addAuthors, #editAuthors").on("keyup change", function () {
     let inputElement = $(this);
     if (inputElement.val().length > 50) {
         inputElement.val(inputElement.val().slice(0, 50));
     }
 });
-$("#addEdition").on("keyup change", function () {
+$("#addEdition, #addEdition").on("keyup change", function () {
     let inputElement = $(this);
     if (inputElement.val().length > 50) {
         inputElement.val(inputElement.val().slice(0, 50));
     }
 });
 
-$("#addQuantity").on("input", function () {
+$("#addQuantity, #editQuantity").on("input", function () {
     let inputElement = $(this);
     if (inputElement.val() <= 0) {
         inputElement.val("");
@@ -266,6 +270,10 @@ $('#updateBookSubmit').on('click', function (event) {
     let edition = validator.trim($("#editEdition").val());
     let quantity = validator.trim($("#editQuantity").val());
     let id = validator.trim($("#editId").val());
+
+
+    console.log($("#editQuantity").val());
+    console.log(quantity);
 
     if (!isFilledTitleAuthorsQuantity(title, authors, quantity))
         $("#editAlert").html("Title, authors, and quantity fields cannot be empty.").show();
