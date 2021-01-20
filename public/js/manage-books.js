@@ -267,6 +267,10 @@ $('#updateBookSubmit').on('click', function (event) {
     let quantity = validator.trim($("#editQuantity").val());
     let id = validator.trim($("#editId").val());
 
+
+    console.log($("#editQuantity").val());
+    console.log(quantity);
+
     if (!isFilledTitleAuthorsQuantity(title, authors, quantity))
         $("#editAlert").html("Title, authors, and quantity fields cannot be empty.").show();
     else if (!isValidBookTitle(title))

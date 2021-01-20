@@ -1,4 +1,5 @@
 const Book = require('../model/book.model');
+const Reservation = require('../model/reservation.model');
 const RentalDates = require('../model/rental.dates.model');
 const hbs = require('hbs');
 const { validationResult } = require('express-validator');
@@ -175,11 +176,18 @@ exports.book_update = async function (req, res) {
         try {
             const edition = (req.body.edition === '') ? null : req.body.edition;
 
+            // update book
             await Book.findByIdAndUpdate(req.body.id, {
                 title: req.body.title,
                 authors: req.body.authors,
                 edition: edition,
                 quantity: req.body.quantity,
+            });
+
+            // update title and description of existing reservations
+            await Reservation.updateMany({item: req.body.id}, {
+                title: req.body.title,
+                description: 'by ' + req.body.authors,
             });
         } catch (err) {
             console.log(err);
