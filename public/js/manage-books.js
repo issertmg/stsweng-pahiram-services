@@ -194,26 +194,26 @@ function isValidBookQuantity(quantity) {
     return validator.isInt(quantity) && (quantity > 0) && (quantity <= 1000);
 }
 
-$("#addTitle").on("keyup change", function () {
+$("#addTitle, #editTitle").on("keyup change", function () {
     let inputElement = $(this);
     if (inputElement.val().length > 50) {
         inputElement.val(inputElement.val().slice(0, 50));
     }
 });
-$("#addAuthors").on("keyup change", function () {
+$("#addAuthors, #editAuthors").on("keyup change", function () {
     let inputElement = $(this);
     if (inputElement.val().length > 50) {
         inputElement.val(inputElement.val().slice(0, 50));
     }
 });
-$("#addEdition").on("keyup change", function () {
+$("#addEdition, #addEdition").on("keyup change", function () {
     let inputElement = $(this);
     if (inputElement.val().length > 50) {
         inputElement.val(inputElement.val().slice(0, 50));
     }
 });
 
-$("#addQuantity").on("input", function () {
+$("#addQuantity, #editQuantity").on("input", function () {
     let inputElement = $(this);
     if (inputElement.val() <= 0) {
         inputElement.val("");
