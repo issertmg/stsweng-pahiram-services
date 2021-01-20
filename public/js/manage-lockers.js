@@ -215,8 +215,10 @@ $('#addPanelSubmit').click(async function () {
                 $('#rangeAlert').show();
                 $('#lowerRange').css('border-color', 'red');
                 $('#upperRange').css('border-color', 'red');
-            } else
+            } else {
+                $('#addPanelSubmit').off();
                 $('#addPanelForm').submit();
+            }
         }
     } else {
         $('#formAlert').show();

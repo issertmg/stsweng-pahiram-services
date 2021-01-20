@@ -842,13 +842,13 @@ tr {
     padding: 8px 16px;
     min-height: 3rem;
     border: solid #f7f7f7 1px;
-    margin: 0 !important;
+    /* margin: 0 !important; */
     transition: 0.2s ease;
 }
 
-input {
+/* input {
     margin-left: 8px !important;
-}
+} */
 
 .form-control.form-lg {
     min-height: calc(3rem + 15px);
