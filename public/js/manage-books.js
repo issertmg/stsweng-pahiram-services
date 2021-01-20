@@ -16,11 +16,24 @@ $(document).ready(function () {
             $(row).css('cursor', 'pointer');
         },
         columns: [
-            { "data": "title" },
-            { "data": "authors" },
+            {
+                "data": "title",
+                "render": function (data, type, row) {
+                    return limitCharLength(data, 20);
+                }
+            },
+            {
+                "data": "authors",
+                "render": function (data, type, row) {
+                    return limitCharLength(data, 20);
+                }
+            },
             {
                 "data": function (data) {
-                    return (data.edition === null) ? "N/A" : data.edition
+                    if (data.edition === null)
+                        return "N/A"
+                    else
+                        return limitCharLength(data.edition, 20);
                 }
             },
             {
@@ -419,4 +432,8 @@ function limitDatePicker() {
     $('#startDate').attr('min', minDate);
     $('#endDate').attr('min', minDate);
     $('#returnDate').attr('min', minDate);
+}
+
+function limitCharLength(data, maxLength) {
+    return data.length > maxLength ? data.substr(0, maxLength) + '...' : data;
 }
