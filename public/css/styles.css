@@ -672,6 +672,10 @@ h1, h2, h3, h4, h5 {
     background-color: #f7f7f7;
 }
 
+.modal-title {
+    overflow: hidden;
+}
+
 /* 
 * Tables
 */
