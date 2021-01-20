@@ -38,7 +38,11 @@ $(document).ready(function () {
             },
             {
                 "data": function (data) {
-                    return (data.quantity - data.onRent) + ' / ' + data.quantity;
+                    const stock = (data.quantity - data.onRent) + ' / ' + data.quantity;
+                    if (data.onRent >= data.quantity)
+                        return `<span class="error-label">${stock}</span>`;
+                    else
+                        return stock;
                 }
             },
             { "data": "_id", "visible": false }
@@ -46,9 +50,9 @@ $(document).ready(function () {
         "order": [[0, "asc"]],
         "responsive": true,
         "dom": "ipt",
-        columnDefs: [
-            { targets: [0, 1, 2, 3], bSortable: false }
-        ]
+        "language": {
+            "emptyTable": "No books to display"
+        }
     });
 
     $("#searchBox").on("keyup paste change", function () {
