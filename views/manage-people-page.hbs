@@ -38,40 +38,40 @@
             <h1 class="col-12 mb-5">Manage people</h1>
 
             <div class="col-12">
-                <div class="row px-0 mx-auto mb-4">
+              <div class="row px-0 mx-auto mb-4">
                 <div class="col-md-4 input-group mb-2 px-0">
-                    <div class="form-group form-inline my-auto flex-fill">
+                  <div class="form-group form-inline my-auto flex-fill">
                     <input type="search" id="searchBox" class="form-control" placeholder="ID Number or Name">
-                    </div>
+                  </div>
                 </div>
                 <div class="col-md-8 d-flex justify-content-end px-0" style="overflow-x: auto;">
-                    <nav class="ml-md-auto mr-md-0 mx-auto">
+                  <nav class="ml-md-auto mr-md-0 mx-auto">
                     <ul class="pagination d-flex align-items-center" id="peoplePagination">
                     </ul>
-                    </nav>
+                  </nav>
                 </div>
-                </div>
-                <div class="card no-hover p-4">
+              </div>
+              <div class="card no-hover p-4">
                 <div class="table table-responsive">
-                    <table class="table table-hover" id="peopleTable">
+                  <table class="table table-hover" id="peopleTable">
                     <thead class="">
-                        <tr class="active head">
+                      <tr class="active head">
                         <th></th>
                         <th>ID number</th>
                         <th>Name</th>
-                            <th>Email</th>
-                            <th>Degree Program</th>
+                        {{!-- <th>Email</th> --}}
+                        {{!-- <th>Degree Program</th> --}}
                         <th>College</th>
                         <th>Type</th>
                         <th>Mobile Number</th>
                         <th></th>
-                        </tr>
+                      </tr>
                     </thead>
                     <tbody id="peopleTableBody">
                     </tbody>
-                    </table>
+                  </table>
                 </div>
-                </div>
+              </div>
             </div>
 
 
@@ -97,26 +97,27 @@
             <input type="hidden" name="id" id="id">
             <div class="modal-body col-lg-10 mx-auto">
               <div class="d-flex flex-column">
-                  <div class="alert alert-warning" role="alert" id="emptyAlert">
-                      Please fill up all the empty fields.
-                  </div>
-                  <div class="alert alert-warning" role="alert" id="idnumAlert">
-                      ID number should only contain numbers and be 8 at length.
-                  </div>
-                  <div class="alert alert-warning" role="alert" id="mobileAlert">
-                      Mobile number should only contain numbers and be 10 at length (excluding the '+63').
-                  </div>
-                  <div class="alert alert-warning" role="alert" id="degreeAlert">
-                      Degree program should only contain letters and/or '-' (dash).
-                  </div>
-                  <div class="alert alert-danger" role="alert" id="dupeMobileAlert">
-                      An existing user already has the same mobile number.
-                  </div>
-                  <div class="alert alert-danger" role="alert" id="dupeIdnumAlert">
-                      An existing user already has the same ID number.
-                  </div>
+                <div class="alert alert-warning" role="alert" id="emptyAlert">
+                  Please fill up all the empty fields.
+                </div>
+                <div class="alert alert-warning" role="alert" id="idnumAlert">
+                  ID number should only contain numbers and be 8 at length.
+                </div>
+                <div class="alert alert-warning" role="alert" id="mobileAlert">
+                  Mobile number should only contain numbers and be 10 at length (excluding the '+63').
+                </div>
+                <div class="alert alert-warning" role="alert" id="degreeAlert">
+                  Degree program should only contain letters and/or '-' (dash).
+                </div>
+                <div class="alert alert-danger" role="alert" id="dupeMobileAlert">
+                  An existing user already has the same mobile number.
+                </div>
+                <div class="alert alert-danger" role="alert" id="dupeIdnumAlert">
+                  An existing user already has the same ID number.
+                </div>
                 <div class="form-group form-inline input-group">
-                  <label for="firstName" class="col-lg-4 justify-content-start pl-2">First Name</label>
+                  <label for="firstName" class="col-lg-4 justify-content-start pl-2">First
+                    Name</label>
                   <input type="text" class="form-control col-lg-8" name="firstName" id="firstName" readonly>
                 </div>
                 <div class="form-group form-inline input-group">
@@ -138,20 +139,24 @@
                   </div>
                 </div>
                 <div class="form-group form-inline input-group">
-                  <label for="degProg" class="col-lg-4 justify-content-start pl-2">Degree Program</label>
+                  <label for="degProg" class="col-lg-4 justify-content-start pl-2">Degree
+                    Program</label>
                   <input type="text" class="form-control col-lg-8" name="degProg" id="degProg" required>
                 </div>
                 <div class="form-group form-inline input-group">
-                  <label for="mobile" class="col-lg-4 justify-content-start pl-2">Mobile number</label>
+                  <label for="mobile" class="col-lg-4 justify-content-start pl-2">Mobile
+                    number</label>
                   <div class="input-group-prepend">
                     <span class="input-group-text">+63</span>
                   </div>
-                  <input type="tel" pattern="[0-9]{10}" class="form-control col-lg-8" name="mobile" id="mobile" required>
+                  <input type="tel" pattern="[0-9]{10}" class="form-control col-lg-8" name="mobile" id="mobile"
+                    required>
                 </div>
 
               </div>
             </div>
             <div class="modal-footer">
+              <button type="button" class="btn mr-auto" data-dismiss="modal" data-toggle="modal" id="promoteDemoteBtn">Promote/Demote</button>
               <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
               <input type="button" class="btn btn-primary" id="approveStatusSubmit" value="Update">
             </div>
@@ -175,7 +180,7 @@
               <input type="hidden" name="userID" id="promoteUserID">
               <h5>Would you like to promote this user to student representative?</h5>
               <p>
-                Student representatives can manage lockers, equipment, users, and reservations. 
+                Student representatives can manage lockers, equipment, users, and reservations.
                 Changes will reflect the user upon restarting his/her session.
               </p>
             </div>
@@ -201,13 +206,13 @@
           <form method="POST" action="/profile/manage/demote" id="demoteUserForm">
             <div class="modal-body col-lg-10 mx-auto">
               <input type="hidden" name="userID" id="demoteUserID">
-              <h5>Would you like to demote this user to student representative?</h5>
+              <h5>Would you like to demote this user to student?</h5>
               <p>
                 User will lose administrative privileges.
                 Changes will reflect the user upon restarting his/her session.
               </p>
               <div class="alert alert-danger" role="alert" id="demoteErrorAlert">
-                  Cannot demote last studentRep.
+                Cannot demote last studentRep.
               </div>
             </div>
             <div class="modal-footer">
@@ -227,9 +232,10 @@
     integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
     crossorigin="anonymous"></script>
   <script src="http://cdn.datatables.net/plug-ins/1.10.15/dataRender/datetime.js"
-          integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-          crossorigin="anonymous"></script>
-  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" charset="utf8"
+    src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
   <script type="text/javascript" src="../js/bootstrap.js"></script>
 
   <script type="text/javascript" src="../js/styles.js"></script>

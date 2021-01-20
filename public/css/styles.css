@@ -1339,7 +1339,7 @@ select.custom-select.form-control {
 */
 
 table.dataTable.no-footer {
-    border: none;
+    border: none !important;
 }
 
 .table .dataTables_wrapper .dataTables_paginate .paginate_button {

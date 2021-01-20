@@ -264,15 +264,15 @@ function getSortValue(column, direction) {
             return {'idNum': dir};
         case '2':
             return {'lastName': dir};
+        // case '3':
+        //     return {'email': dir};
+        // case '4':
+        //     return {'degreeProg': dir};
         case '3':
-            return {'email': dir};
-        case '4':
-            return {'degreeProg': dir};
-        case '5':
             return {'college': dir};
-        case '6':
+        case '4':
             return {'type': dir};
-        case '7':
+        case '5':
             return {'contactNum': dir};
         default:
             return {'idNum': 1}
