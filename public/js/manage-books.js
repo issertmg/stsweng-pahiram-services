@@ -237,9 +237,9 @@ $("#addBookSubmitButton").click(function () {
     if (!isFilledTitleAuthorsQuantity(title, authors, quantity))
         $("#addAlert").html("Title, authors, and quantity fields cannot be empty.").show();
     else if (!isValidBookTitle(title))
-        $("#addAlert").html("Invalid book title. Field should contain at least 1 letter.").show();
+        $("#editAlert").html("Title should contain at least 1 letter and a maximum length of 50 characters.").show();
     else if (!isValidBookAuthors(authors))
-        $("#addAlert").html("Invalid authors. Field should contain at least 1 letter.").show();
+        $("#editAlert").html("Authors should contain at least 1 letter and a maximum length of 50 characters.").show();
     else if (!isValidBookEdition(edition))
         $("#addAlert").html("Invalid edition. Field should contain a maximum of 50 characters.").show();
     else if (!isValidBookQuantity(quantity))
@@ -278,9 +278,9 @@ $('#updateBookSubmit').on('click', function (event) {
     if (!isFilledTitleAuthorsQuantity(title, authors, quantity))
         $("#editAlert").html("Title, authors, and quantity fields cannot be empty.").show();
     else if (!isValidBookTitle(title))
-        $("#editAlert").html("Invalid book title. Field should contain at least 1 letter.").show();
+        $("#editAlert").html("Title should contain at least 1 letter and a maximum length of 50 characters.").show();
     else if (!isValidBookAuthors(authors))
-        $("#editAlert").html("Invalid authors. Field should contain at least 1 letter.").show();
+        $("#editAlert").html("Authors should contain at least 1 letter and a maximum length of 50 characters.").show();
     else if (!isValidBookEdition(edition))
         $("#editAlert").html("Invalid edition. Field should contain a maximum of 50 characters.").show();
     else if (!isValidBookQuantity(quantity))
