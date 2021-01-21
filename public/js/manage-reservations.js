@@ -24,12 +24,17 @@ $(document).ready(function () {
 				}
 			},
 			{ "data": "onItemType" },
-			{ "data": "title" },
+			{ 
+				"data": "title",
+				"render": function (data, type, row) {
+                    return limitCharLength(data, 20);
+                }
+			},
 			{ 
 				"data": "description",
 				"render": function (data, type, row) {
-					return data.length > 50 ? data.substr(0, 50) + '...' : data;
-				} 
+                    return limitCharLength(data, 50);
+                }
 			},
 			{ 
 				"data": function (data, type, row) {
@@ -384,6 +389,10 @@ function getStatusClass(status) {
 		case 'For Pickup':
 			return 'status-pickup-pay';
 	}
+}
+
+function limitCharLength(data, maxLength) {
+    return data.length > maxLength ? data.substr(0, maxLength) + '...' : data;
 }
 
 exports.isValidSetStatus = isValidSetStatus;
