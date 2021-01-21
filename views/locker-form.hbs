@@ -42,13 +42,18 @@
             {{#if panels}}
             <div class="col-lg-10 row align-items-end mx-auto px-0">
 
-              {{#if status}}
               <div class="col-12 mb-4">
+                  {{#unless rental_period}}
+                      <div class="alert alert-info" role="alert">
+                          <strong>Locker Rental Closed:</strong> Please wait for further announcements regarding reopening of locker rental.
+                      </div>
+                  {{/unless}}
+                {{#if status}}
                 <div class="alert alert-danger" role="alert">
                   <strong>Note:</strong> You already have an active locker reservation. Form submission button is <i class="font-italic">disabled</i>. 
                 </div>
+                {{/if}}
               </div>
-              {{/if}}
                 
               <div class="form-group-container col-lg-7">
                 <div class="form-group form-card select-form">
@@ -123,7 +128,7 @@
                 </div>
                 <div>
                   <a href="/reserve" class="btn btn-outline mr-4">Go back</a>                  
-                  <button type="button" id="submitLockerForm" class="btn btn-{{#if status}}disabled" disabled {{else}}primary"{{/if}}>Submit</button>
+                  <button type="button" id="submitLockerForm" class="btn btn-{{#if disabled}}disabled" disabled {{else}}primary"{{/if}}>Submit</button>
                 </div>
               </div>
             </div>

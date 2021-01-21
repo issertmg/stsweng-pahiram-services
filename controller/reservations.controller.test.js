@@ -194,3 +194,93 @@ describe('Payment Date Checker', () => {
         expect(result).toBe(true);
     });
 });
+
+describe('Checking if Reservation is Deletable', () => {
+    it('When the reservation status is Returned, it should be deletable', () => {
+        // Arrange
+        const status = 'Returned';
+
+        // Act
+        const result = reservation.reservationIsDeletable(status);
+
+        // Assert
+        expect(result).toBe(true);
+    });
+
+    it('When the reservation status is Denied, it should be deletable', () => {
+        // Arrange
+        const status = 'Denied';
+
+        // Act
+        const result = reservation.reservationIsDeletable(status);
+
+        // Assert
+        expect(result).toBe(true);
+    });
+
+    it('When the reservation status is On Rent, it should NOT be deletable', () => {
+        // Arrange
+        const status = 'On Rent';
+
+        // Act
+        const result = reservation.reservationIsDeletable(status);
+
+        // Assert
+        expect(result).toBe(false);
+    });
+
+    it('When the reservation status is For Pickup, it should NOT be deletable', () => {
+        // Arrange
+        const status = 'For Pickup';
+
+        // Act
+        const result = reservation.reservationIsDeletable(status);
+
+        // Assert
+        expect(result).toBe(false);
+    });
+
+    it('When the reservation status is To Pay, it should NOT be deletable', () => {
+        // Arrange
+        const status = 'To Pay';
+
+        // Act
+        const result = reservation.reservationIsDeletable(status);
+
+        // Assert
+        expect(result).toBe(false);
+    });
+
+    it('When the reservation status is Uncleared, it should NOT be deletable', () => {
+        // Arrange
+        const status = 'Uncleared';
+
+        // Act
+        const result = reservation.reservationIsDeletable(status);
+
+        // Assert
+        expect(result).toBe(false);
+    });
+
+    it('When the reservation status is Pending, it should NOT be deletable', () => {
+        // Arrange
+        const status = 'Pending';
+
+        // Act
+        const result = reservation.reservationIsDeletable(status);
+
+        // Assert
+        expect(result).toBe(false);
+    });
+
+    it('When the reservation status is a random string (not matching Denied or Returned), it should NOT be deletable', () => {
+        // Arrange
+        const status = 'asdfg';
+
+        // Act
+        const result = reservation.reservationIsDeletable(status);
+
+        // Assert
+        expect(result).toBe(false);
+    });
+});

@@ -50,3 +50,7 @@
 div.description, td.description, span.description, #description {
     word-break: break-word;
 }
+
+#itemDetails {
+    overflow: hidden;
+}

@@ -9,6 +9,9 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
 
+  <!-- Datatables -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+
   <!-- Custom Styles -->
   <link href="/css/styles.css" rel="stylesheet">
   <link href="/css/styles-manage-reservations.css" rel="stylesheet">
@@ -18,8 +21,6 @@
 
   <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
   
   <script src="/js/validator.min.js" type="text/javascript"></script>
 
@@ -56,27 +57,19 @@
                         data-target="#editReservationModal" data-title="{{title}}" data-userid="{{userID}}"
                         data-datecreated="{{dateStr dateCreated}}" data-status="{{status}}"
                         data-description="{{description}}" data-remarks="{{remarks}}" data-penalty="{{penalty}}"
-                        data-type="{{onItemType}}" data-id="{{_id}}" data-paymentdate="{{pickupPayDate}}">
+                        data-type="{{onItemType}}" data-id="{{_id}}" data-pickuppaydate="{{pickupPayDate}}">
                         <div class="col-1 icon mb-auto mt-1"
-                          id="{{#if (isLocker onItemType)}}locker{{else}}equipment{{/if}}"></div>
+                          id="{{#if (isLocker onItemType)}}locker{{else if (isEquipment onItemType)}}equipment{{else}}book{{/if}}"></div>
                         <div class="d-flex flex-fill flex-column mx-4">
                           <div>
                             {{dateStr dateCreated}}
                           </div>
                           <div class="font-weight-bold">{{userID}}</div>
                           <div>
-                            {{#if (isLocker onItemType)}}
-                              <span class="description">{{description}}</span>
-                            {{else}}
-                              <span class="description">{{item.brand}} {{item.name}} ({{item.model}}); {{description}}</span>
-                            {{/if}}
+                            <span class="description">{{title}}, {{description}}</span>
                           </div>
                         </div>
                       </div>
-                      <a class="icon my-auto response" data-toggle="modal" data-target="#approveReservationModal"
-                        id="accept"></a>
-                      <a class="icon my-auto response" data-toggle="modal" data-target="#denyReservationModal"
-                        id="deny" href="#" title="Deny"></a>
                     </div>
                   </div>
                   {{/each}}
@@ -92,24 +85,16 @@
                         data-target="#editReservationModal" data-title="{{title}}" data-userid="{{userID}}"
                         data-datecreated="{{dateStr dateCreated}}" data-status="{{status}}"
                         data-description="{{description}}" data-remarks="{{remarks}}" data-penalty="{{penalty}}"
-                        data-type="{{onItemType}}" data-id="{{_id}}" data-paymentdate="{{pickupPayDate}}">
+                        data-type="{{onItemType}}" data-id="{{_id}}" data-pickuppaydate="{{pickupPayDate}}">
                         <div class="col-1 icon mb-auto mt-1"
-                          id="{{#if (isLocker onItemType)}}locker{{else}}equipment{{/if}}"></div>
+                          id="{{#if (isLocker onItemType)}}locker{{else if (isEquipment onItemType)}}equipment{{else}}book{{/if}}"></div>
                         <div class="d-flex flex-fill flex-column mx-4">
+                          <div class="font-weight-bold">{{userID}}</div>
                           <div>
-                            <div class="font-weight-bold">{{userID}}</div>
-                            {{#if (isLocker onItemType)}}
-                              <span class="description">{{description}}</span>
-                            {{else}}
-                              <span class="description">{{item.brand}} {{item.name}} ({{item.model}}); {{description}}</span>
-                            {{/if}}
+                            <span class="description">{{title}}, {{description}}</span>
                           </div>
                         </div>
                       </div>
-                      <a class="icon my-auto response" data-toggle="modal" data-target="#approveReservationModal"
-                        id="accept"></a>
-                      <a class="icon my-auto response" data-toggle="modal" data-target="#denyReservationModal"
-                        id="deny" href="#" title="Deny"></a>
                     </div>
                   </div>
                   {{/each}}
@@ -131,18 +116,14 @@
                   <div class="card-item" data-toggle="modal" data-target="#editReservationModal" data-title="{{title}}"
                     data-userid="{{userID}}" data-datecreated="{{dateStr dateCreated}}" data-status="{{status}}"
                     data-description="{{description}}" data-remarks="{{remarks}}" data-penalty="{{penalty}}"
-                    data-type="{{onItemType}}" data-id="{{_id}}" data-paymentdate="{{pickupPayDate}}">
+                    data-type="{{onItemType}}" data-id="{{_id}}" data-pickuppaydate="{{pickupPayDate}}">
                     <div class="d-flex flex-row flex-nowrap">
                       <div class="col-1 icon mb-auto mt-1 pr-3"
-                        id="{{#if (isLocker onItemType)}}locker{{else}}equipment{{/if}}"></div>
+                        id="{{#if (isLocker onItemType)}}locker{{else if (isEquipment onItemType)}}equipment{{else}}book{{/if}}"></div>
                       <div class="d-flex flex-column mx-4">
                         <div class="font-weight-bold">{{userID}}</div>
                         <div>
-                            {{#if (isLocker onItemType)}}
-                                <span class="description">{{description}}</span>
-                            {{else}}
-                                <span class="description">{{item.brand}} {{item.name}} ({{item.model}}); {{description}}</span>
-                            {{/if}}
+                          <span class="description">{{title}}, {{description}}</span>
                         </div>
                         {{#if remarks}}
                         <div class="description">
@@ -169,7 +150,7 @@
 
                   <div class="col-12 px-0">
 
-                    <h5 class="mb-4">Other Reservations</h5>
+                    <h5 class="mb-4">All Reservations</h5>
 
                     <div class="row">
                       <div class="col-md-3 col-6 input-group mb-2">
@@ -180,13 +161,14 @@
                       <div class="col-md-3 col-6 mb-2 d-flex align-items-center">
                         <select class="form-control custom-select" name="typeFilter" id="typeFilter">
                           <option value="All">All</option>
-                          <option value="Locker">Locker</option>
+                          <option value="Book">Book</option>
                           <option value="Equipment">Equipment</option>
+                          <option value="Locker">Locker</option>
                         </select>
                       </div>
                     </div>
 
-                    <div class="col-12 table-responsive px-0">
+                    <div class="col-12 table table-responsive px-0">
                       <table class="table table-hover" id="otherReservationsTable">
                         <thead class="">
                           <tr class="active head">
@@ -224,7 +206,6 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          {{!-- <span class="badge badge-pill status-on-rent mr-4">hello</span> --}}
           <h5 class="modal-title" id="statusModalLabel">Update Reservation Status</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
@@ -243,7 +224,7 @@
                 Input element properties has been altered. Please refresh the page.
             </div>
             <div class="d-flex flex-column">
-              <div class="font-weight-bold pl-2 mb-2" id="idNum"></div>
+              <div class="font-weight-bold pl-0 mb-2" id="idNum"></div>
               <div class="d-flex flex-row align-items-center">
                 <div class="icon col-1 mr-2 pr-3" id="profile"></div>
                 <div class="" id="userInfo">Loading...</div>
@@ -260,6 +241,12 @@
                 <div class="icon col-1 mr-2 pr-3" id="remarks"></div>
                 <div class="" id="unclearedError">Loading...</div>
               </div>
+              <div class="ml-1 mb-2 font-weight-bold" id="itemDetailsLabel">Item Details</div>
+              <div class="ml-1" id="itemDetails">
+              </div>
+              <br>
+              <hr>
+              <br>
               <div class="form-group form-inline input-group">
                 <label for="status" class="col-lg-4 justify-content-start pl-2">Status:</label>
                 <div class="col-lg-8 px-0">
@@ -274,8 +261,8 @@
                 </div>
               </div>
               <div class="form-group form-inline input-group" id="paymentForm">
-                <label for="paymentForm" class="col-lg-4 justify-content-start pl-2">Deadline of Payment</label>
-                <input type="date" class="form-control col-lg-8" name="paymentDate" id="paymentDate">
+                <label for="pickupPayDate" class="col-lg-4 justify-content-start pl-2" id="pickupPayLabel">Deadline of Payment</label>
+                <input type="date" class="form-control col-lg-8" name="pickupPayDate" id="pickupPayDate">
               </div>
               <div class="form-group form-inline input-group" id="remarksForm">
                 <label for="remarks" class="col-lg-4 justify-content-start pl-2">Remarks</label>
@@ -293,7 +280,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <a class="btn btn-warning mr-auto" data-dismiss="modal" data-toggle="modal"
+            <a id="deleteReservationBtn" class="btn btn-warning mr-auto" data-dismiss="modal" data-toggle="modal"
               href="#delReservationModal">Delete</a>
             <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
             <input type="button" class="btn btn-primary" id="statusSubmit" value="Update">
@@ -323,142 +310,6 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
             <button type="submit" class="btn btn-primary" id="deleteReservationBtn">Delete</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="approveReservationModal" tabindex="-1" role="dialog"
-    aria-labelledby="approveStatusModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title mr-2" id="approveStatusModalLabel">Approve Reservation: </h5>
-          <h5 class="modal-title" id="approveReservationTitle"></h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <form class="form-horizontal" method="post" action="/reservations/manage/update">
-          <input type="hidden" id="approveReservationID" name="reservationID">
-          <input type="hidden" id="approveReservationType" name="onItemType">
-          <div class="modal-body col-lg-10 mx-auto">
-            <div class="d-flex flex-column">
-              <div class="font-weight-bold pl-2 mb-2" id="approveIDNum"></div>
-              <div class="d-flex flex-row align-items-center">
-                <div class="icon col-1 mr-2 pr-3" id="profile"></div>
-                <div class="" id="approveUserInfo">Loading...</div>
-              </div>
-              <div class="d-flex flex-row align-items-center">
-                <div class="icon col-1 mr-2 pr-3" id="date"></div>
-                <div class="" id="approveDateCreated"></div>
-              </div>
-              <div class="d-flex flex-row align-items-center">
-                <div class="icon col-1 mr-2 pr-3" id="desc"></div>
-                <div class="" id="approveDescription"></div>
-              </div>
-              <div class="d-flex flex-row align-items-center mb-4">
-                <div class="icon col-1 mr-2 pr-3" id="remarks"></div>
-                <div class="" id="apUnclearedError">Loading...</div>
-              </div>
-              <div class="form-group form-inline input-group" id="approveSelectForm">
-                <label for="status" class="col-lg-4 justify-content-start pl-2">Status:</label>
-                <div class="col-lg-8 px-0">
-                  <select class="form-control custom-select" name="status" id="approveStatus">
-                    <option value="status-manage-pending">Pending</option>
-                    <option value="status-manage-pickup-pay">To Pay</option>
-                    <option value="status-manage-on-rent">On Rent</option>
-                    <option value="status-manage-returned">Returned</option>
-                    <option value="status-manage-uncleared">Uncleared</option>
-                    <option value="status-manage-denied">Denied</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-group form-inline input-group" id="approvePaymentForm">
-                <label for="approvePaymentForm" class="col-lg-4 justify-content-start pl-2">Deadline of Payment</label>
-                <input type="date" class="form-control col-lg-8" name="paymentDate" id="approvePaymentDate">
-              </div>
-              <div class="form-group form-inline input-group" id="approveRemarksForm">
-                <label for="remarks" class="col-lg-4 justify-content-start pl-2">Remarks</label>
-                <input type="text" class="form-control col-lg-8" name="remarks" placeholder="Enter Remarks"
-                  id="approveRemarks">
-              </div>
-              <div class="form-group form-inline input-group" id="approvePenaltyForm">
-                <label for="penalty" class="col-lg-4 justify-content-start pl-2">Penalty</label>
-                <div class="input-group-prepend">
-                  <div class="input-group-text">Php</div>
-                </div>
-                <input type="number" class="form-control col-lg-8" name="penalty" placeholder="Penalty"
-                  id="approvePenalty" min="0" oninput="validity.valid||(value='');" step="0.01">
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
-            <input type="submit" class="btn btn-primary" id="approveStatusSubmit" value="Approve Reservation">
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="denyReservationModal" tabindex="-1" role="dialog" aria-labelledby="denyStatusModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title mr-2" id="denyStatusModalLabel">Deny Reservation: </h5>
-          <h5 class="modal-title" id="denyReservationTitle"></h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <form class="form-horizontal" method="post" action="/reservations/manage/update">
-          <input type="hidden" id="denyReservationID" name="reservationID">
-          <input type="hidden" id="denyReservationType" name="onItemType">
-          <div class="modal-body col-lg-10 mx-auto">
-            <div class="d-flex flex-column">
-              <div class="font-weight-bold pl-2 mb-2" id="denyIDNum"></div>
-              <div class="d-flex flex-row align-items-center">
-                <div class="icon col-1 mr-2 pr-3" id="date"></div>
-                <div class="" id="denyDateCreated"></div>
-              </div>
-              <div class="d-flex flex-row align-items-center mb-4">
-                <div class="icon col-1 mr-2 pr-3" id="desc"></div>
-                <div class="" id="denyDescription"></div>
-              </div>
-              <div class="form-group form-inline input-group" id="denySelectForm">
-                <label for="status" class="col-lg-4 justify-content-start pl-2">Status:</label>
-                <div class="col-lg-8 px-0">
-                  <select class="form-control custom-select" name="status" id="denyStatus">
-                    <option value="status-manage-pending">Pending</option>
-                    <option value="status-manage-pickup-pay">To Pay</option>
-                    <option value="status-manage-on-rent">On Rent</option>
-                    <option value="status-manage-returned">Returned</option>
-                    <option value="status-manage-uncleared">Uncleared</option>
-                    <option value="status-manage-denied">Denied</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-group form-inline input-group" id="denyRemarksForm">
-                <label for="remarks" class="col-lg-4 justify-content-start pl-2">Remarks</label>
-                <input type="text" class="form-control col-lg-8" name="remarks" placeholder="Enter Remarks"
-                  id="denyRemarks">
-              </div>
-              <div class="form-group form-inline input-group" id="denyPenaltyForm">
-                <label for="penalty" class="col-lg-4 justify-content-start pl-2">Penalty</label>
-                <div class="input-group-prepend">
-                  <div class="input-group-text">Php</div>
-                </div>
-                <input type="number" class="form-control col-lg-8" name="penalty" placeholder="Penalty"
-                  id="denyPenalty" min="0" oninput="validity.valid||(value='');" step="0.01">
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
-            <input type="submit" class="btn btn-primary" id="denyStatusSubmit" value="Deny Reservation">
           </div>
         </form>
       </div>

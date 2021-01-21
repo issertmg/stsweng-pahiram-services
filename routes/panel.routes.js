@@ -12,6 +12,7 @@ router.get('/status', UserAuth.userIsAdmin, panel_controller.status_get);
 router.post('/update', UserAuth.userIsAdmin, panel_controller.panel_update);
 router.post('/delete', UserAuth.userIsAdmin, panel_controller.panel_delete);
 router.post('/unclear', UserAuth.userIsAdmin, panel_controller.panel_unclear);
+router.post('/set-rental-dates', UserAuth.userIsAdmin, panel_controller.set_rental_dates);
 
 router.get('/get-is-valid-locker-range', panel_controller.valid_locker_range_get);
 

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+
+  <!-- Custom Styles -->
+  <link href="/css/styles.css" rel="stylesheet">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+
+  <title>Borrow Book</title>
+  <link rel="icon" href="/static/logo.png">
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="main-container row">
+      {{> sidenav act=active sb=sidebarData}}
+
+      <div class="main col-md-9 col-lg-10 ml-sm-auto p-0">
+        {{> topnav}}
+
+        <main role="main" class="pt-3 px-4">
+          <div class="row px-0 col-lg-10 mx-auto">
+            <h1 class="col-12 mb-5">Borrow book</h1>
+
+              {{#unless rental_period}}
+                  <div class="col-12 mb-1" id="rentalDatesAlert">
+                      <div class="alert alert-info col-12" role="alert">
+                          <strong>Book Rental Closed:</strong> Please wait for further announcements regarding reopening of book rental.
+                      </div>
+                  </div>
+              {{/unless}}
+
+            <div class="col-12 mb-4" id="activeReservationAlert">
+              <div class="alert alert-danger" role="alert">
+                <strong>Note:</strong> You already have an active book reservation. Form submission button is <i class="font-italic">disabled</i>. 
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="card no-hover p-4">
+                <label class="font-weight-bold mb-4">Select a book to borrow</label>
+                <div class="row">
+                  <div class="col-lg-3 col-md-5 col-12 input-group mb-2">
+                    <div class="form-group form-inline my-auto flex-fill">
+                      <input type="search" id="titleSearch" class="form-control" placeholder="Title">
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-5 col-12 input-group mb-2">
+                    <div class="form-group form-inline my-auto flex-fill">
+                      <input type="search" id="authorSearch" class="form-control" placeholder="Author">
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-5 col-12 mb-2">
+                    <a class="btn btn-primary" id="searchBtn">
+                        Search
+                    </a>
+                  </div>
+                </div>
+                
+                <div class="table table-responsive">
+                  <table class="table table-hover" id="booksTable">
+                    <thead class="">
+                      <tr class="active head">
+                        <th>Title</th>
+                        <th>Author/s</th>
+                        <th>Edition</th>
+                        <th>In Stock</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </main>
+
+        <footer class="py-5 pt-5 text-muted text-center text-small">
+          <p class="mb-1">De La Salle University - Manila</p>
+          <p class="mb-1">Pahiram Services</p>
+        </footer>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal fade" id="borrowBookModal" tabindex="-1" role="dialog"
+    aria-labelledby="borrowBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title mr-2">Reserve a book</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form class="form-horizontal" method="post" action="/reserve/book">
+          <input type="hidden" id="bookID" name="bookID">
+          <div class="modal-body mx-auto">
+            <div class="col-12 mb-2" id="outOfStockAlert">
+              <div class="alert alert-warning" role="warning">
+                <strong>Note:</strong> This book is out of stock. 
+              </div>
+            </div>
+            <div class="d-flex flex-column info-label-text">
+              <div class="d-flex flex-row align-items-start">
+                <div class="col-3 font-weight-bold">Title</div>
+                <div class="col-9" id="titleLabel"></div>
+              </div>
+              <div class="d-flex flex-row align-items-start">
+                <div class="col-3 font-weight-bold">Author/s</div>
+                <div class="col-9" id="authorLabel"></div>
+              </div>
+              <div class="d-flex flex-row align-items-start">
+                <div class="col-3 font-weight-bold">Edition</div>
+                <div class="col-9" id="editionLabel"></div>
+              </div>
+              <div class="d-flex flex-row align-items-start">
+                <div class="col-3 font-weight-bold">In Stock</div>
+                <div class="col-9" id="stockLabel"></div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
+            <input type="submit" class="btn btn-primary" id="borrowBookSubmit" value="Place Reservation">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/js/styles.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" src="/js/reserve-book.js"></script>
+</body>
+
+</html>
