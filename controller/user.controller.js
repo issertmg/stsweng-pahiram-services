@@ -71,10 +71,10 @@ exports.people_get = async function (req, res) {
         else
             sortObject = getSortValue(req.query.order[0].column, req.query.order[0].dir);
 
-        count = await User
+        let count = await User
             .find().countDocuments();
 
-        data = await User
+        let data = await User
             .find(
                 {
                     $or: [
@@ -119,9 +119,10 @@ exports.people_get = async function (req, res) {
                 })
             .sort(sortObject)
             .skip(parseInt(req.query.start))
-            .limit(parseInt(req.query.length));
+            .limit(parseInt(req.query.length)).lean();
 
         if (data && count) {
+            data.forEach(user => user.contactNum = pad(user.contactNum))
             let datatable = {
                 recordsTotal: count,
                 recordsFiltered: count,
@@ -147,8 +148,10 @@ exports.people_get = async function (req, res) {
  */
 exports.profile_details = async function (req, res) {
     try {
-        var user = await User.findOne({ idNum: req.session.idNum });
+        let user = await User.findOne({ idNum: req.session.idNum }).lean();
+
         if (user) {
+            user.contactNum = pad(user.contactNum);
             res.render('profile-page', {
                 active: { active_profile: true },
                 sidebarData: {
@@ -300,4 +303,9 @@ exports.check_mobile_id_duplicate_get = async function (req, res) {
     catch (err) {
         console.log(err);
     }
+}
+
+function pad(num) {
+    let s = "0000000000" + num;
+    return s.substr(-10);
 }
