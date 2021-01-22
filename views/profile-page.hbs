@@ -47,7 +47,7 @@
                   <div class="profile-head d-flex flex-column align-items-center pt-3 pb-5">
                     <h5 class="profile-name mb-0">{{user.firstName}} {{user.lastName}}</h5>
                     <h6 class="profile-type mb-4">{{user.type}}</h6>
-                    <a id="editProfile" data-toggle="modal" href="#editProfileModal"
+                    <a id="editProfile" data-toggle="modal" href="#editProfileModal" data-phone="{{user.contactNum}}"
                       class="btn btn-primary btn-round">Edit Profile</a>
                   </div>
                 </div>
@@ -107,7 +107,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text">+63</span>
               </div>
-              <input type="tel" class="form-control col-lg-8" name="phone" id="phone" value="{{user.contactNum}}" pattern="[0-9]{10}" required>
+              <input type="tel" class="form-control col-lg-8" name="phone" id="phone" pattern="[0-9]{10}" required>
               <input type="hidden" id="idNum" name="idNum" value="{{user.idNum}}">
               <p class="error-label text-sm ml-auto col-lg-8" id="phoneError">{{phoneError}}</p>
             </div>
