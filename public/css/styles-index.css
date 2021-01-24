@@ -85,11 +85,18 @@
     background-size: contain;
 }
 
+#human-book {
+    position: absolute;
+    background: url(../static/locker-equipment/human-book.png) center no-repeat;
+    background-size: contain;
+}
+
 #human-locker.locker-anim {
     transform: translateX(-90px) scale(1.2);
 }
 
 #human-equipment.locker-anim,
+#human-book.locker-anim,
 #table.locker-anim,
 #laptop.locker-anim,
 #umbrella.locker-anim {
@@ -105,6 +112,7 @@
     transform: translateX(-50px) scale(0.95);
 }
 
+#human-book.equipment-anim,
 #bench.locker-anim {
     transform: translateX(-70px) scale(0.8);
 }
@@ -121,10 +129,8 @@
     transform: translateX(-50px) translateY(-10px) scale(0.9);
 }
 
-
-
-
-#human-locker.equipment-anim {
+#human-locker.equipment-anim,
+#human-book.equipment-anim {
     transform: translateX(50px) scale(0.8);
     filter: grayscale(0.75);
 }
@@ -144,6 +150,7 @@
     transform: translateX(40px) scale(0.95);
 }
 
+#human-book.equipment-anim,
 #bench.equipment-anim {
     transform: translateX(40px) scale(0.8);
 }

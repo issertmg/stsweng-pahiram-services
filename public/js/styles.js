@@ -3,6 +3,7 @@ $(document).ready(function () {
         function () {
             $(`#human-locker, 
                #human-equipment,
+               #human-book,
                #table,
                #laptop,
                #umbrella, 
@@ -15,6 +16,7 @@ $(document).ready(function () {
         }, function () {
             $(`#human-locker, 
                #human-equipment,
+               #human-book,
                #table,
                #laptop,
                #umbrella, 
@@ -30,6 +32,7 @@ $(document).ready(function () {
         function () {
             $(`#human-locker, 
                #human-equipment,
+               #human-book,
                #table,
                #laptop,
                #umbrella, 
@@ -42,6 +45,7 @@ $(document).ready(function () {
         }, function () {
             $(`#human-locker, 
                #human-equipment,
+               #human-book,
                #table,
                #laptop,
                #umbrella, 
