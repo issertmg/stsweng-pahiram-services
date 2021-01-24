@@ -50,7 +50,6 @@
     position: absolute;
     background: url(../static/locker-equipment/bench.png) center no-repeat;
     background-size: contain;
-    opacity: 50%;
 }
 
 #umbrella {
@@ -126,7 +125,8 @@
 }
 
 #human-locker.equipment-anim,
-#human-book.equipment-anim {
+#human-book.equipment-anim,
+#bench.equipment-anim {
     transform: translateX(50px) scale(0.8);
     filter: grayscale(0.75);
 }
@@ -144,11 +144,6 @@
 
 #clock.equipment-anim {
     transform: translateX(40px) scale(0.95);
-}
-
-#human-book.equipment-anim,
-#bench.equipment-anim {
-    transform: translateX(50px) scale(0.8);
 }
 
 #trashcan.equipment-anim {
