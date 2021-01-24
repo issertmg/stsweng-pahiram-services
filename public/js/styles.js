@@ -58,6 +58,36 @@ $(document).ready(function () {
         }
     );
 
+    $('#book-btn').hover(
+        function () {
+            $(`#human-locker, 
+               #human-equipment,
+               #human-book,
+               #table,
+               #laptop,
+               #umbrella, 
+               #bench,
+               #trashcan, 
+               #clock,
+               #window,
+               #wall2,
+               #wall1`).addClass('book-anim');
+        }, function () {
+            $(`#human-locker, 
+               #human-equipment,
+               #human-book,
+               #table,
+               #laptop,
+               #umbrella, 
+               #bench,
+               #trashcan, 
+               #clock,
+               #window,
+               #wall2,
+               #wall1`).removeClass('book-anim');
+        }
+    );
+
     var collapsed = false;
     $('.nav-btn').click(function () {
         if (!collapsed) {
