@@ -72,7 +72,48 @@ exports.people_get = async function (req, res) {
             sortObject = getSortValue(req.query.order[0].column, req.query.order[0].dir);
 
         let count = await User
-            .find().countDocuments();
+            .find(
+                {
+                    $or: [
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: { "$concat": ["$lastName", ", ", "$firstName"]},
+                                    regex: req.query.search.value,  //Your text search here
+                                    options: "i"
+                                }
+                            }
+                        },
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: { "$concat": ["$firstName", " ", "$lastName"]},
+                                    regex: req.query.search.value,  //Your text search here
+                                    options: "i"
+                                }
+                            }
+                        },
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: "$idNum",
+                                    regex: req.query.search.value,  //Your text search here
+                                    options: "i"
+                                }
+                            }
+                        },
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: { "$concat": ["$lastName", " ", "$firstName"]},
+                                    regex: req.query.search.value,  //Your text search here
+                                    options: "i"
+                                }
+                            }
+                        }
+                    ]
+
+                }).countDocuments();
 
         let data = await User
             .find(
@@ -121,7 +162,7 @@ exports.people_get = async function (req, res) {
             .skip(parseInt(req.query.start))
             .limit(parseInt(req.query.length)).lean();
 
-        if (data && count) {
+        if (data) {
             data.forEach(user => user.contactNum = pad(user.contactNum))
             let datatable = {
                 recordsTotal: count,
