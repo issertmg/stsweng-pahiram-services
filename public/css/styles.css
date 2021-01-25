@@ -167,10 +167,6 @@ hr {
     background-position: -72px -72px;
 }
 
-.icon#book {
-    background-position: 0px 0px;
-}
-
 .icon#accept {
     background-position: 0px -96px;
 }
@@ -229,6 +225,10 @@ hr {
 
 .icon#locker-broken, .icon.locker-status-manage-broken {
     background-position: -48px -168px;
+}
+
+.icon#book {
+    background-position: -72px -168px;
 }
 
 /* 
