@@ -49,7 +49,10 @@ $(document).ready(function () {
 		],
 		"order": [[9, "desc"]],
 		"responsive": true,
-		"dom": "ipt"
+		"dom": "ipt",
+		"language": {
+			"emptyTable": "No reservations to display"
+		}
 	});
 
 	$("#typeFilter").on("change", function () {
