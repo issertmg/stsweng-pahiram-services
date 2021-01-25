@@ -36,17 +36,19 @@
           <div class="row px-0 col-lg-10 mx-auto">
             <h1 class="col-12 mb-5">Borrow book</h1>
 
-              {{#unless rental_period}}
-                  <div class="col-12 mb-1" id="rentalDatesAlert">
-                      <div class="alert alert-info col-12" role="alert">
-                          <strong>Book Rental Closed:</strong> Please wait for further announcements regarding reopening of book rental.
-                      </div>
-                  </div>
-              {{/unless}}
+            {{#unless rental_period}}
+            <div class="col-12 mb-1" id="rentalDatesAlert">
+              <div class="alert alert-info col-12" role="alert">
+                <strong>Book Rental Closed:</strong> Please wait for further announcements regarding reopening of book
+                rental.
+              </div>
+            </div>
+            {{/unless}}
 
-            <div class="col-12 mb-4" id="activeReservationAlert">
+            <div class="col-12 mb-4" id="activeReservationAlert" style="display: none;">
               <div class="alert alert-danger" role="alert">
-                <strong>Note:</strong> You already have an active book reservation. Form submission button is <i class="font-italic">disabled</i>. 
+                <strong>Note:</strong> You already have an active book reservation. Form submission button is <i
+                  class="font-italic">disabled</i>.
               </div>
             </div>
 
@@ -66,11 +68,11 @@
                   </div>
                   <div class="col-lg-3 col-md-5 col-12 mb-2">
                     <a class="btn btn-primary" id="searchBtn">
-                        Search
+                      Search
                     </a>
                   </div>
                 </div>
-                
+
                 <div class="table table-responsive">
                   <table class="table table-hover" id="booksTable">
                     <thead class="">
@@ -101,8 +103,8 @@
     </div>
   </div>
 
-  <div class="modal fade" id="borrowBookModal" tabindex="-1" role="dialog"
-    aria-labelledby="borrowBookModalLabel" aria-hidden="true">
+  <div class="modal fade" id="borrowBookModal" tabindex="-1" role="dialog" aria-labelledby="borrowBookModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -116,7 +118,7 @@
           <div class="modal-body mx-auto">
             <div class="col-12 mb-2" id="outOfStockAlert">
               <div class="alert alert-warning" role="warning">
-                <strong>Note:</strong> This book is out of stock. 
+                <strong>Note:</strong> This book is out of stock.
               </div>
             </div>
             <div class="d-flex flex-column info-label-text">
@@ -137,12 +139,49 @@
                 <div class="col-9" id="stockLabel"></div>
               </div>
             </div>
+            <div class="form-check d-flex align-items-center mt-4 ml-3">
+              <input type="checkbox" class="form-check-input my-auto" id="checkTerms" required>
+              <label class="form-check-label ml-2" for="checkTerms">
+                I agree to the <a data-dismiss="modal" data-toggle="modal" href="#bookTermsModal">Terms and Conditions</a>.
+              </label>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
             <input type="submit" class="btn btn-primary" id="borrowBookSubmit" value="Place Reservation">
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="bookTermsModal" tabindex="-1" role="dialog" aria-labelledby="bookModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bookModalLabel">Terms and Conditions</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body col-lg-10 mx-auto">
+          <h5>Book service</h5>
+          <ol class="list-group list-group-flush">
+            <li class="list-group-item">1. A student can only borrow 1 book at a time.</li>
+            <li class="list-group-item">2. All books are to be collected and returned to the University Student Government (USG) office.</li>
+            <li class="list-group-item">3. The borrower is responsible for preserving the borrowed book by doing the necessary repairs such as gluing/taping loose leaves and/or covering the book with clear plastic cover.</li>
+            <li class="list-group-item">4. The borrowed book must be returned intact and in the exact same condition as or better than when the borrower received it.</li>
+            <li class="list-group-item">5. If the borrowed book is damaged or lost, the borrower must replace it with a book of the same title and edition.</li>                            
+            <li class="list-group-item">6. Failure to return the book on or before the given return date will result in a fine of Php 200.00 and the borrower’s ID will be regulated by the Discipline Office.</li>
+            <li class="list-group-item">7. Borrowed books with fines will be returned to the Lost and Found section of the Discipline Office (SJ104).</li>
+            <li class="list-group-item">8. The borrower’s ID will be cleared upon the return of the book and the settlement of imposed fines.</li>
+            <li class="list-group-item">9. Depending on the case, failure to comply with the terms will result in restricted use of pahiram's book rental service.</li>
+          </ol>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
   </div>
@@ -154,7 +193,8 @@
     crossorigin="anonymous"></script>
   <script type="text/javascript" src="/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="/js/styles.js"></script>
-  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" charset="utf8"
+    src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
   <script type="text/javascript" src="/js/reserve-book.js"></script>
 </body>
 
