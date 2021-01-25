@@ -35,6 +35,10 @@ jobs:
 #        heroku_app_name: dlsu-pahiram-services
 #        heroku_email: keith_gabriel_badulis@dlsu.edu.ph
 #        branch: 'master'
+    - name: Git permission fix
+      run: |
+        sudo chmod -R ugo+rwX .
+
 
     - name: Deploying Production to Heroku 🖥️
       run: |
