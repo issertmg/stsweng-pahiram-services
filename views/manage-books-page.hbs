@@ -40,11 +40,23 @@
 
             <div class="col-12">
                 <div class="row px-0 mx-auto mb-4 d-flex justify-content-between">
-                <div class="col-md-4 input-group mb-2 px-0">
-                    <div class="form-group form-inline my-auto flex-fill">
-                    <input type="search" id="searchBox" class="form-control" placeholder="Book title">
+                    <div class="row d-flex justify-content-between">
+                        <div class="col-lg-3 col-md-5 col-12 input-group mb-2">
+                            <div class="form-group form-inline my-auto flex-fill">
+                                <input type="search" id="titleSearch" class="form-control" placeholder="Title">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-5 col-12 input-group mb-2">
+                            <div class="form-group form-inline my-auto flex-fill">
+                                <input type="search" id="authorSearch" class="form-control" placeholder="Author">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-5 col-12 mb-2">
+                            <a class="btn btn-primary" id="searchBtn">
+                                Search
+                            </a>
+                        </div>
                     </div>
-                </div>
                 <a id="setRentalDate" data-toggle="modal" href="#setRentalDatesModal"
                     class="btn btn-secondary mb-auto d-flex align-items-center ml-auto mr-4 pl-3" {{#if rentalDatesConfig}}
                     data-startdate="{{rentalDatesConfig.startDate}}" data-enddate="{{rentalDatesConfig.endDate}}"
@@ -257,11 +269,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
     integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
     crossorigin="anonymous"></script>
-  <script src="http://cdn.datatables.net/plug-ins/1.10.15/dataRender/datetime.js"
-    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-    crossorigin="anonymous"></script>
   <script type="text/javascript" charset="utf8"
-    src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+          src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
   <script type="text/javascript" src="../js/bootstrap.js"></script>
 
   <script type="text/javascript" src="../js/styles.js"></script>

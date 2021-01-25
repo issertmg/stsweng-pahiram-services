@@ -35,22 +35,32 @@ exports.book_details = async function (req, res) {
  */
 exports.book_get = async function (req, res) {
     try {
-        const count = await Book.find().countDocuments();
+        const count = await Book.find({
+            title: {
+                $regex: req.query.columns[0].search.value,
+                $options: 'i'
+            },
+            authors: {
+                $regex: req.query.columns[1].search.value,
+                $options: 'i'
+            }
+        }).countDocuments();
 
         let data = await Book
             .find({
-                 $expr: {
-                     $regexMatch: {
-                         input: "$title",
-                         regex: req.query.search.value,  //Your text search here
-                         options: "i"
-                     }
-                 }
+                title: {
+                    $regex: req.query.columns[0].search.value,
+                    $options: 'i'
+                },
+                authors: {
+                    $regex: req.query.columns[1].search.value,
+                    $options: 'i'
+                }
             })
             .skip(parseInt(req.query.start))
             .limit(parseInt(req.query.length));
 
-        if (data && count) {
+        if (data) {
             let datatable = {
                 recordsTotal: count,
                 recordsFiltered: count,
