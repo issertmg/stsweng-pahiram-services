@@ -35,16 +35,14 @@ jobs:
 #        heroku_app_name: dlsu-pahiram-services
 #        heroku_email: keith_gabriel_badulis@dlsu.edu.ph
 #        branch: 'master'
-    - name: Git permission fix
-      run: |
-        sudo chmod -R ugo+rwX .
 
     - name: Deploying Production to Heroku 🖥️
       run: |
+        git config --global user.name "issertmg"
         git init
         git add .
         git commit -m 'Release V !!version'
         git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/dlsu-pahiram-services.git
         git push heroku master -f
-#        working-directory: ./server
+        working-directory: ./
 
