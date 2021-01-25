@@ -28,11 +28,20 @@ jobs:
       with:
         tag-prefix: ''
 
-    - name: Deploy to Heroku
-      uses: AkhileshNS/heroku-deploy@v3.6.8
-      with:
-        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-        heroku_app_name: dlsu-pahiram-services
-        heroku_email: keith_gabriel_badulis@dlsu.edu.ph
-        branch: 'master'
+#    - name: Deploy to Heroku
+#      uses: AkhileshNS/heroku-deploy@v3.6.8
+#      with:
+#        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+#        heroku_app_name: dlsu-pahiram-services
+#        heroku_email: keith_gabriel_badulis@dlsu.edu.ph
+#        branch: 'master'
+
+    - name: Deploying Production to Heroku 🖥️
+      run: |
+        git init
+        git add .
+        git commit -m 'Release V !!version'
+        git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/dlsu-pahiram-services.git
+        git push heroku master -f
+#        working-directory: ./server
 
