@@ -21,32 +21,10 @@ jobs:
     - run: npm ci
     - run: npm test
 
-    - name: Automated Version Bump
-      uses: phips28/gh-action-bump-version@v8.0.18
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/checkout@master
+    - name: Deploy to Heroku
+      uses: AkhileshNS/heroku-deploy@v3.6.8
       with:
-        tag-prefix: ''
-
-#    - name: Deploy to Heroku
-#      uses: AkhileshNS/heroku-deploy@v3.6.8
-#      with:
-#        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-#        heroku_app_name: dlsu-pahiram-services
-#        heroku_email: keith_gabriel_badulis@dlsu.edu.ph
-#        branch: 'master'
-
-    - name: Git permission fix
-      run: |
-        sudo chmod -R ugo+rwX .
-
-    - name: Deploying Production to Heroku 🖥️
-      run: |
-        git config --global user.name "issertmg"
-        git init
-        git add .
-        git commit -m 'Release'
-        git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/dlsu-pahiram-services.git
-        git push heroku master -f
-        working-directory: ./
-
+        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+        heroku_app_name: "dlsu-pahiram-services"
+        heroku_email: "keith_gabriel_badulis@dlsu.edu.ph"
