@@ -33,7 +33,7 @@ $(document).ready(function () {
 			{ 
 				"data": "description",
 				"render": function (data, type, row) {
-                    return limitCharLength(data, 50);
+                    return limitCharLength(data, 30);
                 }
 			},
 			{ 
@@ -147,20 +147,23 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 	);
 
 	// Get item data
-	$('#itemDetailsLabel').text(reservation.onItemType + ' Details')
+    $('#itemDetailsLabel').text(reservation.onItemType + ' Details');
+    $('#itemDetails').html('');
 	$.get('/reservations/manage/get-one-reservation',
 		{ id: reservation._id },
 		function (data) {
-			$('#itemDetails').html('');
-			for (const key in data.item) {
-				if (key !== '__v' && key !== '_id' && key !== 'imageURL')
-					$('#itemDetails').append(`
-						<div class="d-flex row">
-							<div class="col-2">` + key.charAt(0).toUpperCase() + key.slice(1) + `: </div>
-							<div class="col-10">` + data.item[key] + `</div>
-						</div>
-					`);
-			}
+            if (data.item)
+                for (const key in data.item) {
+                    if (key !== '__v' && key !== '_id' && key !== 'imageURL')
+                        $('#itemDetails').append(`
+                            <div class="d-flex row">
+                                <div class="col-2">` + key.charAt(0).toUpperCase() + key.slice(1) + `: </div>
+                                <div class="col-10">` + data.item[key] + `</div>
+                            </div>
+                        `);
+                }
+            else
+                $('#itemDetails').append(`<span>Item could not be loaded.</span>`)
 		}
 	);
 
@@ -171,7 +174,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 
 	$('#statusModalLabel').text(reservation.title);
 	$('#idNum').text(reservation.userID);
-	$('#dateCreated').text(reservation.dateCreated);
+	$('#dateCreated').text((new Date(reservation.dateCreated)).toDateString());
 	$('#description').text(reservation.description);
 	$('#editRemarks').val(reservation.remarks);
 	$('#penalty').val(reservation.penalty);
