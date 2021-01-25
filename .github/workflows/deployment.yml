@@ -45,7 +45,7 @@ jobs:
         git config --global user.name "issertmg"
         git init
         git add .
-        git commit -m 'Release V !!version'
+        git commit -m 'Release'
         git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/dlsu-pahiram-services.git
         git push heroku master -f
         working-directory: ./
