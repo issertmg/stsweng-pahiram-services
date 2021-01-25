@@ -28,8 +28,8 @@ jobs:
       with:
         tag-prefix: ''
 
+    - uses: actions/checkout@v1
     - name: Push to Heroku
-      uses: actions/checkout@v1
       run: git push -f https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/dlsu-pahiram-services.git origin/master:master
 
     # - name: Set up QEMU
