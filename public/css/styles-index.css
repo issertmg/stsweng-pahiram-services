@@ -50,7 +50,6 @@
     position: absolute;
     background: url(../static/locker-equipment/bench.png) center no-repeat;
     background-size: contain;
-    opacity: 50%;
 }
 
 #umbrella {
@@ -85,11 +84,19 @@
     background-size: contain;
 }
 
+#human-book {
+    position: absolute;
+    background: url(../static/locker-equipment/human-book.png) center no-repeat;
+    background-size: contain;
+}
+
 #human-locker.locker-anim {
     transform: translateX(-90px) scale(1.2);
 }
 
 #human-equipment.locker-anim,
+#human-book.locker-anim,
+#bench.locker-anim,
 #table.locker-anim,
 #laptop.locker-anim,
 #umbrella.locker-anim {
@@ -105,12 +112,8 @@
     transform: translateX(-50px) scale(0.95);
 }
 
-#bench.locker-anim {
-    transform: translateX(-70px) scale(0.8);
-}
-
 #trashcan.locker-anim {
-    transform: translateX(-5px) scale(0.9);
+    transform: translateX(-20px) scale(0.9);
 }
 
 #wall2.locker-anim {
@@ -121,10 +124,9 @@
     transform: translateX(-50px) translateY(-10px) scale(0.9);
 }
 
-
-
-
-#human-locker.equipment-anim {
+#human-locker.equipment-anim,
+#human-book.equipment-anim,
+#bench.equipment-anim {
     transform: translateX(50px) scale(0.8);
     filter: grayscale(0.75);
 }
@@ -144,12 +146,8 @@
     transform: translateX(40px) scale(0.95);
 }
 
-#bench.equipment-anim {
-    transform: translateX(40px) scale(0.8);
-}
-
 #trashcan.equipment-anim {
-    transform: translateX(90px) scale(0.7);
+    transform: translateX(70px) scale(0.7);
 }
 
 #wall2.equipment-anim {
@@ -158,4 +156,36 @@
 
 #wall1.equipment-anim {
     transform: translateX(20px) translateY(10px) scale(1.1);
+}
+
+/* BOOK */
+
+#human-equipment.book-anim,
+#table.book-anim,
+#laptop.book-anim,
+#umbrella.book-anim {
+    transform: translateX(-10px) scale(0.8);
+    filter: grayscale(0.75);
+}
+
+#window.book-anim{
+    transform: translateX(-10px) scale(0.95);
+}
+
+#clock.book-anim {
+    transform: translateX(-10px) scale(0.95);
+}
+
+#human-book.book-anim,
+#bench.book-anim {
+    transform: scale(1.2);
+}
+
+#human-locker.book-anim {
+    transform: translateX(10px) scale(0.8);
+    filter: grayscale(0.75);
+}
+
+#trashcan.book-anim {
+    transform: translateX(30px) scale(0.7);
 }

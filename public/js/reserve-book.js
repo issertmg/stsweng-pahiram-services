@@ -121,6 +121,13 @@ $('#borrowBookModal').on('show.bs.modal', (event) => {
     );
 });
 
+$("#borrowBookSubmit").on("click", function () {
+    if (!$("#checkTerms").prop('checked'))
+        alert("Please check the box if you agree to the terms and conditions.");
+    else
+        $("#borrowBookSubmit").trigger("submit");
+});
+
 $(document).ajaxStart(function () {
     $('table').css('filter', 'opacity(0.3)');
     $('.page-link').css('pointer-events', 'none');
