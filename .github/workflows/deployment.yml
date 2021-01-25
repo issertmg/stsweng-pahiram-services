@@ -13,23 +13,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Setup Node.js
     - uses: actions/checkout@v2
+    - name: Setup Node.js
       uses: actions/setup-node@v1
       with:
         node-version: 12
     - run: npm ci
     - run: npm test
 
+    - uses: phips28/gh-action-bump-version@v8.0.18
     - name: Automated Version Bump
-      uses: phips28/gh-action-bump-version@v8.0.18
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag-prefix: ''
 
-    - name: Push to Heroku
     - uses: actions/checkout@v1
+    - name: Push to Heroku
       run: git push -f https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/dlsu-pahiram-services.git origin/master:master
 
     # - name: Set up QEMU
