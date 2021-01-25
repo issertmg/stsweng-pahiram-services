@@ -67,7 +67,6 @@ exports.panel_create = async function (req, res) {
 }
 
 exports.panel_details = async function (req, res) {
-
     // Show the panels
     if (req.query.bldg != null && req.query.flr != null) {
         try {
