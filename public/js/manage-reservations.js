@@ -171,7 +171,7 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 
 	$('#statusModalLabel').text(reservation.title);
 	$('#idNum').text(reservation.userID);
-	$('#dateCreated').text(reservation.dateCreated);
+	$('#dateCreated').text((new Date(reservation.dateCreated)).toDateString());
 	$('#description').text(reservation.description);
 	$('#editRemarks').val(reservation.remarks);
 	$('#penalty').val(reservation.penalty);
