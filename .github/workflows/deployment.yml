@@ -28,7 +28,10 @@ jobs:
       with:
         tag-prefix: ''
 
-    - uses: actions/checkout@v1
+    - name: Login to Heroku
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: heroku login
     - name: Push to Heroku
       run: git push -f https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/dlsu-pahiram-services.git origin/master:master
 
