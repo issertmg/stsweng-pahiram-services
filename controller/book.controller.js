@@ -145,7 +145,7 @@ exports.book_create = async function (req, res) {
     if (errors.isEmpty()) {
         const title = req.body.title.trim();
         const authors = req.body.authors.trim();
-        const edition = req.body.edition.trim();
+        const edition = (req.body.edition.trim() === '') ? null : req.body.edition.trim();
         const quantity = req.body.quantity;
         const isNew = await isNewBook(title, authors, edition);
 
@@ -174,20 +174,20 @@ exports.book_update = async function (req, res) {
 
     if (errors.isEmpty()) {
         try {
-            const edition = (req.body.edition === '') ? null : req.body.edition;
+            const edition = (req.body.edition.trim() === '') ? null : req.body.edition.trim();
 
             // update book
             await Book.findByIdAndUpdate(req.body.id, {
-                title: req.body.title,
-                authors: req.body.authors,
+                title: req.body.title.trim(),
+                authors: req.body.authors.trim(),
                 edition: edition,
                 quantity: req.body.quantity,
             });
 
             // update title and description of existing reservations
             await Reservation.updateMany({item: req.body.id}, {
-                title: req.body.title,
-                description: 'by ' + req.body.authors,
+                title: req.body.title.trim(),
+                description: 'by ' + req.body.authors.trim(),
             });
         } catch (err) {
             console.log(err);
