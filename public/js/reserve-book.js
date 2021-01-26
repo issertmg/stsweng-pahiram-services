@@ -88,10 +88,10 @@ $.get('/reserve/book/active-reservation',
 $('#borrowBookModal').on('show.bs.modal', (event) => {
     // Default values
     $('#bookID').val(null);
-    $('#titleLabel').text("Updating...");
-    $('#authorLabel').text("Updating...");
-    $('#edition').text("Updating...");
-    $('#stockLabel').text("Updating...");
+    $('#titleLabel').text("Loading...");
+    $('#authorLabel').text("Loading...");
+    $('#editionLabel').text("Loading...");
+    $('#stockLabel').text("Loading...");
     $('#outOfStockAlert').css("display", "none");
     // default: disabled submit button
     $('#borrowBookSubmit').prop("disabled", true);
