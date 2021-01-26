@@ -140,6 +140,17 @@ $(document).ajaxComplete(function () {
     $('.page-link').css('filter', 'opacity(1)');
 });
 
+$('#bookTermsModal').on('show.bs.modal', function () {
+    $('body').addClass('modal-open');
+    $('body').css('overflow-y', 'hidden');
+    $(this).css('overflow-y', 'auto');
+});
+
+$('#bookTermsModal').on('hide.bs.modal', function () {
+    $('body').removeClass('modal-open');
+    $('body').css('overflow-y', 'auto');
+});
+
 function limitCharLength(data, maxLength) {
     return data.length > maxLength ? data.substr(0, maxLength) + '...' : data;
 }
