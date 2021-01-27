@@ -37,7 +37,9 @@ exports.equipment = async function (req, res) {
 exports.reserve_equipment = async function (req, res) {
     let errors = validationResult(req);
     try {
-        const invalid = await has2ActiveEquipmentReservations(req.session.idNum);
+        let invalid = true;
+        invalid = await has2ActiveEquipmentReservations(req.session.idNum);
+
         if (!invalid && errors.isEmpty()) {
             let equipment = await Equipment.findById(req.body.equipmentid);
             let equipmentid = req.body.equipmentid;

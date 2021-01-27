@@ -95,8 +95,11 @@ exports.user_has_active_book_reservation = async function (req, res) {
 
 exports.reserve_book = async function (req, res) {
     try {
-        const activeReservation = await hasActiveBookReservation(req.session.idNum);
-        const isRentalPeriod = await isBookRentalPeriod();
+        let activeReservation = true;
+        let isRentalPeriod = false;
+
+        activeReservation = await hasActiveBookReservation(req.session.idNum);
+        isRentalPeriod = await isBookRentalPeriod();
 
         if (!activeReservation && isRentalPeriod) {
             let book = await Book.findById(req.body.bookID);
