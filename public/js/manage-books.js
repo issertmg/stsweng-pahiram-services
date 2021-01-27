@@ -34,7 +34,8 @@ $(document).ready(function () {
                         return "N/A"
                     else
                         return limitCharLength(data.edition, 20);
-                }
+                },
+                "orderable": false
             },
             {
                 "data": function (data) {
@@ -43,11 +44,11 @@ $(document).ready(function () {
                         return `<span class="error-label">${stock}</span>`;
                     else
                         return stock;
-                }
+                },
+                "orderable": false
             },
             { "data": "_id", "visible": false }
         ],
-        "order": [[0, "asc"]],
         "responsive": true,
         "dom": "ipt",
         "language": {
