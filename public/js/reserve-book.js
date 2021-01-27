@@ -125,7 +125,7 @@ $("#borrowBookSubmit").on("click", function () {
     if (!$("#checkTerms").prop('checked'))
         alert("Please check the box if you agree to the terms and conditions.");
     else {
-        $('#submitLockerForm').off("click");
+        $('#borrowBookSubmit').off("click");
         $("#borrowBookSubmit").trigger("submit");
     }
 });
