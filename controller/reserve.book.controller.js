@@ -101,6 +101,9 @@ exports.reserve_book = async function (req, res) {
         if (!activeReservation && isRentalPeriod) {
             let book = await Book.findById(req.body.bookID);
             if (book && (book.onRent < book.quantity)) {
+                // update book
+                await Book.findByIdAndUpdate(book._id, { onRent: book.onRent + 1 });
+                // create a new reservation
                 let reservation = new Reservation({
                     title: book.title,
                     userID: req.session.idNum,
@@ -110,7 +113,6 @@ exports.reserve_book = async function (req, res) {
                     onItemType: 'Book'
                 });
                 await reservation.save();
-                await Book.findByIdAndUpdate(book._id, { onRent: book.onRent + 1 });
             }
         }
         res.redirect("/reservations");

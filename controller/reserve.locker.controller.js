@@ -94,8 +94,10 @@ exports.reserve_locker = async function (req, res) {
             });
             let validLocker = await isLockerVacant(lockerid);
             if (validLocker) {
-                await reservation.save();
+                // update locker
                 await Locker.findByIdAndUpdate(lockerid, {status: 'occupied'});
+                // create new reservation
+                await reservation.save();
             } else {
                 console.log("Reservation unsuccessful. Locker is occupied.")
             }

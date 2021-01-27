@@ -48,6 +48,10 @@ exports.reserve_equipment = async function (req, res) {
             let pickupTime = getPickupTime(parseInt(req.body.borrowtime));
             pickupDate.setHours(pickupTime[0],pickupTime[1],0, 0);
 
+            // udpate equipment
+            await Equipment.findByIdAndUpdate(equipmentid, {$inc: {onRent: 1}});
+
+            // create new reservation
             let reservation = new Reservation({
                 title: equipment.name + ", " + equipment.brand,
                 userID: req.session.idNum,
@@ -58,7 +62,6 @@ exports.reserve_equipment = async function (req, res) {
                 pickupPayDate: pickupDate
             });
             await reservation.save();
-            await Equipment.findByIdAndUpdate(equipmentid, {$inc: {onRent: 1}});
         }
         else {
             console.log("Equipment reservation disabled.");
