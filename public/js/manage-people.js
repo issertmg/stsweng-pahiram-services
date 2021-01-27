@@ -73,9 +73,12 @@ $(document).ready(function () {
         "order": [[2, "asc"]],
         "responsive": true,
         "dom": "ipt",
-        columnDefs: [
+        "columnDefs": [
             { targets: 0, bSortable: false }
-        ]
+        ],
+        "language": {
+            "emptyTable": "No users to display"
+        }
     });
 
     $("#searchBox").on("keyup paste change", function () {

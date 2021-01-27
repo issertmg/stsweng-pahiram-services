@@ -35,22 +35,39 @@ exports.book_details = async function (req, res) {
  */
 exports.book_get = async function (req, res) {
     try {
-        const count = await Book.find().countDocuments();
+        let sortObject;
+        if (req.query.order[0] == null)
+            sortObject = getSortValue(0, 1)
+        else
+            sortObject = getSortValue(req.query.order[0].column, req.query.order[0].dir);
+
+        const count = await Book.find({
+            title: {
+                $regex: req.query.columns[0].search.value,
+                $options: 'i'
+            },
+            authors: {
+                $regex: req.query.columns[1].search.value,
+                $options: 'i'
+            }
+        }).countDocuments();
 
         let data = await Book
             .find({
-                 $expr: {
-                     $regexMatch: {
-                         input: "$title",
-                         regex: req.query.search.value,  //Your text search here
-                         options: "i"
-                     }
-                 }
+                title: {
+                    $regex: req.query.columns[0].search.value,
+                    $options: 'i'
+                },
+                authors: {
+                    $regex: req.query.columns[1].search.value,
+                    $options: 'i'
+                }
             })
+            .sort(sortObject)
             .skip(parseInt(req.query.start))
             .limit(parseInt(req.query.length));
 
-        if (data && count) {
+        if (data) {
             let datatable = {
                 recordsTotal: count,
                 recordsFiltered: count,
@@ -145,7 +162,7 @@ exports.book_create = async function (req, res) {
     if (errors.isEmpty()) {
         const title = req.body.title.trim();
         const authors = req.body.authors.trim();
-        const edition = req.body.edition.trim();
+        const edition = (req.body.edition.trim() === '') ? null : req.body.edition.trim();
         const quantity = req.body.quantity;
         const isNew = await isNewBook(title, authors, edition);
 
@@ -174,20 +191,20 @@ exports.book_update = async function (req, res) {
 
     if (errors.isEmpty()) {
         try {
-            const edition = (req.body.edition === '') ? null : req.body.edition;
+            const edition = (req.body.edition.trim() === '') ? null : req.body.edition.trim();
 
             // update book
             await Book.findByIdAndUpdate(req.body.id, {
-                title: req.body.title,
-                authors: req.body.authors,
+                title: req.body.title.trim(),
+                authors: req.body.authors.trim(),
                 edition: edition,
                 quantity: req.body.quantity,
             });
 
             // update title and description of existing reservations
             await Reservation.updateMany({item: req.body.id}, {
-                title: req.body.title,
-                description: 'by ' + req.body.authors,
+                title: req.body.title.trim(),
+                description: 'by ' + req.body.authors.trim(),
             });
         } catch (err) {
             console.log(err);
@@ -262,4 +279,20 @@ function isValidRentalDates(startDate, endDate, returnDate) {
     returnDate.setHours(23, 59, 59);
 
     return flag;
+}
+
+function getSortValue(column, direction) {
+    if (column == null || direction == null) {
+        console.log('Null')
+        return {'lastUpdated': -1};  
+    } 
+
+    let dir = (direction === 'asc') ? 1: -1;
+
+    switch (column) {
+        case '0':
+            return {'title': dir};
+        case '1':
+            return {'authors': dir};
+    }
 }

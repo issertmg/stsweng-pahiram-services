@@ -282,11 +282,20 @@ exports.reservations_get = async function (req, res) {
         else
             sortObject = getSortValue(req.query.order[0].column, req.query.order[0].dir);
 
-        count = await Reservation
-            .find({onItemType: type})
+        let count = await Reservation
+            .find(
+                {
+                    onItemType: type,
+                    $or: [
+                        {userID: { $regex: '[0-9]*' + req.query.search.value + '[0-9]*' }},
+                        {status: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
+                        {onItemType: { $regex: '[.]*' + req.query.search.value + '[.]*', $options: 'i'}},
+                    ]
+
+                })
             .countDocuments();
 
-        data = await Reservation
+        let data = await Reservation
             .find(
                 {
                     onItemType: type, 
@@ -301,7 +310,7 @@ exports.reservations_get = async function (req, res) {
             .skip(parseInt(req.query.start))
             .limit(parseInt(req.query.length)).populate('item');
 
-        if (data && count) {
+        if (data) {
 
             let datatable = {
                 recordsTotal: count,

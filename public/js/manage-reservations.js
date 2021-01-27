@@ -49,7 +49,10 @@ $(document).ready(function () {
 		],
 		"order": [[9, "desc"]],
 		"responsive": true,
-		"dom": "ipt"
+		"dom": "ipt",
+		"language": {
+			"emptyTable": "No reservations to display"
+		}
 	});
 
 	$("#typeFilter").on("change", function () {
@@ -148,11 +151,12 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
 
 	// Get item data
     $('#itemDetailsLabel').text(reservation.onItemType + ' Details');
-    $('#itemDetails').html('');
+    $('#itemDetails').html('Loading...');
 	$.get('/reservations/manage/get-one-reservation',
 		{ id: reservation._id },
 		function (data) {
-            if (data.item)
+            if (data.item) {
+                $('#itemDetails').html("");
                 for (const key in data.item) {
                     if (key !== '__v' && key !== '_id' && key !== 'imageURL')
                         $('#itemDetails').append(`
@@ -162,8 +166,8 @@ $('#editReservationModal').on('show.bs.modal', (event) => {
                             </div>
                         `);
                 }
-            else
-                $('#itemDetails').append(`<span>Item could not be loaded.</span>`)
+            } else
+                $('#itemDetails').html(`Item could not be loaded.`)
 		}
 	);
 
@@ -397,5 +401,17 @@ function getStatusClass(status) {
 function limitCharLength(data, maxLength) {
     return data.length > maxLength ? data.substr(0, maxLength) + '...' : data;
 }
+
+$(document).ajaxStart(function () {
+    $('table').css('filter', 'opacity(0.3)');
+    $('.page-link').css('pointer-events', 'none');
+    $('.page-link').css('filter', 'opacity(0.3)');
+});
+
+$(document).ajaxComplete(function () {
+    $('table').css('filter', 'opacity(1)');
+    $('.page-link').css('pointer-events', 'auto');
+    $('.page-link').css('filter', 'opacity(1)');
+});
 
 exports.isValidSetStatus = isValidSetStatus;

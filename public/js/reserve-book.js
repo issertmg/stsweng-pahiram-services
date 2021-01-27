@@ -88,10 +88,10 @@ $.get('/reserve/book/active-reservation',
 $('#borrowBookModal').on('show.bs.modal', (event) => {
     // Default values
     $('#bookID').val(null);
-    $('#titleLabel').text("Updating...");
-    $('#authorLabel').text("Updating...");
-    $('#edition').text("Updating...");
-    $('#stockLabel').text("Updating...");
+    $('#titleLabel').text("Loading...");
+    $('#authorLabel').text("Loading...");
+    $('#editionLabel').text("Loading...");
+    $('#stockLabel').text("Loading...");
     $('#outOfStockAlert').css("display", "none");
     // default: disabled submit button
     $('#borrowBookSubmit').prop("disabled", true);
@@ -124,8 +124,10 @@ $('#borrowBookModal').on('show.bs.modal', (event) => {
 $("#borrowBookSubmit").on("click", function () {
     if (!$("#checkTerms").prop('checked'))
         alert("Please check the box if you agree to the terms and conditions.");
-    else
+    else {
+        $('#borrowBookSubmit').off("click");
         $("#borrowBookSubmit").trigger("submit");
+    }
 });
 
 $(document).ajaxStart(function () {
@@ -138,6 +140,17 @@ $(document).ajaxComplete(function () {
     $('table').css('filter', 'opacity(1)');
     $('.page-link').css('pointer-events', 'auto');
     $('.page-link').css('filter', 'opacity(1)');
+});
+
+$('#bookTermsModal').on('show.bs.modal', function () {
+    $('body').addClass('modal-open');
+    $('body').css('overflow-y', 'hidden');
+    $(this).css('overflow-y', 'auto');
+});
+
+$('#bookTermsModal').on('hide.bs.modal', function () {
+    $('body').removeClass('modal-open');
+    $('body').css('overflow-y', 'auto');
 });
 
 function limitCharLength(data, maxLength) {

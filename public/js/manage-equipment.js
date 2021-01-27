@@ -172,7 +172,7 @@ $(document).ready(function () {
                             function (data, status) {
                                 if (data.count === 0) {
                                     $('#editEquipButton').off("click");
-                                    $('#editEquipForm').submit();
+                                    $('#editEquipForm').trigger("submit");
                                 }
                                 else {
                                     $('#formUpdateDuplicateAlert').show();
@@ -203,7 +203,7 @@ $(document).ready(function () {
         }
         else {
             $('#deleteEquipButton').off("click");
-            $('#delEquipForm').submit();
+            $('#delEquipForm').trigger("submit");
         }
       });
     });

@@ -34,7 +34,8 @@ $(document).ready(function () {
                         return "N/A"
                     else
                         return limitCharLength(data.edition, 20);
-                }
+                },
+                "orderable": false
             },
             {
                 "data": function (data) {
@@ -43,11 +44,11 @@ $(document).ready(function () {
                         return `<span class="error-label">${stock}</span>`;
                     else
                         return stock;
-                }
+                },
+                "orderable": false
             },
             { "data": "_id", "visible": false }
         ],
-        "order": [[0, "asc"]],
         "responsive": true,
         "dom": "ipt",
         "language": {
@@ -55,16 +56,26 @@ $(document).ready(function () {
         }
     });
 
-    $("#searchBox").on("keyup paste change", function () {
+    $("#titleSearch").on("keyup paste", function (e) {
         let str = $(this).val();
-        if (str.length > 50) {
-            $(this).val(str.slice(0, 50))
-        }
+        $(this).val(str.substring(0, 50));
+        if (e.code === "Enter")
+            $('#searchBtn').trigger("click");
+    });
+    $("#authorSearch").on("keyup paste", function (e) {
+        let str = $(this).val();
+        $(this).val(str.substring(0, 50));
+        if (e.code === "Enter")
+            $('#searchBtn').trigger("click");
+    });
+    $("#searchBtn").on("click", function () {
         $('#booksTable').DataTable()
-            .search($(this).val())
+            .column(0)
+            .search($('#titleSearch').val())
+            .column(1)
+            .search($('#authorSearch').val())
             .draw();
     });
-
 });
 
 $(document).ajaxStart(function () {
