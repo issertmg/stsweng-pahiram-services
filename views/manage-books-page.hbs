@@ -39,51 +39,52 @@
             <h1 class="col-12 mb-5">Manage books</h1>
 
             <div class="col-12">
-                <div class="row px-0 mx-auto mb-4 d-flex justify-content-between">
-                    <div class="row d-flex justify-content-between">
-                        <div class="col-lg-3 col-md-5 col-12 input-group mb-2">
-                            <div class="form-group form-inline my-auto flex-fill">
-                                <input type="search" id="titleSearch" class="form-control" placeholder="Title">
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-5 col-12 input-group mb-2">
-                            <div class="form-group form-inline my-auto flex-fill">
-                                <input type="search" id="authorSearch" class="form-control" placeholder="Author">
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-5 col-12 mb-2">
-                            <a class="btn btn-primary" id="searchBtn">
-                                Search
-                            </a>
-                        </div>
+              <div class="row px-0 mx-auto mb-4 d-flex justify-content-between">
+                <div class="row d-flex justify-content-between">
+                  <div class="col-lg-3 col-md-5 col-12 input-group mb-2">
+                    <div class="form-group form-inline my-auto flex-fill">
+                      <input type="search" id="titleSearch" class="form-control" placeholder="Title">
                     </div>
+                  </div>
+                  <div class="col-lg-3 col-md-5 col-12 input-group mb-2">
+                    <div class="form-group form-inline my-auto flex-fill">
+                      <input type="search" id="authorSearch" class="form-control" placeholder="Author">
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-5 col-12 mb-2">
+                    <a class="btn btn-primary" id="searchBtn">
+                      Search
+                    </a>
+                  </div>
+                </div>
                 <a id="setRentalDate" data-toggle="modal" href="#setRentalDatesModal"
-                    class="btn btn-secondary mb-auto d-flex align-items-center ml-auto mr-4 pl-3" {{#if rentalDatesConfig}}
-                    data-startdate="{{rentalDatesConfig.startDate}}" data-enddate="{{rentalDatesConfig.endDate}}"
-                    data-returndate="{{rentalDatesConfig.returnDate}}" {{/if}}>
-                    <div class="icon mr-2 white" id="edit"></div> Edit rental dates
+                  class="btn btn-secondary mb-auto d-flex align-items-center ml-auto mr-4 pl-3" {{#if
+                  rentalDatesConfig}} data-startdate="{{rentalDatesConfig.startDate}}"
+                  data-enddate="{{rentalDatesConfig.endDate}}" data-returndate="{{rentalDatesConfig.returnDate}}"
+                  {{/if}}>
+                  <div class="icon mr-2 white" id="edit"></div> Edit rental dates
                 </a>
                 <a id="addBook" data-toggle="modal" href="#addBookModal"
-                    class="btn btn-primary mb-auto d-flex align-items-center pl-3">
-                    <div class="icon mr-2 white" id="add"></div> Add book
+                  class="btn btn-primary mb-auto d-flex align-items-center pl-3">
+                  <div class="icon mr-2 white" id="add"></div> Add book
                 </a>
-                </div>
-                <div class="card no-hover p-4">
+              </div>
+              <div class="card no-hover p-4">
                 <div class="table table-responsive">
-                    <table class="table table-hover" id="booksTable">
+                  <table class="table table-hover" id="booksTable">
                     <thead class="">
-                        <tr class="active head">
+                      <tr class="active head">
                         <th>Title</th>
                         <th>Author/s</th>
                         <th>Edition</th>
                         <th>Number in Stock</th>
-                        </tr>
+                      </tr>
                     </thead>
                     <tbody>
                     </tbody>
-                    </table>
+                  </table>
                 </div>
-                </div>
+              </div>
             </div>
 
           </div>
@@ -206,7 +207,8 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-warning mr-auto" data-toggle="modal" data-target="#deleteBookModal" data-dismiss="modal">Delete</button>
+              <button type="button" class="btn btn-warning mr-auto" data-toggle="modal" data-target="#deleteBookModal"
+                data-dismiss="modal">Delete</button>
               <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
               <input type="button" class="btn btn-primary" id="updateBookSubmit" value="Update">
             </div>
@@ -270,7 +272,7 @@
     integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
     crossorigin="anonymous"></script>
   <script type="text/javascript" charset="utf8"
-          src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+    src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
   <script type="text/javascript" src="../js/bootstrap.js"></script>
 
   <script type="text/javascript" src="../js/styles.js"></script>
