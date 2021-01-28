@@ -122,11 +122,12 @@ $('#borrowBookModal').on('show.bs.modal', (event) => {
 });
 
 $("#borrowBookSubmit").on("click", function () {
-    if (!$("#checkTerms").prop('checked'))
+    if (!$("#checkTerms").prop('checked')) {
         alert("Please check the box if you agree to the terms and conditions.");
-    else {
+    } else {
+        $("#borrowBookForm").trigger("submit");
+        $("#borrowBookForm").off("submit");
         $('#borrowBookSubmit').off("click");
-        $("#borrowBookSubmit").trigger("submit");
     }
 });
 
