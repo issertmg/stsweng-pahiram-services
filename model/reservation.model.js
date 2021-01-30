@@ -25,7 +25,7 @@ const reservationSchema = new mongoose.Schema({
         required: true,
         enum: ['Book', 'Equipment', 'Locker']
     },
-    lastUpdated: { type: Date, default: Date.now() },
+    lastUpdated: { type: Date, default: new Date() },
     pickupPayDate: { type: Date, default: null }
 });
 
