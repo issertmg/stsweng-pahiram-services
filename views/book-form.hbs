@@ -104,7 +104,7 @@
   </div>
 
   <div class="modal fade" id="borrowBookModal" tabindex="-1" role="dialog" aria-labelledby="borrowBookModalLabel"
-    aria-hidden="true" id="borrowBookForm">
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -113,7 +113,7 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <form class="form-horizontal" method="post" action="/reserve/book" >
+        <form class="form-horizontal" method="post" action="/reserve/book" id="borrowBookForm">
           <input type="hidden" id="bookID" name="bookID">
           <div class="modal-body mx-auto">
             <div class="col-12 mb-2" id="outOfStockAlert">
@@ -148,7 +148,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
-            <button class="btn btn-primary" id="borrowBookSubmit">Place Reservation</button>
+            <button type="button" class="btn btn-primary" id="borrowBookSubmit">Place Reservation</button>
           </div>
         </form>
       </div>

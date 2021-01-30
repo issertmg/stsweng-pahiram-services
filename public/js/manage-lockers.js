@@ -305,6 +305,7 @@ function isValidStartDate () {
     let startDate = $("#startDate").val();
     let startDateObject = new Date(startDate);
     let currentDate = new Date();
+    currentDate.setHours(0,0,0,0);
 
     let startTimeString = $("#startTime").val();
     let startTimeHour = startTimeString.split(':')[0];

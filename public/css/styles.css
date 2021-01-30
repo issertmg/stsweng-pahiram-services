@@ -869,12 +869,12 @@ tr {
     padding: 8px 16px;
 }
 
-.form-group .form-control:hover, .form-group .form-control-file:hover, input:hover {
+.form-group .form-control:not(#borrow-date):hover, .form-group .form-control-file:hover, input:not(#borrow-date):hover {
     border-color: #38b98a !important;
     /* background-color: #fff; */
 }
 
-.form-group .form-control:active, .form-group .form-control:focus, input:focus {
+.form-group .form-control:not(#borrow-date):active, .form-group .form-control:not(#borrow-date):focus, input:not(#borrow-date):focus {
     background-color: #fff !important;
     border-color: #38b98a !important;
     box-shadow: none;
