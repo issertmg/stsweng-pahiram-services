@@ -268,6 +268,7 @@ exports.set_rental_dates = async function (req, res) {
 function isValidRentalDates(startDate, endDate, returnDate) {
     let flag = false;
     let currentDate = new Date();
+    currentDate.setHours(0,0,0,0);
 
     startDate.setMinutes(startDate.getMinutes() + 1);
     returnDate.setHours(endDate.getHours(), endDate.getMinutes(), 0);
