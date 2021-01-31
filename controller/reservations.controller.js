@@ -163,7 +163,7 @@ cron.schedule('0 59 23 * * SUN,MON,TUE,WED,THU,FRI,SAT *', async function () {
     }
 });
 
-hbs.registerHelper('dateStr', (date) => { return date == null ? '' : date.toDateString(); });
+hbs.registerHelper('dateStr', (date) => { return date == null ? '' : date.toLocaleDateString(); });
 hbs.registerHelper('hasPenalty', (penalty) => { return penalty > 0; });
 hbs.registerHelper('hasRemarks', (remarks) => { return remarks != ''; });
 hbs.registerHelper('status-pending', (status) => { return status == 'Pending'; });
@@ -201,6 +201,21 @@ exports.myReservations = async function (req, res) {
                 userID: req.session.idNum,
                 status: ['Denied', 'Returned']
             }).sort({ lastUpdated: -1 }).populate('item');
+
+        let lockerRentalDate = await RentalDates.findOne({type: 'Locker'});
+        let bookRentalDate = await RentalDates.findOne({type: 'Book'});
+        
+        for (let i = 0; i < activeReservations.length; i++) {
+            if (activeReservations[i].onItemType === 'Locker')
+                activeReservations[i].returnDate = lockerRentalDate.returnDate;
+            else if (activeReservations[i].onItemType === 'Book')
+                activeReservations[i].returnDate = bookRentalDate.returnDate;
+            else if (activeReservations[i].onItemType === 'Equipment')
+                activeReservations[i].returnDate = activeReservations[i].pickupPayDate;
+        }
+
+        console.log(activeReservations)
+        
         res.render('my-reservations-page', {
             active: { active_my_reservations: true },
             sidebarData: {
