@@ -11,6 +11,9 @@ jobs:
   test_pull_request:
 
     runs-on: ubuntu-latest
+    env:
+      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      TEST: "thisistest"
 
     steps:
     - uses: actions/checkout@v2
@@ -22,10 +25,17 @@ jobs:
         node-version: 12
 #    - run: npm ci
 #    - run: npm test
-
-    - name: Deploy to Heroku
+    - run: |
+        `cat >~/.netrc <<EOF
+                  machine api.heroku.com
+                      login $EMAIL
+                      password $HEROKU_AUTH_TOKEN
+                  machine git.heroku.com
+                      login $EMAIL
+                      password $HEROKU_AUTH_TOKEN
+                  EOF`
       env:
-        HEROKU_API_TOKEN: ${{ secrets.HEROKU_AUTH_TOKEN }}
-        HEROKU_APP_NAME: "dlsu-pahiram-services"
-      if: github.ref == 'refs/heads/master' && job.status == 'success'
-      run: git push https://heroku:$HEROKU_API_TOKEN@git.heroku.com/$HEROKU_APP_NAME.git origin/master:master
+      EMAIL: keith_gabriel_badulis@dlsu.edu.ph
+      HEROKU_AUTH_TOKEN: ${{ secrets.HEROKU_AUTH_TOKEN }}
+
+    - run: git push heroku master
