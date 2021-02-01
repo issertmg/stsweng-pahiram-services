@@ -11,9 +11,6 @@ jobs:
   test_pull_request:
 
     runs-on: ubuntu-latest
-    env:
-      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-      TEST: "thisistest"
 
     steps:
     - uses: actions/checkout@v2
@@ -23,24 +20,11 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 12
-#    - run: npm ci
-#    - run: npm test
-    - run: |
-        `cat >~/.netrc <<EOF
-                  machine api.heroku.com
-                      login $EMAIL
-                      password $HEROKU_AUTH_TOKEN
-                  machine git.heroku.com
-                      login $EMAIL
-                      password $HEROKU_AUTH_TOKEN
-                  EOF`
+    - run: npm ci
+    - run: npm test
+      -
+    - name: Deploy to Heroku
       env:
-        EMAIL: keith_gabriel_badulis@dlsu.edu.ph
-        HEROKU_AUTH_TOKEN: ${{ secrets.HEROKU_AUTH_TOKEN }}
-
-
-    - name: "Add remote"
-      shell: "bash"
-      run: |
-        heroku git:remote --app dlsu-pahiram-services
-    - run: git push heroku master
+        HEROKU_APP_NAME: "dlsu-pahiram-services"
+      if: github.ref == 'refs/heads/master' && job.status == 'success'
+      run: git push https://heroku:dcd9ff4d-a579-4a09-b4f3-f2546f00a49b@git.heroku.com/$HEROKU_APP_NAME.git origin/master:master
