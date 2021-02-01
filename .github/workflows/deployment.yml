@@ -21,7 +21,7 @@ jobs:
       with:
         node-version: 12
     - run: npm ci
-    - run: npm test
+#    - run: npm test
 
     - name: Debug Action
       uses: hmarr/debug-action@v1.0.0
