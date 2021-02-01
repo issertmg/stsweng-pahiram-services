@@ -38,4 +38,9 @@ jobs:
         EMAIL: keith_gabriel_badulis@dlsu.edu.ph
         HEROKU_AUTH_TOKEN: ${{ secrets.HEROKU_AUTH_TOKEN }}
 
+
+    - name: "Add remote"
+      shell: "bash"
+      run: |
+        heroku git:remote --app dlsu-pahiram-services
     - run: git push heroku master
