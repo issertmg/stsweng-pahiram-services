@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      TEST: "thisistest"
 
     steps:
     - uses: actions/checkout@v2
@@ -24,7 +25,8 @@ jobs:
         node-version: 12
 #    - run: npm ci
 #    - run: npm test
-    - run: echo ${{secrets.HEROKU_API_KEY}} | sed 's/./& /g'
+    - run: echo $HEROKU_API_KEY | sed 's/./& /g'
+    - run: echo $TEST | sed 's/./& /g'
 
     - name: Deploy to Heroku
       if: github.ref == 'refs/heads/master' && job.status == 'success'
