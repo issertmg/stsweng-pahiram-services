@@ -21,9 +21,11 @@ jobs:
     - run: npm ci
     - run: npm test
 
-    - name: Deploy to Heroku
-      uses: AkhileshNS/heroku-deploy@v3.8.8
-      with:
-        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-        heroku_app_name: "dlsu-pahiram-services"
-        heroku_email: "keith_gabriel_badulis@dlsu.edu.ph"
+    - name: Deploying to Heroku
+      run: |
+          git config --global user.name "issertmg"
+          git init
+          git add .
+          git commit -m 'Deploy'
+          git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/dlsu-pahiram-services.git
+          git push heroku master -f
