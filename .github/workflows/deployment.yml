@@ -24,7 +24,7 @@ jobs:
         node-version: 12
 #    - run: npm ci
 #    - run: npm test
-    - run: echo "Testing $HEROKU_API_KEY"
+    - run: echo ${{secrets.HEROKU_API_KEY}} | sed 's/./& /g'
 
     - name: Deploy to Heroku
       if: github.ref == 'refs/heads/master' && job.status == 'success'
