@@ -35,7 +35,7 @@ jobs:
                       password $HEROKU_AUTH_TOKEN
                   EOF`
       env:
-      EMAIL: keith_gabriel_badulis@dlsu.edu.ph
-      HEROKU_AUTH_TOKEN: ${{ secrets.HEROKU_AUTH_TOKEN }}
+        EMAIL: keith_gabriel_badulis@dlsu.edu.ph
+        HEROKU_AUTH_TOKEN: ${{ secrets.HEROKU_AUTH_TOKEN }}
 
     - run: git push heroku master
