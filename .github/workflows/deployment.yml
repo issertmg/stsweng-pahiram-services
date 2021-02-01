@@ -9,7 +9,7 @@ on:
 
 jobs:
   test_pull_request:
-
+    environment: stsweng-pahiram-services
     runs-on: ubuntu-latest
 
     steps:
@@ -22,8 +22,10 @@ jobs:
         node-version: 12
     - run: npm ci
     - run: npm test
+
     - name: Deploy to Heroku
       env:
+        HEROKU_API_TOKEN: ${{ secrets.HEROKU_AUTH_TOKEN }}
         HEROKU_APP_NAME: "dlsu-pahiram-services"
       if: github.ref == 'refs/heads/master' && job.status == 'success'
-      run: git push https://heroku:dcd9ff4d-a579-4a09-b4f3-f2546f00a49b@git.heroku.com/$HEROKU_APP_NAME.git origin/master:master
+      run: git push https://heroku:$HEROKU_API_TOKEN@git.heroku.com/$HEROKU_APP_NAME.git origin/master:master
